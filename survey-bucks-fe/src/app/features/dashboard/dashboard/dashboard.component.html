@@ -48,6 +48,14 @@
     </div>
   </div>
   
+  <!-- Next Best Action Card -->
+  <app-next-best-action
+    *ngIf="getNextBestAction() as nextAction"
+    [action]="nextAction"
+    [showDismiss]="false"
+    (actionClick)="onNextActionClick($event)">
+  </app-next-best-action>
+
   <!-- Document Verification Status Banner -->
   <div class="document-verification-status" *ngIf="hasDocumentVerificationIssues">
     <mat-card class="alert-card rejection-alert">
@@ -206,12 +214,16 @@
   <!-- Main Dashboard Grid -->
   <div class="dashboard-grid">
     <!-- Available Surveys Section - Show different content based on access -->
-    <mat-card class="dashboard-card surveys-available" *ngIf="hasSurveyAccess">
-      <mat-card-header>
-        <mat-card-title>Available Surveys</mat-card-title>
-        <mat-card-subtitle>{{ availableSurveys.length }} surveys ready to take</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+    <mat-expansion-panel class="dashboard-panel" [expanded]="availableSurveys.length > 0" *ngIf="hasSurveyAccess">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>assignment</mat-icon>
+          Available Surveys
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ availableSurveys.length }} survey{{ availableSurveys.length !== 1 ? 's' : '' }} ready to take
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <app-empty-state
           *ngIf="availableSurveys.length === 0"
           icon="assignment"
@@ -252,15 +264,14 @@
             </div>
           </div>
           
-          <button mat-button color="primary" 
-                  class="see-all-button" 
+          <button mat-button color="primary"
+                  class="see-all-button"
                   (click)="navigateToSurveys()">
             <mat-icon>arrow_forward</mat-icon>
             See All Surveys
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
+    </mat-expansion-panel>
 
     <!-- Survey Preview Section - Show when profile incomplete -->
     <mat-card class="dashboard-card survey-preview-section" *ngIf="!hasSurveyAccess && availableSurveys.length > 0">
@@ -343,12 +354,16 @@
     </mat-card>
     
     <!-- In Progress Surveys Section -->
-    <mat-card class="dashboard-card surveys-progress" *ngIf="inProgressSurveys.length > 0">
-      <mat-card-header>
-        <mat-card-title>Continue Where You Left Off</mat-card-title>
-        <mat-card-subtitle>{{ inProgressSurveys.length }} surveys in progress</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+    <mat-expansion-panel class="dashboard-panel" [expanded]="inProgressSurveys.length > 0" *ngIf="inProgressSurveys.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>play_circle_outline</mat-icon>
+          Continue Where You Left Off
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ inProgressSurveys.length }} survey{{ inProgressSurveys.length !== 1 ? 's' : '' }} in progress
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <div *ngFor="let survey of inProgressSurveys; trackBy: trackByParticipationId" 
              class="progress-survey-item">
           <div class="survey-info">
@@ -375,16 +390,19 @@
             </button>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
-    
+    </mat-expansion-panel>
+
     <!-- Recent Achievements Section -->
-    <mat-card class="dashboard-card achievements">
-      <mat-card-header>
-        <mat-card-title>Recent Achievements</mat-card-title>
-        <mat-card-subtitle>Your latest accomplishments</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+    <mat-expansion-panel class="dashboard-panel" [expanded]="recentAchievements.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>emoji_events</mat-icon>
+          Recent Achievements
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ recentAchievements.length > 0 ? recentAchievements.length + ' recent accomplishment' + (recentAchievements.length !== 1 ? 's' : '') : 'Your latest accomplishments' }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <app-empty-state
           *ngIf="recentAchievements.length === 0"
           icon="emoji_events"
@@ -413,23 +431,26 @@
             </div>
           </div>
           
-          <button mat-button color="primary" 
-                  class="see-all-button" 
+          <button mat-button color="primary"
+                  class="see-all-button"
                   (click)="navigateToAchievements()">
             <mat-icon>arrow_forward</mat-icon>
             See All Achievements
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
-    
+    </mat-expansion-panel>
+
     <!-- Active Challenges Section -->
-    <mat-card class="dashboard-card challenges" *ngIf="activeChallenges.length > 0">
-      <mat-card-header>
-        <mat-card-title>Active Challenges</mat-card-title>
-        <mat-card-subtitle>Limited-time opportunities</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+    <mat-expansion-panel class="dashboard-panel" [expanded]="false" *ngIf="activeChallenges.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>flag</mat-icon>
+          Active Challenges
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ activeChallenges.length }} limited-time opportunit{{ activeChallenges.length !== 1 ? 'ies' : 'y' }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <div *ngFor="let challenge of activeChallenges; trackBy: trackByChallengeId" 
              class="challenge-item"
              [class]="getChallengeProgressClass(challenge)">
@@ -452,22 +473,25 @@
           </div>
         </div>
         
-        <button mat-button color="primary" 
-                class="see-all-button" 
+        <button mat-button color="primary"
+                class="see-all-button"
                 (click)="navigateToChallenges()">
           <mat-icon>arrow_forward</mat-icon>
           See All Challenges
         </button>
-      </mat-card-content>
-    </mat-card>
-    
+    </mat-expansion-panel>
+
     <!-- Rewards Summary Section -->
-    <mat-card class="dashboard-card rewards-summary">
-      <mat-card-header>
-        <mat-card-title>Your Rewards</mat-card-title>
-        <mat-card-subtitle>Points and progress</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+    <mat-expansion-panel class="dashboard-panel" [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>redeem</mat-icon>
+          Your Rewards
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ formatPointsDisplay(pointsBalance) }} points available
+        </mat-panel-description>
+      </mat-expansion-panel-header>
         <div class="rewards-display">
           <div class="points-circle">
             <span class="points-amount">{{ formatPointsDisplay(pointsBalance) }}</span>
@@ -502,8 +526,7 @@
             Browse Rewards
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
+    </mat-expansion-panel>
   </div>
 </div>
 

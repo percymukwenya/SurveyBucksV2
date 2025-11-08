@@ -1399,3 +1399,93 @@
     }
   }
 }
+// Expansion Panel Styles for Progressive Disclosure
+.dashboard-panel {
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  ::ng-deep {
+    .mat-expansion-panel-header {
+      padding: 16px 24px;
+      height: auto;
+      min-height: 64px;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.02);
+      }
+    }
+    
+    .mat-expansion-panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 18px;
+      font-weight: 600;
+      
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: var(--primary-color, #1976d2);
+      }
+    }
+    
+    .mat-expansion-panel-header-description {
+      font-size: 14px;
+      color: var(--text-color-secondary, #666);
+      margin: 0;
+      justify-content: flex-end;
+    }
+    
+    .mat-expansion-panel-body {
+      padding: 16px 24px 24px;
+    }
+  }
+}
+
+// Smooth transitions for expansion
+::ng-deep {
+  .mat-expansion-panel:not(.mat-expanded) {
+    .mat-expansion-panel-header {
+      border-bottom: none;
+    }
+  }
+  
+  .mat-expansion-panel.mat-expanded {
+    margin: 16px 0;
+  }
+}
+
+// Dark mode support for expansion panels
+.dark-mode {
+  .dashboard-panel {
+    background-color: #2d2d2d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    
+    ::ng-deep {
+      .mat-expansion-panel-header {
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+      }
+      
+      .mat-expansion-panel-header-title mat-icon {
+        color: #64b5f6;
+      }
+      
+      .mat-expansion-panel-header-description {
+        color: #999;
+      }
+    }
+  }
+}

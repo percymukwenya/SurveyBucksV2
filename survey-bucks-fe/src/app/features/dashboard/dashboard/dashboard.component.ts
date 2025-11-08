@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { Router, RouterModule } from '@angular/router';
 import { UserProfileService } from '../../../core/services/user-profile.service';
 import { SurveyService } from '../../../core/services/survey.service';
@@ -22,6 +23,7 @@ import { UserPoints } from '../../../core/models/rewards.models';
 import { DashboardData, DashboardDataService, DocumentVerificationStatus, SurveyAccessInfo } from '../../../core/services/dashboard-data.service';
 import { LoadingIndicatorComponent } from '../../../shared/components/loading-indicator/loading-indicator.component';
 import { LoadingTimerService } from '../../../core/services/loading-timer.service';
+import { NextBestActionComponent, NextBestAction } from '../../../shared/components/next-best-action/next-best-action.component';
 
 interface SurveyInfo {
   id: number;
@@ -70,10 +72,12 @@ interface UserDashboardInfo {
     MatBadgeModule,
     MatTabsModule,
     MatDividerModule,
+    MatExpansionModule,
     MatProgressSpinnerModule,
     RouterModule,
     EmptyStateComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    NextBestActionComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -402,7 +406,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   navigateToSection(section: string): void {
     const routes = {
       'Documents': '/client/profile?tab=documents',
-      'Demographics': '/client/profile?tab=demographics', 
+      'Demographics': '/client/profile?tab=demographics',
       'Banking': '/client/profile?tab=banking',
       'Interests': '/client/profile?tab=interests',
       'Profile': '/client/profile'
@@ -410,5 +414,107 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const route = routes[section as keyof typeof routes] || '/client/profile';
     this.router.navigateByUrl(route);
+  }
+
+  // Next Best Action logic
+  getNextBestAction(): NextBestAction | null {
+    // Priority 1: Document verification issues
+    if (this.rejectedDocumentsCount > 0) {
+      return {
+        title: 'Fix Rejected Documents',
+        description: `${this.rejectedDocumentsCount} document${this.rejectedDocumentsCount > 1 ? 's need' : ' needs'} to be re-uploaded for verification.`,
+        icon: 'warning',
+        priority: 'critical',
+        action: 'Documents',
+        actionLabel: 'Upload Documents',
+        estimatedMinutes: 5
+      };
+    }
+
+    // Priority 2: Critical profile sections blocking survey access
+    if (this.criticalNextSteps.length > 0) {
+      const step = this.criticalNextSteps[0];
+      return {
+        title: step.title,
+        description: step.description,
+        icon: 'priority_high',
+        priority: 'critical',
+        action: step.section,
+        actionLabel: 'Complete Now',
+        estimatedMinutes: step.estimatedMinutes,
+        pointsValue: this.surveyAccessInfo?.potentialPoints || undefined
+      };
+    }
+
+    // Priority 3: In-progress surveys
+    if (this.inProgressSurveys.length > 0) {
+      const survey = this.inProgressSurveys[0];
+      return {
+        title: 'Complete Survey',
+        description: `Continue "${survey.surveyTitle}" - ${survey.completionPercentage}% complete`,
+        icon: 'assignment',
+        priority: 'high',
+        action: `/client/surveys/take/${survey.participationId}`,
+        actionLabel: 'Continue Survey',
+        progressPercentage: survey.completionPercentage,
+        estimatedMinutes: survey.estimatedTimeRemaining
+      };
+    }
+
+    // Priority 4: Available surveys
+    if (this.availableSurveys.length > 0 && this.hasSurveyAccess) {
+      const survey = this.availableSurveys[0];
+      return {
+        title: 'Start a New Survey',
+        description: `"${survey.title}" - Earn ${survey.rewardPoints} points`,
+        icon: 'poll',
+        priority: 'medium',
+        action: `/client/surveys/${survey.id}`,
+        actionLabel: 'View Survey',
+        estimatedMinutes: survey.estimatedTimeMinutes,
+        pointsValue: survey.rewardPoints
+      };
+    }
+
+    // Priority 5: Profile completion for better matching
+    if (this.profileCompletion < 100 && !this.surveysBlocked) {
+      return {
+        title: 'Complete Your Profile',
+        description: `You're ${100 - this.profileCompletion}% away from full profile completion. Get matched with more surveys!`,
+        icon: 'person',
+        priority: 'medium',
+        action: 'Profile',
+        actionLabel: 'Complete Profile',
+        progressPercentage: this.profileCompletion,
+        estimatedMinutes: 10
+      };
+    }
+
+    // Priority 6: Active challenges
+    if (this.activeChallenges.length > 0) {
+      const challenge = this.activeChallenges[0];
+      const daysLeft = this.getDaysUntilChallenge(challenge.endDate);
+      return {
+        title: 'Complete Challenge',
+        description: `"${challenge.name}" - ${daysLeft} day${daysLeft > 1 ? 's' : ''} remaining`,
+        icon: 'flag',
+        priority: 'low',
+        action: '/client/challenges',
+        actionLabel: 'View Challenges',
+        progressPercentage: challenge.progressPercentage,
+        pointsValue: challenge.pointsReward
+      };
+    }
+
+    // No action needed - user is all caught up!
+    return null;
+  }
+
+  onNextActionClick(action: string): void {
+    if (action.startsWith('/')) {
+      this.router.navigateByUrl(action);
+    } else {
+      this.navigateToSection(action);
+    }
   }
 }
