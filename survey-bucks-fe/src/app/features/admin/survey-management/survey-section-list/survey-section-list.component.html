@@ -38,10 +38,10 @@
           </mat-panel-title>
           <mat-panel-description>
             <div class="section-actions">
-              <button mat-icon-button color="primary" (click)="openSectionDialog(section); $event.stopPropagation()" matTooltip="Edit Section">
+              <button mat-icon-button color="primary" (click)="openSectionDialog(section); $event.stopPropagation()" matTooltip="Edit Section" aria-label="Edit section {{section.name}}">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="deleteSection(section); $event.stopPropagation()" matTooltip="Delete Section">
+              <button mat-icon-button color="warn" (click)="deleteSection(section); $event.stopPropagation()" matTooltip="Delete Section" aria-label="Delete section {{section.name}}">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>

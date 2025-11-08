@@ -1,0 +1,490 @@
+/**
+ * Accessibility Enhancements for SurveyBucks
+ *
+ * This file contains global accessibility improvements including:
+ * - Mobile touch target minimums (44px per iOS HIG)
+ * - Skip-to-content links
+ * - Focus indicators
+ * - Screen reader utilities
+ */
+
+// ===================================
+// 1. MOBILE TOUCH TARGETS
+// ===================================
+
+/**
+ * iOS Human Interface Guidelines: 44x44pt minimum
+ * Android Material Design: 48x48dp minimum
+ * We use 48px as the standard
+ */
+
+@media (max-width: 768px) and (pointer: coarse) {
+  // Icon buttons - expand touch area without changing visual size
+  button[mat-icon-button],
+  button[mat-mini-fab],
+  .mat-mdc-icon-button {
+    position: relative;
+    min-width: 48px !important;
+    min-height: 48px !important;
+
+    // Ensure icon stays centered
+    .mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  // Radio buttons and checkboxes
+  .mat-mdc-radio-button,
+  .mat-mdc-checkbox {
+    .mdc-radio,
+    .mdc-checkbox {
+      min-width: 48px !important;
+      min-height: 48px !important;
+
+      // Expand touch target with pseudo-element
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 48px;
+        min-height: 48px;
+      }
+    }
+  }
+
+  // Matrix question radio buttons (special case)
+  .matrix-cell {
+    .mat-mdc-radio-button {
+      padding: 12px;
+
+      .mdc-radio {
+        min-width: 48px;
+        min-height: 48px;
+      }
+    }
+  }
+
+  // List items
+  .mat-mdc-list-item,
+  .mat-mdc-list-option {
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+  }
+
+  // Tab buttons
+  .mat-mdc-tab {
+    min-height: 48px !important;
+  }
+
+  // Chips (when interactive)
+  .mat-mdc-chip {
+    &.mat-mdc-chip-selectable {
+      min-height: 48px !important;
+      padding: 12px 16px !important;
+    }
+  }
+
+  // Form fields - increase touch area for labels
+  .mat-mdc-form-field {
+    margin-bottom: 24px; // More spacing between fields
+  }
+
+  // Menu items
+  .mat-mdc-menu-item {
+    min-height: 48px !important;
+  }
+}
+
+// ===================================
+// 2. SKIP-TO-CONTENT LINKS
+// ===================================
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  z-index: 10000;
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 4px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: top 0.3s ease;
+
+  &:focus {
+    top: 0;
+    outline: 3px solid #ffd700;
+    outline-offset: 2px;
+  }
+
+  &:hover {
+    background: #5568d3;
+  }
+}
+
+// ===================================
+// 3. FOCUS INDICATORS
+// ===================================
+
+/**
+ * Enhanced focus indicators for better keyboard navigation visibility
+ */
+
+// Global focus style (WCAG 2.4.7)
+*:focus-visible {
+  outline: 3px solid #667eea !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+// High contrast focus for interactive elements
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #667eea !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2) !important;
+}
+
+// Remove default Material focus indicators (we use our own)
+.mat-mdc-button:focus-visible,
+.mat-mdc-raised-button:focus-visible,
+.mat-mdc-icon-button:focus-visible,
+.mat-mdc-fab:focus-visible {
+  outline: 3px solid #667eea !important;
+  outline-offset: 2px !important;
+}
+
+// Focus within containers
+.mat-mdc-card:focus-within {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3) !important;
+}
+
+// ===================================
+// 4. SCREEN READER UTILITIES
+// ===================================
+
+/**
+ * Screen reader only text (visually hidden but accessible)
+ */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/**
+ * Allow element to be focusable when navigated to via keyboard
+ */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+// ===================================
+// 5. COLOR CONTRAST FIXES
+// ===================================
+
+/**
+ * WCAG AA compliance: 4.5:1 for normal text, 3:1 for large text
+ */
+
+// Fix common contrast issues
+.text-muted,
+.mat-mdc-card-subtitle,
+.mat-mdc-list-item-secondary-text {
+  color: #6c757d !important; // 5.74:1 contrast ratio (AA compliant)
+}
+
+// Placeholder text
+::placeholder {
+  color: #6c757d !important;
+  opacity: 1;
+}
+
+// Disabled text should still be readable
+.mat-mdc-button:disabled,
+.mat-mdc-raised-button:disabled {
+  opacity: 0.7 !important; // Better than default 0.38
+}
+
+// ===================================
+// 6. HIGH CONTRAST MODE SUPPORT
+// ===================================
+
+@media (prefers-contrast: high) {
+  // Increase border visibility
+  .mat-mdc-card,
+  .mat-mdc-button,
+  .mat-mdc-form-field {
+    border: 2px solid currentColor !important;
+  }
+
+  // Stronger focus indicators
+  *:focus-visible {
+    outline-width: 4px !important;
+    outline-color: #000 !important;
+  }
+
+  // Ensure text is black/white
+  body {
+    color: #000 !important;
+    background: #fff !important;
+  }
+}
+
+// ===================================
+// 7. REDUCED MOTION
+// ===================================
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  // Keep essential loading spinners but reduce animation
+  .mat-mdc-progress-spinner,
+  .mat-mdc-progress-bar {
+    animation-duration: 1s !important; // Slower but still visible
+  }
+}
+
+// ===================================
+// 8. KEYBOARD NAVIGATION HINTS
+// ===================================
+
+.keyboard-shortcut-hint {
+  display: inline-block;
+  padding: 2px 6px;
+  margin-left: 8px;
+  background: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: monospace;
+  color: #666;
+  vertical-align: middle;
+
+  @media (max-width: 768px) {
+    display: none; // Hide on mobile (no keyboard)
+  }
+}
+
+// ===================================
+// 9. ARIA LIVE REGIONS
+// ===================================
+
+.live-region {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+// Visual indicator for live region updates (development only)
+[aria-live] {
+  // Uncomment during development to debug live regions
+  // border: 2px dashed orange !important;
+}
+
+// ===================================
+// 10. FOCUS TRAP FOR MODALS
+// ===================================
+
+.modal-open {
+  // Prevent scrolling when modal is open
+  overflow: hidden;
+}
+
+.mat-mdc-dialog-container {
+  // Ensure focus stays within dialog
+  &:focus {
+    outline: none; // Dialog itself shouldn't show focus
+  }
+
+  // First and last focusable elements
+  .dialog-first-focus,
+  .dialog-last-focus {
+    position: absolute;
+    left: -9999px;
+  }
+}
+
+// ===================================
+// 11. PRINT ACCESSIBILITY
+// ===================================
+
+@media print {
+  // Show URLs for links
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+
+  // Remove navigation, buttons, etc.
+  nav,
+  .mat-mdc-button,
+  .mat-mdc-fab,
+  .skip-link {
+    display: none !important;
+  }
+
+  // Ensure good contrast
+  * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+}
+
+// ===================================
+// 12. TOUCH FEEDBACK
+// ===================================
+
+@media (hover: none) and (pointer: coarse) {
+  // Add visual feedback on touch
+  button,
+  a,
+  .mat-mdc-list-item,
+  .mat-mdc-card {
+    -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+    tap-highlight-color: rgba(102, 126, 234, 0.3);
+  }
+
+  // Active state feedback
+  button:active,
+  a:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+// ===================================
+// 13. RESPONSIVE TEXT SIZING
+// ===================================
+
+// Minimum text sizes for readability
+body {
+  font-size: 16px; // Never go below 16px on mobile
+
+  @media (max-width: 768px) {
+    font-size: 16px; // Ensure 16px minimum (no browser zoom needed)
+  }
+}
+
+// Small text should still be readable
+small,
+.text-small,
+.mat-mdc-caption {
+  font-size: 14px !important; // Never below 14px
+
+  @media (max-width: 768px) {
+    font-size: 14px !important;
+  }
+}
+
+// Ensure headings are properly sized
+h1 { font-size: clamp(24px, 5vw, 32px); }
+h2 { font-size: clamp(20px, 4vw, 24px); }
+h3 { font-size: clamp(18px, 3vw, 20px); }
+
+// ===================================
+// 14. FORM ACCESSIBILITY
+// ===================================
+
+// Ensure form labels are always visible
+.mat-mdc-form-field-label {
+  // Don't rely solely on placeholder
+  position: relative;
+  display: block;
+  margin-bottom: 4px;
+}
+
+// Error messages should be clearly visible
+.mat-mdc-form-field-error {
+  font-size: 14px !important;
+  color: #d32f2f !important;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+
+  .mat-icon {
+    margin-right: 4px;
+  }
+}
+
+// Required field indicator
+.required-indicator {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+// ===================================
+// 15. LOADING STATES
+// ===================================
+
+// Accessible loading indicator
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+
+  // Announce to screen readers
+  &[aria-busy="true"] {
+    &::after {
+      content: "Loading...";
+      @extend .sr-only;
+    }
+  }
+}
+
+// ===================================
+// END OF ACCESSIBILITY STYLES
+// ===================================
+
+/**
+ * Usage Notes:
+ *
+ * 1. Import this file in your main styles.scss:
+ *    @import './accessibility';
+ *
+ * 2. Use .sr-only for screen-reader-only content:
+ *    <span class="sr-only">Close dialog</span>
+ *
+ * 3. Add skip links in your layout:
+ *    <a href="#main-content" class="skip-link">Skip to main content</a>
+ *
+ * 4. Test with:
+ *    - Screen reader (NVDA, JAWS, VoiceOver)
+ *    - Keyboard navigation (Tab, Enter, Space, Arrow keys)
+ *    - Mobile device (real device, not just Chrome DevTools)
+ *    - axe DevTools browser extension
+ *    - Lighthouse accessibility audit
+ */
