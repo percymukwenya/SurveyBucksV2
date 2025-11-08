@@ -1,15 +1,21 @@
 <div class="admin-layout" [class.dark-mode]="isDarkMode">
+  <!-- Skip Links for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#navigation-menu" class="skip-link">Skip to navigation menu</a>
+  <a href="#page-footer" class="skip-link">Skip to footer</a>
+
   <mat-sidenav-container class="sidenav-container">
     <!-- Sidebar -->
-    <mat-sidenav 
+    <mat-sidenav
       #sidenav
-      [mode]="isMobileView ? 'over' : 'side'" 
-      [opened]="!isMobileView || isExpanded" 
-      [fixedInViewport]="true" 
+      [mode]="isMobileView ? 'over' : 'side'"
+      [opened]="!isMobileView || isExpanded"
+      [fixedInViewport]="true"
       [fixedTopGap]="0"
       [fixedBottomGap]="0"
       [class.expanded]="isExpanded"
-      class="sidebar">
+      class="sidebar"
+      id="navigation-menu">
       
       <!-- Sidebar Header with Logo -->
       <div class="sidebar-header">
@@ -303,12 +309,12 @@
       </mat-toolbar>
       
       <!-- Page Content -->
-      <div class="page-content">
+      <main id="main-content" class="page-content">
         <router-outlet></router-outlet>
-      </div>
-      
+      </main>
+
       <!-- Footer -->
-      <footer class="admin-footer">
+      <footer id="page-footer" class="admin-footer">
         <div class="footer-content">
           <div class="copyright">
             &copy; {{ currentYear }} SurveyBucks Admin Panel

@@ -1,5 +1,10 @@
 <div class="main-layout-container" [class.dark-mode]="isDarkMode">
-  <mat-toolbar color="primary" class="main-toolbar">
+  <!-- Skip Links for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#navigation-menu" class="skip-link">Skip to navigation menu</a>
+  <a href="#page-footer" class="skip-link">Skip to footer</a>
+
+  <mat-toolbar color="primary" class="main-toolbar" id="main-toolbar">
     <div class="toolbar-left">
       <button mat-icon-button *ngIf="isMobileView" (click)="toggleSidenav()" aria-label="Menu toggle">
         <mat-icon>menu</mat-icon>
@@ -113,11 +118,12 @@
   </mat-toolbar>
   
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav [mode]="isMobileView ? 'over' : 'side'" 
-                [opened]="sidenavOpen" 
+    <mat-sidenav [mode]="isMobileView ? 'over' : 'side'"
+                [opened]="sidenavOpen"
                 [fixedInViewport]="isMobileView"
                 [disableClose]="!isMobileView"
-                class="sidenav">
+                class="sidenav"
+                id="navigation-menu">
       <div class="sidenav-header">
         <h2>Menu</h2>
       </div>
@@ -156,11 +162,11 @@
         <breadcrumb></breadcrumb>
       </div>
       
-      <div class="content-wrapper">
+      <main id="main-content" class="content-wrapper">
         <router-outlet></router-outlet>
-      </div>
-      
-      <footer class="footer">
+      </main>
+
+      <footer id="page-footer" class="footer">
         <div class="copyright">
           &copy; 2025 SurveyBucks. All rights reserved.
         </div>

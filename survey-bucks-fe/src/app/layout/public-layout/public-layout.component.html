@@ -1,7 +1,18 @@
 <div class="public-layout">
-  <app-navbar></app-navbar>
-  <div class="main-content">
+  <!-- Skip Links for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#navigation" class="skip-link">Skip to navigation</a>
+  <a href="#footer" class="skip-link">Skip to footer</a>
+
+  <nav id="navigation">
+    <app-navbar></app-navbar>
+  </nav>
+
+  <main id="main-content" class="main-content">
     <router-outlet></router-outlet>
-  </div>
-  <app-footer></app-footer>
+  </main>
+
+  <footer id="footer">
+    <app-footer></app-footer>
+  </footer>
 </div>

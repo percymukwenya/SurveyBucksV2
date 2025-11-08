@@ -37,6 +37,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 
 interface ProfileSection {
   sectionName: string;
@@ -155,6 +156,7 @@ interface CreateBankingDetail {
     MatBadgeModule,
     MatTooltipModule,
     MatDialogModule,
+    EmptyStateComponent
   ],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],

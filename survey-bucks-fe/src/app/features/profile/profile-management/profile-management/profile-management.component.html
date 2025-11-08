@@ -851,14 +851,13 @@
             <div class="documents-list">
               <h4>Your Documents</h4>
 
-              <div *ngIf="userDocuments.length === 0" class="empty-state">
-                <mat-icon>description</mat-icon>
-                <h3>No documents uploaded</h3>
-                <p>
-                  Upload your identity documents to start the verification
-                  process.
-                </p>
-              </div>
+              <app-empty-state
+                *ngIf="userDocuments.length === 0"
+                icon="description"
+                title="No documents uploaded"
+                description="Upload your identity documents to start the verification process."
+                size="small">
+              </app-empty-state>
 
               <div *ngFor="let document of userDocuments" class="document-item">
                 <div class="document-info">
@@ -1129,26 +1128,19 @@
                 <p>Loading banking details...</p>
               </div>
 
-              <div
+              <app-empty-state
                 *ngIf="
                   !loadingBanking &&
                   bankingDetails.length === 0 &&
                   !showBankingForm
                 "
-                class="empty-state"
-              >
-                <mat-icon>account_balance</mat-icon>
-                <h3>No banking details added</h3>
-                <p>Add your banking details to receive survey payments.</p>
-                <button
-                  mat-flat-button
-                  color="primary"
-                  (click)="showAddBankingForm()"
-                >
-                  <mat-icon>add</mat-icon>
-                  Add Your First Banking Details
-                </button>
-              </div>
+                icon="account_balance"
+                title="No banking details added"
+                description="Add your banking details to receive survey payments."
+                actionLabel="Add Your First Banking Details"
+                (action)="showAddBankingForm()"
+                size="small">
+              </app-empty-state>
 
               <div *ngFor="let banking of bankingDetails" class="banking-item">
                 <div class="banking-info">
