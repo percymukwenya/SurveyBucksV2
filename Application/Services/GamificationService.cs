@@ -714,34 +714,123 @@ namespace Application.Services
             };
         }
 
-        public Task ProcessProfileMilestoneAsync(string userId, string achievementKey, int completionPercentage)
+        public async Task ProcessProfileMilestoneAsync(string userId, string achievementKey, int completionPercentage)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Processing profile milestone for user {UserId}: {AchievementKey} ({Percentage}%)",
+                    userId, achievementKey, completionPercentage);
+
+                // Award points based on milestone
+                int points = completionPercentage switch
+                {
+                    25 => 25,
+                    50 => 50,
+                    75 => 75,
+                    100 => 100,
+                    _ => 0
+                };
+
+                if (points > 0)
+                {
+                    await _pointsRepository.AwardPointsAsync(userId, points, $"ProfileMilestone_{completionPercentage}", achievementKey);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing profile milestone for user {UserId}", userId);
+            }
         }
 
-        public Task ProcessChallengeProgressAsync(string userId, string actionType, int actionValue)
+        public async Task ProcessChallengeProgressAsync(string userId, string actionType, int actionValue)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogDebug("Processing challenge progress for user {UserId}: {ActionType} = {Value}",
+                    userId, actionType, actionValue);
+
+                // Update active user challenges
+                var challenges = await _challengeRepository.GetUserActiveChallengesAsync(userId);
+                foreach (var challenge in challenges)
+                {
+                    // Update progress based on action type
+                    await _challengeRepository.UpdateChallengeProgressAsync(userId, challenge.Id, actionValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing challenge progress for user {UserId}", userId);
+            }
         }
 
-        public Task ProcessPointsEarnedAsync(string userId, int points, string actionType, string referenceId = null)
+        public async Task ProcessPointsEarnedAsync(string userId, int points, string actionType, string referenceId = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Awarding {Points} points to user {UserId} for {ActionType}",
+                    points, userId, actionType);
+
+                await _pointsRepository.AwardPointsAsync(userId, points, actionType, referenceId);
+
+                // Check for level up
+                var stats = await GetUserStatsAsync(userId);
+                await CheckAndAwardBadgesAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing points for user {UserId}", userId);
+            }
         }
 
-        public Task ProcessDocumentUploadAsync(string userId, int documentTypeId)
+        public async Task ProcessDocumentUploadAsync(string userId, int documentTypeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Processing document upload for user {UserId}, type {TypeId}",
+                    userId, documentTypeId);
+
+                // Award points for document upload
+                await _pointsRepository.AwardPointsAsync(userId, 10, "DocumentUpload", documentTypeId.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing document upload for user {UserId}", userId);
+            }
         }
 
-        public Task ProcessDocumentUploadAsync(string userId, string documentType)
+        public async Task ProcessDocumentUploadAsync(string userId, string documentType)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Processing document upload for user {UserId}, type {Type}",
+                    userId, documentType);
+
+                // Award points for document upload
+                await _pointsRepository.AwardPointsAsync(userId, 10, "DocumentUpload", documentType);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing document upload for user {UserId}", userId);
+            }
         }
 
-        public Task ProcessDocumentVerificationAsync(string userId, string documentTypeName)
+        public async Task ProcessDocumentVerificationAsync(string userId, string documentTypeName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Processing document verification for user {UserId}, type {Type}",
+                    userId, documentTypeName);
+
+                // Award points for verified document
+                await _pointsRepository.AwardPointsAsync(userId, 25, "DocumentVerification", documentTypeName);
+
+                // Check for achievements
+                await CheckAndAwardBadgesAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing document verification for user {UserId}", userId);
+            }
         }
 
         public async Task<UserStatsDto> GetUserStatsAsync(string userId)

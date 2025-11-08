@@ -176,14 +176,42 @@ namespace Application.Services
                 "Reward");
         }
 
-        public Task SendEnrollmentNotificationAsync(string userId, int surveyId)
+        public async Task SendEnrollmentNotificationAsync(string userId, int surveyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Survey Enrollment",
+                    $"You've been enrolled in a new survey! Start now to earn rewards.",
+                    "SurveyEnrollment",
+                    surveyId.ToString(),
+                    "Survey");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending enrollment notification for user {UserId}, survey {SurveyId}",
+                    userId, surveyId);
+            }
         }
 
-        public Task SendCompletionNotificationAsync(string userId, int surveyId)
+        public async Task SendCompletionNotificationAsync(string userId, int surveyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Survey Completed! 🎉",
+                    $"Congratulations! You've completed the survey and earned points!",
+                    "SurveyCompletion",
+                    surveyId.ToString(),
+                    "Survey");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending completion notification for user {UserId}, survey {SurveyId}",
+                    userId, surveyId);
+            }
         }
 
         public async Task SendAchievementNotificationAsync(string userId, string achievementKey)
@@ -687,24 +715,76 @@ namespace Application.Services
                 "Profile");
         }
 
-        public Task SendDocumentUploadedNotificationAsync(string userId, string documentTypeName)
+        public async Task SendDocumentUploadedNotificationAsync(string userId, string documentTypeName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Document Uploaded 📄",
+                    $"Your {documentTypeName} has been uploaded successfully. Our team will review it soon.",
+                    "DocumentUploaded",
+                    documentTypeName,
+                    "Document");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending document uploaded notification for user {UserId}", userId);
+            }
         }
 
-        public Task SendDocumentApprovedNotificationAsync(string userId, string documentTypeName)
+        public async Task SendDocumentApprovedNotificationAsync(string userId, string documentTypeName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Document Approved ✅",
+                    $"Great news! Your {documentTypeName} has been verified and approved.",
+                    "DocumentApproved",
+                    documentTypeName,
+                    "Document");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending document approved notification for user {UserId}", userId);
+            }
         }
 
-        public Task SendDocumentRejectedNotificationAsync(string userId, string documentTypeName, string reason)
+        public async Task SendDocumentRejectedNotificationAsync(string userId, string documentTypeName, string reason)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Document Requires Attention ⚠️",
+                    $"Your {documentTypeName} could not be verified. Reason: {reason}. Please upload a new document.",
+                    "DocumentRejected",
+                    documentTypeName,
+                    "Document");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending document rejected notification for user {UserId}", userId);
+            }
         }
 
-        public Task SendDocumentDeletedNotificationAsync(string userId, string documentTypeName)
+        public async Task SendDocumentDeletedNotificationAsync(string userId, string documentTypeName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _notificationRepository.CreateNotificationAsync(
+                    userId,
+                    "Document Removed 🗑️",
+                    $"Your {documentTypeName} has been removed from the system.",
+                    "DocumentDeleted",
+                    documentTypeName,
+                    "Document");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending document deleted notification for user {UserId}", userId);
+            }
         }
 
         public async Task SendSectionCompletionNotificationAsync(string userId, string sectionName, int sectionPercentage)
