@@ -1,0 +1,32 @@
+<div class="empty-state" [class]="'empty-state--' + size">
+  <!-- Icon -->
+  <div class="empty-state__icon">
+    <mat-icon>{{ icon }}</mat-icon>
+  </div>
+
+  <!-- Content -->
+  <div class="empty-state__content">
+    <h3 class="empty-state__title">{{ title }}</h3>
+    <p class="empty-state__description" *ngIf="description">{{ description }}</p>
+  </div>
+
+  <!-- Actions -->
+  <div class="empty-state__actions" *ngIf="actionLabel || secondaryActionLabel">
+    <button
+      *ngIf="actionLabel"
+      mat-raised-button
+      color="primary"
+      (click)="onAction()"
+      [attr.aria-label]="actionLabel">
+      {{ actionLabel }}
+    </button>
+
+    <button
+      *ngIf="secondaryActionLabel"
+      mat-stroked-button
+      (click)="onSecondaryAction()"
+      [attr.aria-label]="secondaryActionLabel">
+      {{ secondaryActionLabel }}
+    </button>
+  </div>
+</div>

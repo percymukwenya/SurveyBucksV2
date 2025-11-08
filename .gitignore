@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# SurveyBucks specific - sensitive configuration files
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/uploads/

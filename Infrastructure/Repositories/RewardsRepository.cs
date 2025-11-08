@@ -468,9 +468,20 @@ namespace Infrastructure.Repositories
             return await connection.QueryAsync<RewardDto>(sql);
         }
 
-        public Task<UserRewardDto> GetUserRewardByIdAsync(int userRewardId)
+        public async Task<UserRewardDto> GetUserRewardByIdAsync(int userRewardId)
         {
-            throw new NotImplementedException();
+            const string sql = @"
+            SELECT ur.Id, ur.UserId, ur.RewardId, ur.PointsUsed, ur.ClaimDate, ur.Status,
+                   ur.ClaimedDate, ur.RejectedDate, ur.RejectionReason,
+                   r.Name AS RewardName, r.Description AS RewardDescription,
+                   r.RewardType, r.Amount
+            FROM SurveyBucks.UserRewards ur
+            INNER JOIN SurveyBucks.Rewards r ON ur.RewardId = r.Id
+            WHERE ur.Id = @UserRewardId AND ur.IsDeleted = 0";
+
+            using var connection = _connectionFactory.CreateConnection();
+
+            return await connection.QuerySingleOrDefaultAsync<UserRewardDto>(sql, new { UserRewardId = userRewardId });
         }
     }
 }

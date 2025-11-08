@@ -1,1 +1,71 @@
-<p>not-found works!</p>
+<div class="not-found-container">
+  <div class="not-found-content">
+    <!-- 404 Icon/Illustration -->
+    <div class="error-icon">
+      <mat-icon class="large-icon">sentiment_dissatisfied</mat-icon>
+      <h1 class="error-code">404</h1>
+    </div>
+
+    <!-- Error Message -->
+    <h2 class="error-title">Page Not Found</h2>
+    <p class="error-description">
+      Oops! The page you're looking for doesn't exist or has been moved.
+    </p>
+
+    <!-- Search Suggestions -->
+    <mat-card class="suggestions-card">
+      <mat-card-content>
+        <h3>You might be looking for:</h3>
+        <ul class="suggestion-list">
+          <li>
+            <mat-icon>assignment</mat-icon>
+            <a routerLink="/client/surveys">Available Surveys</a>
+          </li>
+          <li>
+            <mat-icon>dashboard</mat-icon>
+            <a routerLink="/client/dashboard">Your Dashboard</a>
+          </li>
+          <li>
+            <mat-icon>person</mat-icon>
+            <a routerLink="/client/profile">Your Profile</a>
+          </li>
+          <li>
+            <mat-icon>card_giftcard</mat-icon>
+            <a routerLink="/client/rewards">Rewards</a>
+          </li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="goToDashboard()"
+        aria-label="Go to dashboard">
+        <mat-icon>dashboard</mat-icon>
+        Go to Dashboard
+      </button>
+
+      <button
+        mat-stroked-button
+        (click)="goHome()"
+        aria-label="Go to home page">
+        <mat-icon>home</mat-icon>
+        Go Home
+      </button>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+      <p>
+        <mat-icon class="help-icon">help_outline</mat-icon>
+        Need help?
+        <a routerLink="/help">Visit our Help Center</a>
+        or
+        <a routerLink="/contact">Contact Support</a>
+      </p>
+    </div>
+  </div>
+</div>

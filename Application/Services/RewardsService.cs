@@ -349,9 +349,34 @@ namespace Application.Services
             return await _rewardsRepository.GetAvailableRewardsAsync(userId);
         }
 
-        public Task<bool> AwardPointsForActionAsync(string userId, string actionType, int actionCount = 1, string referenceId = null)
+        public async Task<bool> AwardPointsForActionAsync(string userId, string actionType, int actionCount = 1, string referenceId = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Awarding points for {ActionType} to user {UserId}", actionType, userId);
+
+                // Calculate points based on action type (can be enhanced with configuration)
+                int points = actionType switch
+                {
+                    "SurveyCompletion" => 100 * actionCount,
+                    "DailyLogin" => 10,
+                    "ProfileComplete" => 50,
+                    _ => 0
+                };
+
+                if (points > 0)
+                {
+                    await _gamificationService.ProcessPointsEarnedAsync(userId, points, actionType, referenceId);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error awarding points for {ActionType} to user {UserId}", actionType, userId);
+                return false;
+            }
         }
     }
 }

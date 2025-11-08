@@ -54,10 +54,10 @@
           </div>
           
           <div class="question-actions">
-            <button mat-icon-button color="primary" (click)="openQuestionDialog(question)" matTooltip="Edit Question">
+            <button mat-icon-button color="primary" (click)="openQuestionDialog(question)" matTooltip="Edit Question" aria-label="Edit question {{i + 1}}">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="deleteQuestion(question)" matTooltip="Delete Question">
+            <button mat-icon-button color="warn" (click)="deleteQuestion(question)" matTooltip="Delete Question" aria-label="Delete question {{i + 1}}">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

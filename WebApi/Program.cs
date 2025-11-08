@@ -174,7 +174,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
+    options.AddPolicy("RequireUserRole", policy => policy.RequireRole("Client"));
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
@@ -206,6 +206,7 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IRewardsService, RewardsService>();
 builder.Services.AddScoped<IBackgroundTaskService, BackgroundTaskService>();
 builder.Services.AddScoped<ISurveyBranchingService, SurveyBranchingService>();
+builder.Services.AddScoped<ISurveyPreviewService, SurveyPreviewService>();
 builder.Services.AddScoped<ISurveyManagementService, SurveyManagementService>();
 builder.Services.AddScoped<ISurveyAccessService, SurveyAccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -281,6 +282,21 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
+// Seed roles on application startup
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "Client" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 if (app.Configuration["FileStorage:Type"] == "Local")
 {
     var env = app.Environment;
@@ -305,6 +321,8 @@ if (app.Configuration["FileStorage:Type"] == "Local")
 }
 
 // Configure the HTTP request pipeline.
+// Global exception handler should be first
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseMiddleware<FileUploadSecurityMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();

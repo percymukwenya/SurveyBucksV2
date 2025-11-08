@@ -1,0 +1,43 @@
+<div class="keyboard-shortcuts-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>keyboard</mat-icon>
+    Keyboard Shortcuts
+  </h2>
+
+  <mat-dialog-content>
+    <p class="dialog-subtitle">
+      Use these shortcuts to navigate SurveyBucks faster
+    </p>
+
+    <div *ngFor="let category of categories" class="shortcut-category">
+      <h3 class="category-title">{{ category }}</h3>
+
+      <mat-list>
+        <mat-list-item *ngFor="let shortcut of getShortcutsByCategory(category)">
+          <div class="shortcut-item">
+            <div class="shortcut-keys">
+              <kbd *ngFor="let key of shortcut.keys" class="key">{{ key }}</kbd>
+            </div>
+            <div class="shortcut-description">{{ shortcut.description }}</div>
+          </div>
+        </mat-list-item>
+      </mat-list>
+
+      <mat-divider></mat-divider>
+    </div>
+
+    <div class="tip-section">
+      <mat-icon class="tip-icon">lightbulb_outline</mat-icon>
+      <p class="tip-text">
+        <strong>Tip:</strong> Press <kbd>?</kbd> anywhere in the app to show these shortcuts again.
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" mat-dialog-close aria-label="Close keyboard shortcuts dialog">
+      <mat-icon>check</mat-icon>
+      Got it!
+    </button>
+  </mat-dialog-actions>
+</div>
