@@ -1,0 +1,47 @@
+<div class="loading-indicator" [class]="'loading-indicator-' + size" *ngIf="loadingState.isLoading">
+  <div class="loading-content">
+    <!-- Spinner -->
+    <mat-spinner
+      *ngIf="type === 'spinner'"
+      [diameter]="getSpinnerDiameter()"
+      [mode]="'indeterminate'">
+    </mat-spinner>
+
+    <!-- Progress Bar -->
+    <mat-progress-bar
+      *ngIf="type === 'bar'"
+      mode="indeterminate"
+      class="loading-bar">
+    </mat-progress-bar>
+
+    <!-- Loading Message -->
+    <div class="loading-message">
+      <p class="message-text">{{ loadingState.message }}</p>
+
+      <!-- Elapsed Time (shown after 3 seconds) -->
+      <p class="elapsed-time" *ngIf="showElapsedTime && loadingState.elapsedSeconds >= 3">
+        <mat-icon class="timer-icon">schedule</mat-icon>
+        <span>{{ loadingState.elapsedSeconds }}s elapsed</span>
+      </p>
+
+      <!-- Still Loading Message (shown after 5 seconds) -->
+      <p class="still-loading-hint" *ngIf="loadingState.elapsedSeconds >= 5">
+        <mat-icon class="info-icon">info</mat-icon>
+        <span>This may take a moment. Thank you for your patience.</span>
+      </p>
+
+      <!-- Cancel Button (shown after configured time) -->
+      <div class="loading-actions" *ngIf="showCancelButton && loadingState.showCancel">
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="onCancel()"
+          aria-label="Cancel loading operation">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <p class="cancel-hint">You can cancel and try again later</p>
+      </div>
+    </div>
+  </div>
+</div>

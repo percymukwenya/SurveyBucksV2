@@ -1,0 +1,173 @@
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 400px;
+
+    .loading-bar {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .loading-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+
+      .message-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--text-color, #333);
+        margin: 0;
+      }
+
+      .elapsed-time {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 14px;
+        color: var(--text-color-secondary, #666);
+        margin: 0;
+
+        .timer-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .still-loading-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 14px;
+        color: #ff9800;
+        padding: 0.5rem 1rem;
+        background-color: rgba(255, 152, 0, 0.1);
+        border-radius: 4px;
+        margin: 0;
+
+        .info-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .loading-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+
+        .cancel-hint {
+          font-size: 12px;
+          color: var(--text-color-secondary, #666);
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Size variants
+  &.loading-indicator-small {
+    padding: 1rem;
+
+    .loading-content {
+      gap: 1rem;
+
+      .loading-message {
+        .message-text {
+          font-size: 14px;
+        }
+
+        .elapsed-time {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  &.loading-indicator-large {
+    padding: 3rem;
+
+    .loading-content {
+      gap: 2rem;
+      max-width: 500px;
+
+      .loading-message {
+        .message-text {
+          font-size: 18px;
+        }
+
+        .elapsed-time {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+.dark-mode {
+  .loading-indicator {
+    .loading-content {
+      .loading-message {
+        .message-text {
+          color: #e0e0e0;
+        }
+
+        .elapsed-time {
+          color: #999;
+        }
+      }
+    }
+  }
+}
+
+// Animation for smooth appearance
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading-indicator {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .loading-indicator {
+    padding: 1.5rem 1rem;
+
+    .loading-content {
+      .loading-message {
+        .message-text {
+          font-size: 14px;
+        }
+
+        .still-loading-hint {
+          font-size: 13px;
+          padding: 0.4rem 0.8rem;
+        }
+      }
+    }
+  }
+}

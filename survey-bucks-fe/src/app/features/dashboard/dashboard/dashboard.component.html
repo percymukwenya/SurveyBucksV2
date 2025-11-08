@@ -508,11 +508,14 @@
 </div>
 
 <!-- Loading State -->
-<div *ngIf="loading" class="loading-container">
-  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-  <h3>Loading your dashboard...</h3>
-  <p>Gathering your latest survey data and rewards</p>
-</div>
+<app-loading-indicator
+  *ngIf="loading"
+  loadingKey="dashboard"
+  type="spinner"
+  message="Loading your dashboard..."
+  [showElapsedTime]="true"
+  size="large">
+</app-loading-indicator>
 
 <!-- Error State -->
 <div *ngIf="hasError" class="error-container">

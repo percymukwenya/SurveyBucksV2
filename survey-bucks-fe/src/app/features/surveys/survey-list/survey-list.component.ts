@@ -19,6 +19,8 @@ import { UserProfileService } from '../../../core/services/user-profile.service'
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { LoadingIndicatorComponent } from '../../../shared/components/loading-indicator/loading-indicator.component';
+import { LoadingTimerService } from '../../../core/services/loading-timer.service';
 
 @Component({
   selector: 'app-survey-list',
@@ -38,7 +40,8 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
     MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
-    EmptyStateComponent
+    EmptyStateComponent,
+    LoadingIndicatorComponent
   ],
   templateUrl: './survey-list.component.html',
   styleUrls: ['./survey-list.component.scss'],
@@ -62,9 +65,10 @@ export class SurveyListComponent implements OnInit {
   potentialPoints = 0;
 
   constructor(
-    private surveyService: SurveyService, 
+    private surveyService: SurveyService,
     private userProfileService: UserProfileService,
-    private router: Router
+    private router: Router,
+    private loadingTimerService: LoadingTimerService
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +84,7 @@ export class SurveyListComponent implements OnInit {
 
   loadSurveys(): void {
     this.loading = true;
+    this.loadingTimerService.startLoading('survey-list', 'Loading surveys...', 10);
 
     // Get available surveys and profile completion in parallel
     forkJoin({
@@ -101,19 +106,21 @@ export class SurveyListComponent implements OnInit {
 
         this.industries = [...new Set(this.availableSurveys.map((s: any) => s.industry))];
         this.profileCompletion = profileCompletion?.overallCompletionPercentage || 0;
-        
+
         // Calculate potential points
-        this.potentialPoints = this.availableSurveys.reduce((total: number, survey: any) => 
+        this.potentialPoints = this.availableSurveys.reduce((total: number, survey: any) =>
           total + (survey.reward?.amount || 0), 0);
 
         // Generate next steps (simplified for this component)
         this.nextSteps = this.generateNextSteps(profileCompletion);
-        
+
         this.loading = false;
+        this.loadingTimerService.stopLoading('survey-list');
       },
       error: (error) => {
         console.error('Error loading surveys data', error);
         this.loading = false;
+        this.loadingTimerService.stopLoading('survey-list');
       },
     });
 

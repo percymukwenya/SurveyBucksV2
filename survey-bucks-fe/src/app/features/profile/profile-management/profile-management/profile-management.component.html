@@ -166,10 +166,13 @@
   </mat-card>
 </div>
 
-  <div *ngIf="loading" class="loading-container">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    <p>Loading profile data...</p>
-  </div>
+  <app-loading-indicator
+    *ngIf="loading"
+    loadingKey="profile"
+    type="bar"
+    message="Loading profile data..."
+    [showElapsedTime]="true">
+  </app-loading-indicator>
 
   <div *ngIf="!loading" class="profile-content">
     <mat-tab-group animationDuration="0ms">

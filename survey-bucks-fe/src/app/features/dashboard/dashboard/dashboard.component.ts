@@ -20,6 +20,8 @@ import { UserLevel, Achievement, Challenge } from '../../../core/models/gamifica
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { UserPoints } from '../../../core/models/rewards.models';
 import { DashboardData, DashboardDataService, DocumentVerificationStatus, SurveyAccessInfo } from '../../../core/services/dashboard-data.service';
+import { LoadingIndicatorComponent } from '../../../shared/components/loading-indicator/loading-indicator.component';
+import { LoadingTimerService } from '../../../core/services/loading-timer.service';
 
 interface SurveyInfo {
   id: number;
@@ -70,7 +72,8 @@ interface UserDashboardInfo {
     MatDividerModule,
     MatProgressSpinnerModule,
     RouterModule,
-    EmptyStateComponent
+    EmptyStateComponent,
+    LoadingIndicatorComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -105,7 +108,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dashboardDataService: DashboardDataService,
     private errorHandler: ErrorHandlerService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loadingTimerService: LoadingTimerService
   ) { }
   
   ngOnInit(): void {
@@ -131,12 +135,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadDashboardData(): void {
     this.loading = true;
     this.hasError = false;
-    
+    this.loadingTimerService.startLoading('dashboard', 'Loading dashboard...', 10);
+
     this.dashboardDataService.loadDashboardData()
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
           this.loading = false;
+          this.loadingTimerService.stopLoading('dashboard');
           this.cdr.markForCheck();
         })
       )
@@ -153,7 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.activeChallenges = data.activeChallenges;
           this.documentVerificationStatus = data.documentVerificationStatus;
           this.surveyAccessInfo = data.surveyAccessInfo;
-          
+
           this.cdr.markForCheck();
         },
         error: (error) => {

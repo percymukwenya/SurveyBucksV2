@@ -38,6 +38,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { LoadingIndicatorComponent } from '../../../../shared/components/loading-indicator/loading-indicator.component';
+import { LoadingTimerService } from '../../../../core/services/loading-timer.service';
 
 interface ProfileSection {
   sectionName: string;
@@ -156,7 +158,8 @@ interface CreateBankingDetail {
     MatBadgeModule,
     MatTooltipModule,
     MatDialogModule,
-    EmptyStateComponent
+    EmptyStateComponent,
+    LoadingIndicatorComponent
   ],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
@@ -509,7 +512,8 @@ export class ProfileManagementComponent implements OnInit, OnDestroy {
     private documentService: DocumentService,
     private bankingService: BankingService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private loadingTimerService: LoadingTimerService
   ) {
     this.initializeForms();
   }
@@ -600,6 +604,7 @@ export class ProfileManagementComponent implements OnInit, OnDestroy {
 
   loadProfileData(): void {
     this.loading = true;
+    this.loadingTimerService.startLoading('profile', 'Loading profile...', 10);
 
     // Get profile completion (now returns detailed object)
     this.userProfileService.getProfileCompletion().subscribe({
@@ -634,10 +639,12 @@ export class ProfileManagementComponent implements OnInit, OnDestroy {
         console.log('Demographics loaded:', demographics); // Debug log
         this.demographicsForm.patchValue(demographics);
         this.loading = false;
+        this.loadingTimerService.stopLoading('profile');
       },
       error: (error) => {
         console.error('Error loading demographics', error);
         this.loading = false;
+        this.loadingTimerService.stopLoading('profile');
       },
     });
 

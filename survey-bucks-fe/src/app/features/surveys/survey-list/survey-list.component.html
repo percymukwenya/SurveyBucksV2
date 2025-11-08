@@ -134,10 +134,13 @@
   <mat-tab-group animationDuration="0ms" *ngIf="hasSurveyAccess">
     <mat-tab label="Available Surveys">
       <div class="tab-content">
-        <div *ngIf="loading" class="loading-container">
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-          <p>Loading surveys...</p>
-        </div>
+        <app-loading-indicator
+          *ngIf="loading"
+          loadingKey="survey-list"
+          type="bar"
+          message="Loading surveys..."
+          [showElapsedTime]="true">
+        </app-loading-indicator>
 
         <app-empty-state
           *ngIf="!loading && availableSurveys.length === 0"
