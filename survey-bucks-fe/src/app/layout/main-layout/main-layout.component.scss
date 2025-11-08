@@ -81,7 +81,60 @@
     .search-btn {
       margin-right: 4px;
     }
-    
+
+    // Profile completion indicator
+    .profile-completion-btn {
+      position: relative;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-completion-indicator {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+
+        .progress-ring {
+          transform: rotate(-90deg);
+
+          .progress-ring-circle-bg {
+            opacity: 0.3;
+          }
+
+          .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+          }
+        }
+
+        .percentage-text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--text-color);
+          pointer-events: none;
+        }
+      }
+
+      // Pulsing animation for incomplete profiles
+      &.pulsing {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+        .profile-completion-indicator {
+          .progress-ring-circle {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+        }
+      }
+    }
+
     .user-menu-button {
       display: flex;
       align-items: center;
@@ -349,22 +402,41 @@
       gap: 4px;
     }
   }
-  
+
   .sidenav-container {
     .sidenav {
       width: 260px;
     }
-    
+
     .content-container {
       .content-wrapper {
         padding: 16px;
       }
-      
+
       .footer {
         flex-direction: column;
         gap: 8px;
         text-align: center;
       }
     }
+  }
+}
+
+// Animations for profile completion indicator
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }

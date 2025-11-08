@@ -17,6 +17,7 @@ import { catchError, finalize, forkJoin, of, Subject, takeUntil } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ErrorHandlerService } from '../../../core/utils/error-handler.service';
 import { UserLevel, Achievement, Challenge } from '../../../core/models/gamification.models';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { UserPoints } from '../../../core/models/rewards.models';
 import { DashboardData, DashboardDataService, DocumentVerificationStatus, SurveyAccessInfo } from '../../../core/services/dashboard-data.service';
 
@@ -68,7 +69,8 @@ interface UserDashboardInfo {
     MatTabsModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    RouterModule
+    RouterModule,
+    EmptyStateComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

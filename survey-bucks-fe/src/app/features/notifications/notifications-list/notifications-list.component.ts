@@ -13,6 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-notifications-list',
@@ -28,7 +29,8 @@ import { MatProgressBar } from '@angular/material/progress-bar';
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatProgressBar
+    MatProgressBar,
+    EmptyStateComponent
   ],
   templateUrl: './notifications-list.component.html',
   styleUrls: ['./notifications-list.component.scss']

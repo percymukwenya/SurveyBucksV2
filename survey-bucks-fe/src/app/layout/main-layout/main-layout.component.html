@@ -19,10 +19,49 @@
       <button mat-icon-button (click)="toggleTheme()" [matTooltip]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
         <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
-      
+
+      <!-- Profile completion indicator -->
+      <button
+        mat-icon-button
+        class="profile-completion-btn"
+        [class.pulsing]="isProfileIncomplete()"
+        [matTooltip]="profileCompletionLoading ? 'Loading...' : (profileCompletionPercentage < 100 ? 'Complete your profile to unlock all features' : 'Profile complete!')"
+        (click)="navigateToProfile()"
+        aria-label="Profile completion: {{profileCompletionPercentage}}%">
+        <div class="profile-completion-indicator">
+          <mat-spinner
+            *ngIf="profileCompletionLoading"
+            diameter="24"
+            mode="indeterminate">
+          </mat-spinner>
+          <svg *ngIf="!profileCompletionLoading" class="progress-ring" width="36" height="36">
+            <circle
+              class="progress-ring-circle-bg"
+              stroke="#e0e0e0"
+              stroke-width="3"
+              fill="transparent"
+              r="15"
+              cx="18"
+              cy="18"/>
+            <circle
+              class="progress-ring-circle"
+              [attr.stroke]="getProfileCompletionColor() === 'warn' ? '#f44336' : (getProfileCompletionColor() === 'accent' ? '#ff9800' : '#4caf50')"
+              stroke-width="3"
+              fill="transparent"
+              r="15"
+              cx="18"
+              cy="18"
+              [style.stroke-dasharray]="94.25"
+              [style.stroke-dashoffset]="94.25 - (94.25 * profileCompletionPercentage / 100)"
+              stroke-linecap="round"/>
+          </svg>
+          <span *ngIf="!profileCompletionLoading" class="percentage-text">{{profileCompletionPercentage}}</span>
+        </div>
+      </button>
+
       <!-- Notification dropdown -->
-      <app-notification-dropdown 
-        [maxItems]="5" 
+      <app-notification-dropdown
+        [maxItems]="5"
         (markAsRead)="onNotificationRead($event)">
       </app-notification-dropdown>
       

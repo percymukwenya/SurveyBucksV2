@@ -139,17 +139,12 @@
           <p>Loading surveys...</p>
         </div>
 
-        <div
+        <app-empty-state
           *ngIf="!loading && availableSurveys.length === 0"
-          class="empty-state"
-        >
-          <mat-icon>assignment_turned_in</mat-icon>
-          <h3>No Surveys Available</h3>
-          <p>
-            There are no surveys available that match your profile at the
-            moment.
-          </p>
-        </div>
+          icon="assignment_turned_in"
+          title="No Surveys Available"
+          description="There are no surveys available that match your profile at the moment.">
+        </app-empty-state>
 
         <div
           *ngIf="!loading && availableSurveys.length > 0"
@@ -223,13 +218,13 @@
 
     <mat-tab label="In Progress">
       <div class="tab-content">
-        <div *ngIf="inProgressSurveys.length === 0" class="empty-state">
-          <mat-icon>assignment_late</mat-icon>
-          <h3>No Surveys In Progress</h3>
-          <p>
-            You don't have any enrolled or in-progress surveys at the moment.
-          </p>
-        </div>
+        <app-empty-state
+          *ngIf="inProgressSurveys.length === 0"
+          icon="assignment_late"
+          title="No Surveys In Progress"
+          description="You don't have any enrolled or in-progress surveys at the moment."
+          size="small">
+        </app-empty-state>
 
         <div *ngIf="inProgressSurveys.length > 0" class="survey-list">
           <mat-card
@@ -324,11 +319,13 @@
 
     <mat-tab label="Completed">
       <div class="tab-content">
-        <div *ngIf="completedSurveys.length === 0" class="empty-state">
-          <mat-icon>assignment_turned_in</mat-icon>
-          <h3>No Completed Surveys</h3>
-          <p>You haven't completed any surveys yet.</p>
-        </div>
+        <app-empty-state
+          *ngIf="completedSurveys.length === 0"
+          icon="assignment_turned_in"
+          title="No Completed Surveys"
+          description="You haven't completed any surveys yet."
+          size="small">
+        </app-empty-state>
 
         <div *ngIf="completedSurveys.length > 0" class="survey-list">
           <mat-card

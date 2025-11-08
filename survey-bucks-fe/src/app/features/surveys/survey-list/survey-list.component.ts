@@ -18,6 +18,7 @@ import { SurveyListItemDto } from '../../../core/models/survey.model';
 import { UserProfileService } from '../../../core/services/user-profile.service';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-survey-list',
@@ -37,6 +38,7 @@ import { forkJoin } from 'rxjs';
     MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    EmptyStateComponent
   ],
   templateUrl: './survey-list.component.html',
   styleUrls: ['./survey-list.component.scss'],

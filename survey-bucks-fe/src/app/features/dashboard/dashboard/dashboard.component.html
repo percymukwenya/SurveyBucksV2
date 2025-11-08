@@ -212,16 +212,15 @@
         <mat-card-subtitle>{{ availableSurveys.length }} surveys ready to take</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div *ngIf="availableSurveys.length === 0" class="empty-state">
-          <mat-icon>assignment</mat-icon>
-          <h3>No surveys available</h3>
-          <p>Check back soon for new opportunities!</p>
-          <button mat-button color="primary" (click)="refreshDashboard()">
-            <mat-icon>refresh</mat-icon>
-            Refresh
-          </button>
-        </div>
-        
+        <app-empty-state
+          *ngIf="availableSurveys.length === 0"
+          icon="assignment"
+          title="No surveys available"
+          description="Check back soon for new opportunities!"
+          actionLabel="Refresh"
+          (action)="refreshDashboard()">
+        </app-empty-state>
+
         <div *ngIf="availableSurveys.length > 0" class="surveys-list">
           <div *ngFor="let survey of availableSurveys; trackBy: trackBySurveyId" 
                class="survey-item">
@@ -386,12 +385,14 @@
         <mat-card-subtitle>Your latest accomplishments</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div *ngIf="recentAchievements.length === 0" class="empty-state">
-          <mat-icon>emoji_events</mat-icon>
-          <h3>No achievements yet</h3>
-          <p>Complete surveys to earn your first achievement!</p>
-        </div>
-        
+        <app-empty-state
+          *ngIf="recentAchievements.length === 0"
+          icon="emoji_events"
+          title="No achievements yet"
+          description="Complete surveys to earn your first achievement!"
+          size="small">
+        </app-empty-state>
+
         <div *ngIf="recentAchievements.length > 0" class="achievements-list">
           <div *ngFor="let achievement of recentAchievements; trackBy: trackByAchievementId" 
                class="achievement-item"

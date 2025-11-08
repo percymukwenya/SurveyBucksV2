@@ -8,8 +8,10 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/authentication/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { UserProfileService } from '../../core/services/user-profile.service';
 import { User } from '../../core/models/user.model';
 import { NotificationDropdownComponent } from '../../shared/components/notification-dropdown/notification-dropdown/notification-dropdown.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -43,6 +45,7 @@ interface NavigationItem {
     MatTooltipModule,
     MatRippleModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
     NotificationDropdownComponent,
     BreadcrumbComponent
 ],
@@ -60,6 +63,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   sidenavOpen = false;
   isDarkMode = false;
   activePage = '';
+  profileCompletionPercentage = 0;
+  profileCompletionLoading = false;
 
   navigation: NavigationItem[] = [
     {
@@ -98,6 +103,7 @@ currentYear: any;
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
+    private userProfileService: UserProfileService,
     private themeService: ThemeService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -172,6 +178,7 @@ currentYear: any;
   private loadUserSpecificData(): void {
     // Load any user-specific data that affects the layout
     this.loadUnreadNotificationCount();
+    this.loadProfileCompletion();
   }
 
   private handleRouteChange(): void {
@@ -287,5 +294,36 @@ currentYear: any;
   onSearch(): void {
     // Implement search functionality
     console.log('Search functionality to be implemented');
+  }
+
+  // Profile completion
+  loadProfileCompletion(): void {
+    this.profileCompletionLoading = true;
+    this.userProfileService.getProfileCompletion()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (completion) => {
+          this.profileCompletionPercentage = completion.completionPercentage || 0;
+          this.profileCompletionLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading profile completion', error);
+          this.profileCompletionLoading = false;
+        }
+      });
+  }
+
+  navigateToProfile(): void {
+    this.router.navigate(['/client/profile']);
+  }
+
+  getProfileCompletionColor(): string {
+    if (this.profileCompletionPercentage >= 100) return 'primary';
+    if (this.profileCompletionPercentage >= 75) return 'accent';
+    return 'warn';
+  }
+
+  isProfileIncomplete(): boolean {
+    return this.profileCompletionPercentage < 100;
   }
 }

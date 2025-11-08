@@ -35,12 +35,13 @@
     </div>
     
     <div *ngIf="!loading" class="notifications-list">
-      <div *ngIf="notifications.length === 0" class="empty-state">
-        <mat-icon>notifications_off</mat-icon>
-        <h3>No Notifications</h3>
-        <p>You don't have any notifications at the moment.</p>
-      </div>
-      
+      <app-empty-state
+        *ngIf="notifications.length === 0"
+        icon="notifications_off"
+        title="No Notifications"
+        description="You don't have any notifications at the moment.">
+      </app-empty-state>
+
       <mat-card *ngFor="let notification of notifications" 
                class="notification-card" 
                [ngClass]="{'unread': !notification.isRead}">
