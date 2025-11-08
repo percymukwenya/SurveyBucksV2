@@ -1,0 +1,511 @@
+.how-it-works-page {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(135deg, #16d2cb 0%, #00acc1 100%);
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #caff29 !important;
+  color: #333 !important;
+}
+
+// Steps Section
+.steps-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.steps-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.step-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+}
+
+.step-number {
+  position: absolute;
+  top: -15px;
+  right: 20px;
+  background: #16d2cb;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.step-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.step-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.step-card p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.step-details ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.step-details li {
+  padding: 0.3rem 0;
+  color: #555;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.step-details li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+// Survey Types Section
+.survey-types-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.survey-types-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+survey-types-section .section-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.survey-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.survey-type {
+  text-align: center;
+  padding: 2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.survey-type:hover {
+  border-color: #16d2cb;
+  transform: translateY(-3px);
+}
+
+.type-icon {
+  font-size: 4rem;
+  height: 4rem;
+  width: 4rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.survey-type h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.survey-type p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.earning-range {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+// FAQ Section
+.faq-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.faq-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.faq-item {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.faq-item h3 {
+  color: #16d2cb;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.faq-item p {
+  color: #666;
+  line-height: 1.6;
+}
+
+// Requirements Section
+.requirements-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.requirements-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.requirements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.requirement {
+  text-align: center;
+  padding: 2rem;
+}
+
+.req-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  margin-bottom: 1rem;
+}
+
+.req-icon.check {
+  color: #4caf50;
+}
+
+.req-icon:not(.check) {
+  color: #2196f3;
+}
+
+.requirement h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.requirement p {
+  color: #666;
+}
+
+// Final CTA Section
+.final-cta-section {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #16d2cb 0%, #00acc1 100%);
+  color: white;
+  text-align: center;
+}
+
+.final-cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.final-cta-section p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primary-cta {
+  background-color: #caff29 !important;
+  color: #333 !important;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.secondary-cta {
+  color: white !important;
+  border-color: white !important;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+// Gamification Section
+.gamification-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.gamification-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gamification-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.feature {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-3px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #caff29;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.feature p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.business-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.business-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.business-section p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.business-benefits {
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+}
+
+.business-benefits ul {
+  list-style: none;
+  padding: 0;
+}
+
+.business-benefits li {
+  padding: 0.8rem 0;
+  color: #555;
+  position: relative;
+  padding-left: 2rem;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.6;
+}
+
+.business-benefits li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #16d2cb;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.business-benefits li:last-child {
+  border-bottom: none;
+}
+
+.business-benefits strong {
+  color: #333;
+}
+
+.business-cta {
+  display: block;
+  margin: 2rem auto 0 auto;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  color: #16d2cb !important;
+  border-color: #16d2cb !important;
+  max-width: 300px;
+}
+
+.business-cta:hover {
+  background-color: #16d2cb !important;
+  color: white !important;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1.1rem;
+  }
+
+  .steps-section h2,
+  .survey-types-section h2,
+  .faq-section h2,
+  .requirements-section h2,
+  .final-cta-section h2 {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primary-cta,
+  .secondary-cta {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .gamification-section h2,
+  .business-section h2 {
+    font-size: 2rem;
+  }
+  
+  .gamification-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .business-benefits li {
+    padding-left: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}

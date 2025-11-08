@@ -1,0 +1,222 @@
+.survey-navigation-container {
+  .enhanced-tab-group {
+    margin-bottom: 2rem;
+    
+    .section-tab-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+
+      .section-name {
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+
+      .progress-indicator {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .progress-ring {
+          transform: rotate(-90deg); // Start from top
+          
+          .progress-ring-background {
+            opacity: 0.3;
+          }
+          
+          .progress-ring-progress {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+          }
+        }
+
+        .progress-text {
+          font-family: inherit;
+          font-weight: 600;
+          font-size: 8px;
+        }
+
+        &.complete {
+          .progress-ring-progress {
+            stroke: #4caf50;
+          }
+        }
+
+        &.partial {
+          .progress-ring-progress {
+            stroke: #ff9800;
+          }
+        }
+
+        &.empty {
+          .progress-ring-progress {
+            stroke: #e0e0e0;
+          }
+        }
+      }
+
+      .question-badge {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.08);
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+
+        .answered {
+          color: #4caf50;
+        }
+
+        .separator {
+          color: #999;
+          margin: 0 0.25rem;
+        }
+
+        .total {
+          color: #666;
+        }
+      }
+    }
+
+    // Override Material tabs styling
+    ::ng-deep {
+      .mat-mdc-tab-group {
+        .mat-mdc-tab-header {
+          border-bottom: 1px solid #e0e0e0;
+        }
+
+        .mat-mdc-tab {
+          min-width: 120px;
+          
+          &.mat-mdc-tab-disabled {
+            opacity: 0.6;
+          }
+        }
+
+        .mat-mdc-tab-body-wrapper {
+          .mat-mdc-tab-body {
+            .mat-mdc-tab-body-content {
+              padding: 1rem 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .section-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+
+    .nav-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    .section-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+
+      .section-counter {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.875rem;
+      }
+
+      .section-status {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
+
+        mat-icon {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+
+          &.required-warning {
+            color: #ff9800;
+          }
+
+          &.optional-info {
+            color: #2196f3;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .survey-navigation-container {
+    .enhanced-tab-group {
+      ::ng-deep {
+        .mat-mdc-tab {
+          min-width: 80px;
+          padding: 0 8px;
+        }
+      }
+
+      .section-tab-label {
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .section-name {
+          font-size: 0.75rem;
+        }
+
+        .question-badge {
+          font-size: 0.6875rem;
+          padding: 0.125rem 0.375rem;
+        }
+      }
+    }
+
+    .section-controls {
+      flex-direction: column;
+      gap: 1rem;
+
+      .section-info {
+        order: -1;
+      }
+
+      .nav-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .survey-navigation-container {
+    .enhanced-tab-group {
+      .section-tab-label {
+        .progress-indicator {
+          .progress-ring {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+}

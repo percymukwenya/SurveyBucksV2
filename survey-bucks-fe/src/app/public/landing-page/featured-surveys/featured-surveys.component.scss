@@ -1,0 +1,81 @@
+.featured-section {
+      padding: 4rem 2rem;
+      background-color: white;
+    }
+    
+    .featured-container {
+      display: flex;
+      max-width: 1000px;
+      margin: 0 auto;
+      gap: 3rem;
+      align-items: center;
+    }
+    
+    .content {
+      flex: 1;
+    }
+    
+    .image-container {
+      flex: 1;
+      height: 400px;
+      background-image: url('../../../../assets/images/featured-surveys-survey-bucks.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    
+    .survey-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+    }
+    
+    .survey-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+    
+    .survey-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-color: #caff29;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .view-all-btn {
+      background-color: #caff29;
+      color: #333;
+      border: none;
+      border-radius: 25px;
+      padding: 0.8rem 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .view-all-btn:hover {
+      background-color: #FDD835;
+    }
+    
+    @media (max-width: 768px) {
+      .featured-container {
+        flex-direction: column-reverse;
+      }
+    }

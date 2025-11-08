@@ -1,0 +1,75 @@
+.steps-section {
+      background-color: #16D2CB;
+      padding: 3rem 2rem;
+      color: white;
+    }
+    
+    .steps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto 2rem;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    
+    .learn-more-btn {
+      background-color: #caff29;
+      color: #333;
+      border: none;
+      border-radius: 25px;
+      padding: 0.5rem 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .learn-more-btn:hover {
+      background-color: #FDD835;
+    }
+    
+    .steps-container {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      gap: 1rem;
+    }
+    
+    .step {
+      background-color: white;
+      color: #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .step-icon {
+      background-color: #16D2CB;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .steps-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      
+      .steps-container {
+        flex-direction: column;
+      }
+    }

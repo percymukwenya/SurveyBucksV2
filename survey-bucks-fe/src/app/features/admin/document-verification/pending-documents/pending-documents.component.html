@@ -1,0 +1,184 @@
+<div class="pending-documents-container">
+  <div class="page-header">
+    <h1>Document Verification</h1>
+    <p class="subtitle">Review and verify user-submitted documents</p>
+  </div>
+
+  <!-- Filters and Actions -->
+  <div class="toolbar">
+    <div class="filters">
+      <select [(ngModel)]="selectedDocumentType" (change)="onDocumentTypeFilterChange()" class="document-type-filter">
+        <option [value]="null">All Document Types</option>
+        <option *ngFor="let type of documentTypes" [value]="type.id">{{type.name}}</option>
+      </select>
+    </div>
+    
+    <div class="batch-actions" *ngIf="selectedDocuments.size > 0">
+      <button class="btn btn-success" (click)="openBatchModal('approve')">
+        Approve Selected ({{selectedDocuments.size}})
+      </button>
+      <button class="btn btn-danger" (click)="openBatchModal('reject')">
+        Reject Selected ({{selectedDocuments.size}})
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading documents...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{error}}</p>
+    <button class="btn btn-primary" (click)="loadPendingDocuments()">Retry</button>
+  </div>
+
+  <!-- Documents List -->
+  <div *ngIf="!loading && !error" class="documents-list">
+    <div class="documents-header">
+      <div class="select-all">
+        <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" id="selectAll">
+        <label for="selectAll">Select All</label>
+      </div>
+      <div class="document-count">
+        {{totalCount}} pending document(s)
+      </div>
+    </div>
+
+    <div class="documents-grid">
+      <div *ngFor="let document of documents" class="document-card">
+        <div class="document-header">
+          <input type="checkbox" 
+                 [checked]="selectedDocuments.has(document.id)" 
+                 (change)="toggleDocumentSelection(document.id)"
+                 [id]="'doc-' + document.id">
+          <div class="document-info">
+            <div class="document-type">
+              <span class="type-icon">{{getDocumentTypeIcon(document.category)}}</span>
+              {{document.documentTypeName}}
+            </div>
+            <div class="user-info">{{document.firstName}} {{document.lastName}} ({{document.email}})</div>
+          </div>
+          <div class="document-status">
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(document.verificationStatus)">
+              {{document.verificationStatus}}
+            </span>
+          </div>
+        </div>
+
+        <div class="document-details">
+          <div class="file-info">
+            <div class="filename">{{document.originalFileName}}</div>
+            <div class="file-meta">
+              {{formatFileSize(document.fileSize)}} • Uploaded {{formatDate(document.uploadedDate)}}
+            </div>
+          </div>
+          
+          <div class="document-actions">
+            <button class="btn btn-outline" (click)="downloadDocument(document)">
+              Download
+            </button>
+            <button class="btn btn-success" (click)="openVerificationModal(document, 'approve')">
+              Approve
+            </button>
+            <button class="btn btn-danger" (click)="openVerificationModal(document, 'reject')">
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button class="btn btn-outline" 
+              [disabled]="currentPage <= 1" 
+              (click)="onPageChange(currentPage - 1)">
+        Previous
+      </button>
+      
+      <div class="page-numbers">
+        <button *ngFor="let page of getPages()" 
+                class="btn" 
+                [ngClass]="{'btn-primary': page === currentPage, 'btn-outline': page !== currentPage}"
+                (click)="onPageChange(page)">
+          {{page}}
+        </button>
+      </div>
+      
+      <button class="btn btn-outline" 
+              [disabled]="currentPage >= totalPages" 
+              (click)="onPageChange(currentPage + 1)">
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- Verification Modal -->
+  <div class="modal-overlay" *ngIf="showVerificationModal" (click)="closeVerificationModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{verificationAction === 'approve' ? 'Approve' : 'Reject'}} Document</h3>
+        <button class="close-btn" (click)="closeVerificationModal()">×</button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedDocument">
+        <div class="document-summary">
+          <strong>{{selectedDocument.documentTypeName}}</strong> from {{selectedDocument.firstName}} {{selectedDocument.lastName}}
+        </div>
+        
+        <div class="form-group">
+          <label for="verificationNotes">Notes {{verificationAction === 'reject' ? '(required)' : '(optional)'}}</label>
+          <textarea id="verificationNotes" 
+                    [(ngModel)]="verificationNotes" 
+                    placeholder="Enter verification notes..."
+                    rows="4"></textarea>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeVerificationModal()">Cancel</button>
+        <button class="btn" 
+                [ngClass]="verificationAction === 'approve' ? 'btn-success' : 'btn-danger'"
+                (click)="verifyDocument()">
+          {{verificationAction === 'approve' ? 'Approve' : 'Reject'}} Document
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Verification Modal -->
+  <div class="modal-overlay" *ngIf="showBatchModal" (click)="closeBatchModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{batchAction === 'approve' ? 'Approve' : 'Reject'}} {{selectedDocuments.size}} Document(s)</h3>
+        <button class="close-btn" (click)="closeBatchModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="batch-summary">
+          You are about to {{batchAction}} {{selectedDocuments.size}} document(s).
+        </div>
+        
+        <div class="form-group">
+          <label for="batchNotes">Notes {{batchAction === 'reject' ? '(required)' : '(optional)'}}</label>
+          <textarea id="batchNotes" 
+                    [(ngModel)]="batchNotes" 
+                    placeholder="Enter notes for all selected documents..."
+                    rows="4"></textarea>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeBatchModal()">Cancel</button>
+        <button class="btn" 
+                [ngClass]="batchAction === 'approve' ? 'btn-success' : 'btn-danger'"
+                (click)="batchVerifyDocuments()">
+          {{batchAction === 'approve' ? 'Approve' : 'Reject'}} Selected
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

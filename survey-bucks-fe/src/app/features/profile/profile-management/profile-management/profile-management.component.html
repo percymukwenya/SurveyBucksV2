@@ -1,0 +1,1342 @@
+<!-- src/app/features/profile/profile-management/profile-management.component.html -->
+<div class="profile-container">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p class="subtitle">Manage your personal information and preferences</p>
+    
+    <!-- Auto-save status indicator -->
+    <div class="auto-save-status" [ngClass]="autoSaveStatus">
+      <mat-icon *ngIf="autoSaveStatus === 'saving'">cloud_upload</mat-icon>
+      <mat-icon *ngIf="autoSaveStatus === 'saved'">cloud_done</mat-icon>
+      <mat-icon *ngIf="autoSaveStatus === 'error'">cloud_off</mat-icon>
+      <span *ngIf="autoSaveStatus === 'saving'">Saving...</span>
+      <span *ngIf="autoSaveStatus === 'saved'">Saved {{ lastSaveTime | date:'short' }}</span>
+      <span *ngIf="autoSaveStatus === 'error'">Save failed - retry in progress</span>
+    </div>
+  </div>
+
+  <div class="profile-completion-card">
+  <mat-card>
+    <mat-card-content>
+      <!-- Main Completion Header -->
+      <div class="completion-header">
+        <div class="completion-main">
+          <h2>Profile Completion</h2>
+          <div class="completion-score">
+            <span class="completion-percentage" [ngClass]="getCompletionClass()">
+              {{profileCompletion}}%
+            </span>
+            <mat-progress-bar mode="determinate" [value]="profileCompletion" [ngClass]="getCompletionClass()"></mat-progress-bar>
+          </div>
+        </div>
+        
+        <div class="completion-actions">
+          <button mat-icon-button (click)="refreshProfileCompletion()" matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button mat-icon-button (click)="debugProfileData()" matTooltip="Debug Info" *ngIf="!loading">
+            <mat-icon>bug_report</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Banner -->
+      <div *ngIf="detailedCompletion" class="status-banner" [class.eligible]="detailedCompletion.isEligibleForSurveys">
+        <div class="status-info">
+          <mat-icon>{{detailedCompletion.isEligibleForSurveys ? 'check_circle' : 'pending'}}</mat-icon>
+          <span class="status-text">{{detailedCompletion.eligibilityStatusText}}</span>
+        </div>
+        <small class="last-updated">
+          Updated: {{detailedCompletion.lastUpdated | date:'short'}}
+        </small>
+      </div>
+
+      <!-- Compact Section Grid -->
+      <div *ngIf="detailedCompletion" class="sections-grid">
+        <!-- Demographics Card -->
+        <div class="section-card" [class]="'status-' + detailedCompletion.demographics.status">
+          <div class="section-header">
+            <div class="section-icon">
+              <mat-icon>{{detailedCompletion.demographics.statusIcon}}</mat-icon>
+            </div>
+            <div class="section-info">
+              <h4>{{detailedCompletion.demographics.sectionName}}</h4>
+              <div class="section-stats">
+                <span class="completion">{{detailedCompletion.demographics.completionPercentage}}%</span>
+                <span class="weight">{{detailedCompletion.demographics.weight}}% weight</span>
+              </div>
+            </div>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="detailedCompletion.demographics.completionPercentage"></mat-progress-bar>
+          
+          <!-- Expandable Details -->
+          <div class="section-details" *ngIf="detailedCompletion.demographics.missingFields.length > 0">
+            <div class="missing-count">
+              <mat-icon>warning</mat-icon>
+              <span>{{detailedCompletion.demographics.missingFields.length}} missing fields</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Card -->
+        <div class="section-card" [class]="'status-' + detailedCompletion.documents.status">
+          <div class="section-header">
+            <div class="section-icon">
+              <mat-icon>{{detailedCompletion.documents.statusIcon}}</mat-icon>
+            </div>
+            <div class="section-info">
+              <h4>{{detailedCompletion.documents.sectionName}}</h4>
+              <div class="section-stats">
+                <span class="completion">{{detailedCompletion.documents.completionPercentage}}%</span>
+                <span class="weight">{{detailedCompletion.documents.weight}}% weight</span>
+              </div>
+            </div>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="detailedCompletion.documents.completionPercentage"></mat-progress-bar>
+          
+          <div class="section-details" *ngIf="detailedCompletion.documents.missingFields.length > 0">
+            <div class="missing-count">
+              <mat-icon>upload_file</mat-icon>
+              <span>{{detailedCompletion.documents.missingFields.length}} documents needed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banking Card -->
+        <div class="section-card" [class]="'status-' + detailedCompletion.banking.status">
+          <div class="section-header">
+            <div class="section-icon">
+              <mat-icon>{{detailedCompletion.banking.statusIcon}}</mat-icon>
+            </div>
+            <div class="section-info">
+              <h4>{{detailedCompletion.banking.sectionName}}</h4>
+              <div class="section-stats">
+                <span class="completion">{{detailedCompletion.banking.completionPercentage}}%</span>
+                <span class="weight">{{detailedCompletion.banking.weight}}% weight</span>
+              </div>
+            </div>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="detailedCompletion.banking.completionPercentage"></mat-progress-bar>
+          
+          <div class="section-details" *ngIf="detailedCompletion.banking.missingFields.length > 0">
+            <div class="missing-count">
+              <mat-icon>account_balance</mat-icon>
+              <span>Banking details needed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interests Card -->
+        <div class="section-card" [class]="'status-' + detailedCompletion.interests.status">
+          <div class="section-header">
+            <div class="section-icon">
+              <mat-icon>{{detailedCompletion.interests.statusIcon}}</mat-icon>
+            </div>
+            <div class="section-info">
+              <h4>{{detailedCompletion.interests.sectionName}}</h4>
+              <div class="section-stats">
+                <span class="completion">{{detailedCompletion.interests.completionPercentage}}%</span>
+                <span class="weight">{{detailedCompletion.interests.weight}}% weight</span>
+              </div>
+            </div>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="detailedCompletion.interests.completionPercentage"></mat-progress-bar>
+          
+          <div class="section-details" *ngIf="detailedCompletion.interests.missingFields.length > 0">
+            <div class="missing-count">
+              <mat-icon>interests</mat-icon>
+              <span>{{detailedCompletion.interests.missingFields.length}} interests to add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Actions (if any) -->
+      <div *ngIf="detailedCompletion && detailedCompletion.nextSteps && detailedCompletion.nextSteps.length > 0" class="priority-actions">
+        <h4>Quick Actions</h4>
+        <div class="actions-list">
+          <div *ngFor="let step of detailedCompletion.nextSteps.slice(0, 3)" class="action-item">
+            <mat-icon>{{step.priorityIcon}}</mat-icon>
+            <span>{{step.title}}</span>
+            <mat-chip class="priority-chip">{{step.priorityText}}</mat-chip>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading profile data...</p>
+  </div>
+
+  <div *ngIf="!loading" class="profile-content">
+    <mat-tab-group animationDuration="0ms">
+      <!-- Personal Information Tab -->
+      <mat-tab label="Personal Information">
+        <div class="tab-content">
+          <form [formGroup]="demographicsForm" (ngSubmit)="saveDemographics()">
+            <!-- Basic Demographics -->
+            <div class="form-section">
+              <div class="section-header-with-progress">
+                <h3>Basic Information</h3>
+                <div class="section-progress">
+                  <span class="progress-text">{{ getBasicInfoCompletion() }}% Complete</span>
+                  <mat-progress-bar mode="determinate" [value]="getBasicInfoCompletion()" class="mini-progress"></mat-progress-bar>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Age</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="age"
+                    required
+                  />
+                  <mat-icon matSuffix *ngIf="demographicsForm.get('age')?.valid && demographicsForm.get('age')?.touched" class="field-valid">check_circle</mat-icon>
+                  <mat-error
+                    *ngIf="demographicsForm.get('age')?.hasError('required')"
+                  >
+                    Age is required
+                  </mat-error>
+                  <mat-error
+                    *ngIf="
+                      demographicsForm.get('age')?.hasError('min') ||
+                      demographicsForm.get('age')?.hasError('max')
+                    "
+                  >
+                    Age must be between 18 and 120
+                  </mat-error>
+                  <div class="field-importance critical">
+                    <mat-icon>priority_high</mat-icon>
+                    <span>Required for survey matching</span>
+                  </div>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="gender" required>
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option
+                      *ngFor="let option of genderOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="demographicsForm.get('gender')?.hasError('required')"
+                  >
+                    Gender is required
+                  </mat-error>
+                  <div class="field-importance critical">
+                    <mat-icon>priority_high</mat-icon>
+                    <span>Essential for demographic targeting</span>
+                  </div>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Location</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="location" 
+                    placeholder="e.g. Cape Town, Johannesburg, Durban"
+                    required 
+                  />
+                  <mat-error
+                    *ngIf="
+                      demographicsForm.get('location')?.hasError('required')
+                    "
+                  >
+                    Please enter your city or area for location-based surveys
+                  </mat-error>
+                  <div class="field-importance important">
+                    <mat-icon>location_on</mat-icon>
+                    <span>Enables local and regional survey opportunities</span>
+                  </div>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Urban/Rural</mat-label>
+                  <mat-select formControlName="urbanRural">
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option
+                      *ngFor="let option of urbanRuralOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Country</mat-label>
+                  <input
+                    matInput
+                    placeholder="South Africa"
+                    formControlName="country"
+                    value="South Africa"
+                    readonly
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Province</mat-label>
+                  <mat-select formControlName="state">
+                    <mat-option value="">-- Select Province --</mat-option>
+                    <mat-option
+                      *ngFor="let province of provinceOptions"
+                      [value]="province"
+                    >
+                      {{ province }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>City</mat-label>
+                  <input matInput formControlName="city" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>ZIP/Postal Code</mat-label>
+                  <input matInput formControlName="zipCode" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Household Information -->
+            <div class="form-section">
+              <h3>Household Information</h3>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Marital Status</mat-label>
+                  <mat-select formControlName="maritalStatus">
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option
+                      *ngFor="let option of maritalStatusOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Household Size</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    formControlName="householdSize"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <div class="checkbox-field">
+                  <mat-slide-toggle
+                    formControlName="hasChildren"
+                    (change)="onHasChildrenChange($event)"
+                  >
+                    Do you have children?
+                  </mat-slide-toggle>
+                </div>
+
+                <mat-form-field
+                  appearance="outline"
+                  *ngIf="demographicsForm.get('hasChildren')?.value"
+                >
+                  <mat-label>Number of Children</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    formControlName="numberOfChildren"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Education and Employment -->
+            <div class="form-section">
+              <div class="section-header-with-progress">
+                <h3>Education & Employment</h3>
+                <div class="section-progress">
+                  <span class="progress-text">{{ getEducationCompletion() }}% Complete</span>
+                  <mat-progress-bar mode="determinate" [value]="getEducationCompletion()" class="mini-progress"></mat-progress-bar>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Highest Education</mat-label>
+                  <mat-select formControlName="highestEducation" required>
+                    <mat-option value=""
+                      >-- Select Education Level --</mat-option
+                    >
+                    <mat-option
+                      *ngFor="let option of educationOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      demographicsForm
+                        .get('highestEducation')
+                        ?.hasError('required')
+                    "
+                  >
+                    Education level is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Field of Study</mat-label>
+                  <input matInput formControlName="fieldOfStudy" />
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Year of Graduation</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="yearOfGraduation"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Employment Status</mat-label>
+                  <mat-select formControlName="employmentStatus">
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option
+                      *ngFor="let option of employmentStatusOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Occupation</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="occupation" 
+                    placeholder="e.g. Software Developer, Teacher, Manager"
+                    required 
+                  />
+                  <mat-error
+                    *ngIf="
+                      demographicsForm.get('occupation')?.hasError('required')
+                    "
+                  >
+                    Occupation is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Job Title</mat-label>
+                  <input matInput formControlName="jobTitle" />
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Industry</mat-label>
+                  <mat-select formControlName="industry">
+                    <mat-option value="">-- Select Industry --</mat-option>
+                    <mat-option
+                      *ngFor="let industry of industryOptions"
+                      [value]="industry"
+                    >
+                      {{ industry }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Years of Experience</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    formControlName="yearsOfExperience"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Company Size</mat-label>
+                  <mat-select formControlName="companySize">
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option
+                      *ngFor="let option of companySizeOptions"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Income Information -->
+            <div class="form-section">
+              <div class="section-header-with-progress">
+                <h3>Income Information</h3>
+                <div class="section-progress">
+                  <span class="progress-text">{{ getIncomeCompletion() }}% Complete</span>
+                  <mat-progress-bar mode="determinate" [value]="getIncomeCompletion()" class="mini-progress"></mat-progress-bar>
+                </div>
+              </div>
+              <p class="section-description">
+                This information helps us match you with relevant surveys. All
+                data is kept confidential.
+              </p>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Annual Income Range</mat-label>
+                  <mat-select formControlName="incomeRange" required>
+                    <mat-option value="">-- Select Income Range --</mat-option>
+                    <mat-option
+                      *ngFor="let range of incomeRangeOptions"
+                      [value]="range"
+                    >
+                      {{ range }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="demographicsForm.get('incomeRange')?.hasError('required')"
+                  >
+                    Income range is required
+                  </mat-error>
+                  <div class="field-importance important">
+                    <mat-icon>info</mat-icon>
+                    <span>Helps match you with relevant paid surveys</span>
+                  </div>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Currency</mat-label>
+                  <mat-select formControlName="incomeCurrency">
+                    <mat-option value="USD">USD</mat-option>
+                    <mat-option value="EUR">EUR</mat-option>
+                    <mat-option value="GBP">GBP</mat-option>
+                    <mat-option value="CAD">CAD</mat-option>
+                    <mat-option value="AUD">AUD</mat-option>
+                    <mat-option value="ZAR">ZAR</mat-option>
+                    <mat-option value="Other">Other</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Technology Usage -->
+            <div class="form-section">
+              <h3>Technology Usage</h3>
+
+              <div class="subsection">
+                <h4>Which devices do you regularly use?</h4>
+                <div class="checkbox-group">
+                  <mat-checkbox
+                    *ngFor="let device of deviceTypeOptions"
+                    [checked]="isDeviceSelected(device)"
+                    (change)="updateDeviceTypes(device, $event.checked)"
+                  >
+                    {{ device }}
+                  </mat-checkbox>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Internet Usage (Hours per Week)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    max="168"
+                    formControlName="internetUsageHoursPerWeek"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="demographicsForm.invalid || saving"
+              >
+                <mat-icon *ngIf="!saving">save</mat-icon>
+                <mat-progress-spinner
+                  *ngIf="saving"
+                  mode="indeterminate"
+                  diameter="20"
+                ></mat-progress-spinner>
+                {{ saving ? "Saving..." : "Save Changes" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Interests Tab -->
+      <mat-tab label="Interests">
+        <div class="tab-content">
+          <div class="interests-container">
+            <div class="interests-header">
+              <h3>My Interests</h3>
+              <p class="section-description">
+                Add your interests to get matched with surveys that align with
+                what you care about.
+              </p>
+            </div>
+
+            <div class="add-interest-section">
+              <h4>Add New Interest</h4>
+
+              <div class="interest-form">
+                <div class="interest-selection">
+                  <mat-form-field
+                    appearance="outline"
+                    class="interest-dropdown"
+                  >
+                    <mat-label>Select Interest</mat-label>
+                    <mat-select [(value)]="selectedInterest">
+                      <mat-option value="">-- Choose an interest --</mat-option>
+                      <mat-option
+                        *ngFor="let interest of getAvailableInterests()"
+                        [value]="interest"
+                      >
+                        {{ interest }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="addInterestFromDropdown()"
+                    [disabled]="!selectedInterest"
+                  >
+                    <mat-icon>add</mat-icon>
+                    Add Interest
+                  </button>
+                </div>
+
+                <div class="interest-level">
+                  <mat-label
+                    >Interest Level:
+                    {{ getInterestLevelText(interestLevel) }}</mat-label
+                  >
+                  <mat-slider min="1" max="5" step="1" [discrete]="true">
+                    <input matSliderThumb [(ngModel)]="interestLevel" />
+                  </mat-slider>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="interests-list">
+              <h4>Current Interests ({{ userInterests.length }})</h4>
+
+              <div *ngIf="userInterests.length === 0" class="no-interests">
+                <mat-icon>interests</mat-icon>
+                <h5>No interests added yet</h5>
+                <p>
+                  Add interests above to improve survey matching and earn more
+                  rewards.
+                </p>
+              </div>
+
+              <div *ngIf="userInterests.length > 0" class="interests-grid">
+                <div
+                  *ngFor="let interest of userInterests"
+                  class="interest-card"
+                >
+                  <div class="interest-content">
+                    <h5>{{ interest.interest }}</h5>
+                    <div class="interest-level-display">
+                      <span class="level-text">{{
+                        getInterestLevelText(interest.interestLevel)
+                      }}</span>
+                      <div class="level-stars">
+                        <mat-icon
+                          *ngFor="let star of [1, 2, 3, 4, 5]"
+                          [class.filled]="star <= interest.interestLevel"
+                        >
+                          {{
+                            star <= interest.interestLevel
+                              ? "star"
+                              : "star_border"
+                          }}
+                        </mat-icon>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    mat-icon-button
+                    (click)="removeInterest(interest.id)"
+                    color="warn"
+                    matTooltip="Remove interest"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Documents Tab -->
+      <mat-tab label="Documents">
+        <div class="tab-content">
+          <div class="documents-container">
+            <div class="documents-header">
+              <h3>Identity Verification</h3>
+              <p class="section-description">
+                Upload identity documents to verify your account and unlock
+                premium surveys with higher rewards.
+              </p>
+            </div>
+
+            <!-- Document Upload Section -->
+            <div class="upload-section">
+              <mat-card class="upload-card">
+                <mat-card-header>
+                  <mat-card-title>Upload New Document</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="upload-form">
+                    <div class="form-row">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Document Type</mat-label>
+                        <mat-select [(value)]="selectedDocumentType" required>
+                          <mat-option
+                            *ngFor="let type of documentTypes"
+                            [value]="type"
+                          >
+                            {{ type.name }}
+                            <span
+                              *ngIf="type.isRequired"
+                              class="required-badge"
+                            >
+                              (Required)</span
+                            >
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field
+                        appearance="outline"
+                        *ngIf="selectedDocumentType"
+                      >
+                        <mat-label>Expiry Date (Optional)</mat-label>
+                        <input
+                          matInput
+                          [matDatepicker]="picker"
+                          [(ngModel)]="documentExpiryDate"
+                        />
+                        <mat-datepicker-toggle
+                          matSuffix
+                          [for]="picker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+
+                    <div *ngIf="selectedDocumentType" class="document-info">
+                      <p>
+                        <strong>Description:</strong>
+                        {{ selectedDocumentType.description }}
+                      </p>
+                      <p>
+                        <strong>Allowed file types:</strong>
+                        {{ selectedDocumentType.allowedFileTypes }}
+                      </p>
+                      <p>
+                        <strong>Maximum file size:</strong>
+                        {{ selectedDocumentType.maxFileSizeMB }}MB
+                      </p>
+                    </div>
+
+                    <div class="file-upload">
+                      <input
+                        #fileInput
+                        type="file"
+                        style="display: none"
+                        (change)="onFileSelected($event)"
+                        [accept]="getAcceptedFileTypes()"
+                      />
+
+                      <button
+                        mat-stroked-button
+                        (click)="fileInput.click()"
+                        [disabled]="!selectedDocumentType"
+                      >
+                        <mat-icon>upload_file</mat-icon>
+                        Choose File
+                      </button>
+
+                      <span *ngIf="selectedFile" class="selected-file">
+                        {{ selectedFile.name }} ({{
+                          formatFileSize(selectedFile.size)
+                        }})
+                      </span>
+                    </div>
+
+                    <div class="upload-actions">
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="uploadDocument()"
+                        [disabled]="
+                          !selectedFile ||
+                          !selectedDocumentType ||
+                          uploadingDocument
+                        "
+                      >
+                        <mat-icon *ngIf="!uploadingDocument"
+                          >cloud_upload</mat-icon
+                        >
+                        <mat-progress-spinner
+                          *ngIf="uploadingDocument"
+                          mode="indeterminate"
+                          diameter="20"
+                        ></mat-progress-spinner>
+                        {{
+                          uploadingDocument ? "Uploading..." : "Upload Document"
+                        }}
+                      </button>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Documents List -->
+            <div class="documents-list">
+              <h4>Your Documents</h4>
+
+              <div *ngIf="userDocuments.length === 0" class="empty-state">
+                <mat-icon>description</mat-icon>
+                <h3>No documents uploaded</h3>
+                <p>
+                  Upload your identity documents to start the verification
+                  process.
+                </p>
+              </div>
+
+              <div *ngFor="let document of userDocuments" class="document-item">
+                <div class="document-info">
+                  <div class="document-header">
+                    <h4>{{ document.documentTypeName }}</h4>
+                    <mat-chip
+                      [class]="
+                        'status-' + document.verificationStatus.toLowerCase()
+                      "
+                    >
+                      <mat-icon>{{
+                        getStatusIcon(document.verificationStatus)
+                      }}</mat-icon>
+                      {{ document.verificationStatus }}
+                    </mat-chip>
+                  </div>
+
+                  <div class="document-details">
+                    <p>
+                      <strong>File:</strong> {{ document.originalFileName }}
+                    </p>
+                    <p>
+                      <strong>Size:</strong>
+                      {{ formatFileSize(document.fileSize) }}
+                    </p>
+                    <p>
+                      <strong>Uploaded:</strong>
+                      {{ document.uploadedDate | date : "medium" }}
+                    </p>
+                    <p *ngIf="document.verifiedDate">
+                      <strong>Verified:</strong>
+                      {{ document.verifiedDate | date : "medium" }}
+                    </p>
+                    <p *ngIf="document.expiryDate">
+                      <strong>Expires:</strong>
+                      {{ document.expiryDate | date : "mediumDate" }}
+                    </p>
+                    <p *ngIf="document.notes" class="notes">
+                      <strong>Notes:</strong> {{ document.notes }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="document-actions">
+                  <button
+                    mat-icon-button
+                    (click)="downloadDocument(document)"
+                    matTooltip="Download"
+                  >
+                    <mat-icon>download</mat-icon>
+                  </button>
+
+                  <button
+                    mat-icon-button
+                    (click)="deleteDocument(document)"
+                    *ngIf="document.verificationStatus !== 'Approved'"
+                    matTooltip="Delete"
+                    color="warn"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Banking Details Tab -->
+      <mat-tab label="Banking Details">
+        <div class="tab-content">
+          <div class="banking-container">
+            <div class="banking-header">
+              <h3>Payment Information</h3>
+              <p class="section-description">
+                Add your banking details to receive survey rewards and payments
+                directly to your account.
+              </p>
+            </div>
+
+            <!-- Add Banking Form -->
+            <div *ngIf="showBankingForm" class="banking-form-section">
+              <mat-card class="banking-form-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    {{
+                      editingBanking
+                        ? "Edit Banking Details"
+                        : "Add Banking Details"
+                    }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form
+                    [formGroup]="bankingForm"
+                    (ngSubmit)="saveBankingDetails()"
+                  >
+                    <div class="form-row">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Bank Name</mat-label>
+                        <mat-select formControlName="bankName" required>
+                          <mat-option value="">-- Select Bank --</mat-option>
+                          <mat-option
+                            *ngFor="let bank of bankOptions"
+                            [value]="bank"
+                          >
+                            {{ bank }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="
+                            bankingForm.get('bankName')?.hasError('required')
+                          "
+                        >
+                          Bank name is required
+                        </mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline">
+                        <mat-label>Account Holder Name</mat-label>
+                        <input
+                          matInput
+                          formControlName="accountHolderName"
+                          required
+                        />
+                        <mat-error
+                          *ngIf="
+                            bankingForm
+                              .get('accountHolderName')
+                              ?.hasError('required')
+                          "
+                        >
+                          Account holder name is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Account Number</mat-label>
+                        <input
+                          matInput
+                          formControlName="accountNumber"
+                          required
+                        />
+                        <mat-error
+                          *ngIf="
+                            bankingForm
+                              .get('accountNumber')
+                              ?.hasError('required')
+                          "
+                        >
+                          Account number is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="
+                            bankingForm
+                              .get('accountNumber')
+                              ?.hasError('minlength') ||
+                            bankingForm
+                              .get('accountNumber')
+                              ?.hasError('maxlength')
+                          "
+                        >
+                          Account number must be between 6 and 20 characters
+                        </mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline">
+                        <mat-label>Account Type</mat-label>
+                        <mat-select formControlName="accountType" required>
+                          <mat-option value=""
+                            >-- Select Account Type --</mat-option
+                          >
+                          <mat-option
+                            *ngFor="let type of accountTypeOptions"
+                            [value]="type"
+                          >
+                            {{ type }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="
+                            bankingForm.get('accountType')?.hasError('required')
+                          "
+                        >
+                          Account type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Branch Code</mat-label>
+                        <input matInput formControlName="branchCode" placeholder="6-digit branch code">
+                        <mat-hint>6-digit branch code (e.g. 632005)</mat-hint>
+                        <mat-error *ngIf="bankingForm.get('branchCode')?.hasError('pattern')">
+                          Branch code must be 6 digits
+                        </mat-error>
+                      </mat-form-field>
+                      
+                      <mat-form-field appearance="outline">
+                        <mat-label>Branch Name</mat-label>
+                        <input matInput formControlName="branchName">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-checkbox formControlName="isPrimary">
+                        Set as primary account
+                      </mat-checkbox>
+                    </div>
+
+                    <div class="form-actions">
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        type="submit"
+                        [disabled]="bankingForm.invalid || savingBanking"
+                      >
+                        <mat-icon *ngIf="!savingBanking">save</mat-icon>
+                        <mat-progress-spinner
+                          *ngIf="savingBanking"
+                          mode="indeterminate"
+                          diameter="20"
+                        ></mat-progress-spinner>
+                        {{
+                          savingBanking
+                            ? "Saving..."
+                            : (editingBanking ? "Update" : "Add") +
+                              " Banking Details"
+                        }}
+                      </button>
+
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelBankingForm()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Banking Details List -->
+            <div class="banking-list">
+              <div class="banking-list-header">
+                <h4>Your Banking Details</h4>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="showAddBankingForm()"
+                  *ngIf="!showBankingForm && bankingDetails.length < 3"
+                >
+                  <mat-icon>add</mat-icon>
+                  Add Banking Details
+                </button>
+              </div>
+
+              <div *ngIf="loadingBanking" class="loading-container">
+                <mat-progress-spinner
+                  mode="indeterminate"
+                  diameter="40"
+                ></mat-progress-spinner>
+                <p>Loading banking details...</p>
+              </div>
+
+              <div
+                *ngIf="
+                  !loadingBanking &&
+                  bankingDetails.length === 0 &&
+                  !showBankingForm
+                "
+                class="empty-state"
+              >
+                <mat-icon>account_balance</mat-icon>
+                <h3>No banking details added</h3>
+                <p>Add your banking details to receive survey payments.</p>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="showAddBankingForm()"
+                >
+                  <mat-icon>add</mat-icon>
+                  Add Your First Banking Details
+                </button>
+              </div>
+
+              <div *ngFor="let banking of bankingDetails" class="banking-item">
+                <div class="banking-info">
+                  <div class="banking-header">
+                    <h4>{{ banking.bankName }}</h4>
+                    <div class="badges">
+                      <mat-chip
+                        *ngIf="banking.isPrimary"
+                        color="primary"
+                        selected
+                      >
+                        <mat-icon>star</mat-icon>
+                        Primary
+                      </mat-chip>
+                      <mat-chip
+                        [class]="banking.isVerified ? 'verified' : 'pending'"
+                      >
+                        <mat-icon>{{
+                          banking.isVerified ? "verified" : "schedule"
+                        }}</mat-icon>
+                        {{ banking.isVerified ? "Verified" : "Pending" }}
+                      </mat-chip>
+                    </div>
+                  </div>
+
+                  <div class="banking-details">
+                    <p>
+                      <strong>Account Holder:</strong>
+                      {{ banking.accountHolderName }}
+                    </p>
+                    <p>
+                      <strong>Account Number:</strong>
+                      {{ getMaskedAccountNumber(banking.accountNumber) }}
+                    </p>
+                    <p>
+                      <strong>Account Type:</strong> {{ banking.accountType }}
+                    </p>
+                    <p *ngIf="banking.branchName">
+                      <strong>Branch:</strong> {{ banking.branchName }}
+                    </p>
+                    <p>
+                      <strong>Added:</strong>
+                      {{ banking.createdDate | date : "mediumDate" }}
+                    </p>
+                    <p *ngIf="banking.verifiedDate">
+                      <strong>Verified:</strong>
+                      {{ banking.verifiedDate | date : "mediumDate" }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="banking-actions">
+                  <button
+                    mat-icon-button
+                    (click)="setPrimaryBankingDetail(banking)"
+                    *ngIf="!banking.isPrimary"
+                    matTooltip="Set as Primary"
+                  >
+                    <mat-icon>star_border</mat-icon>
+                  </button>
+
+                  <button
+                    mat-icon-button
+                    (click)="editBankingDetail(banking)"
+                    *ngIf="!banking.isVerified"
+                    matTooltip="Edit"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <button
+                    mat-icon-button
+                    (click)="deleteBankingDetail(banking)"
+                    matTooltip="Delete"
+                    color="warn"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="bankingDetails.length >= 3" class="max-limit-message">
+                <mat-icon>info</mat-icon>
+                <p>
+                  You can add up to 3 banking details. Remove existing ones to
+                  add new accounts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Engagement Tab -->
+      <mat-tab label="Engagement">
+        <div class="tab-content">
+          <div *ngIf="userEngagement" class="engagement-container">
+            <h3>Your Survey Engagement</h3>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.currentLoginStreak }}
+                </div>
+                <div class="stat-label">Current Streak</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.maxLoginStreak }}
+                </div>
+                <div class="stat-label">Best Streak</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">{{ userEngagement.totalLogins }}</div>
+                <div class="stat-label">Total Logins</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.totalSurveysCompleted }}
+                </div>
+                <div class="stat-label">Surveys Completed</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{
+                    userEngagement.totalSurveysStarted -
+                      userEngagement.totalSurveysCompleted
+                  }}
+                </div>
+                <div class="stat-label">Surveys In Progress</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.completionRate | percent : "1.0-0" }}
+                </div>
+                <div class="stat-label">Completion Rate</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.totalPointsEarned | number }}
+                </div>
+                <div class="stat-label">Points Earned</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-value">
+                  {{ userEngagement.totalRewardsRedeemed }}
+                </div>
+                <div class="stat-label">Rewards Redeemed</div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="engagement-details">
+              <h4>Activity Summary</h4>
+
+              <div class="activity-summary">
+                <div class="activity-item">
+                  <mat-icon>login</mat-icon>
+                  <div class="activity-details">
+                    <div class="activity-label">Last Login</div>
+                    <div class="activity-value">
+                      {{ userEngagement.lastLoginDate | date : "medium" }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <mat-icon>update</mat-icon>
+                  <div class="activity-details">
+                    <div class="activity-label">Last Activity</div>
+                    <div class="activity-value">
+                      {{ userEngagement.lastActivityDate | date : "medium" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

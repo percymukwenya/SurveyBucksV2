@@ -1,0 +1,197 @@
+<div class="flow-designer-container">
+  <!-- Header -->
+  <div class="designer-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>Survey Flow Designer</h1>
+        <p class="subtitle" *ngIf="survey">{{ survey.name }}</p>
+      </div>
+      <div class="header-actions">
+        <button 
+          mat-stroked-button 
+          (click)="resetView()"
+          matTooltip="Reset view to center">
+          <mat-icon>center_focus_strong</mat-icon>
+          Reset View
+        </button>
+        <button 
+          mat-stroked-button 
+          (click)="fitToView()"
+          matTooltip="Fit flow to screen">
+          <mat-icon>fit_screen</mat-icon>
+          Fit to View
+        </button>
+        <button 
+          mat-stroked-button 
+          color="primary"
+          (click)="exportFlow()"
+          matTooltip="Export flow diagram">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flow Canvas Container -->
+  <div class="canvas-container" #flowContainer>
+    <!-- Loading overlay -->
+    <div *ngIf="loading" class="loading-overlay">
+      <mat-progress-spinner diameter="60"></mat-progress-spinner>
+      <p>Generating flow diagram...</p>
+    </div>
+    
+    <!-- Flow Canvas -->
+    <canvas 
+      #flowCanvas 
+      class="flow-canvas"
+      [class.loading]="loading">
+    </canvas>
+    
+    <!-- Control Panel -->
+    <div class="control-panel" *ngIf="!loading">
+      <!-- Zoom Controls -->
+      <div class="zoom-controls">
+        <button 
+          mat-mini-fab 
+          color="primary"
+          (click)="zoomIn()"
+          matTooltip="Zoom In">
+          <mat-icon>zoom_in</mat-icon>
+        </button>
+        <button 
+          mat-mini-fab 
+          color="primary"
+          (click)="zoomOut()"
+          matTooltip="Zoom Out">
+          <mat-icon>zoom_out</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Legend -->
+      <div class="legend-panel">
+        <h3>Legend</h3>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="legend-icon section-icon">📁</div>
+            <span>Section</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-icon question-icon">❓</div>
+            <span>Question</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-icon decision-icon">🔀</div>
+            <span>Decision Point</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-icon termination-icon">🚫</div>
+            <span>Termination</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-indicator logic-indicator"></div>
+            <span>Has Logic</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Node Info Panel -->
+    <div class="node-info-panel" *ngIf="selectedNode && !loading">
+      <div class="panel-header">
+        <h3>{{ selectedNode.data.title }}</h3>
+        <button 
+          mat-icon-button 
+          (click)="selectedNode = null"
+          class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="panel-content">
+        <div class="info-item" *ngIf="selectedNode.data.subtitle">
+          <label>Description:</label>
+          <span>{{ selectedNode.data.subtitle }}</span>
+        </div>
+        <div class="info-item" *ngIf="selectedNode.data.questionType">
+          <label>Type:</label>
+          <span>{{ selectedNode.data.questionType }}</span>
+        </div>
+        <div class="info-item" *ngIf="selectedNode.data.sectionId">
+          <label>Section:</label>
+          <span>Section {{ selectedNode.data.sectionId }}</span>
+        </div>
+        <div class="info-item">
+          <label>Has Logic:</label>
+          <span>{{ selectedNode.data.hasLogic ? 'Yes' : 'No' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Connections:</label>
+          <span>{{ selectedNode.connections.length }}</span>
+        </div>
+      </div>
+      <div class="panel-actions" *ngIf="selectedNode.type === 'question'">
+        <button 
+          mat-raised-button 
+          color="primary"
+          (click)="editNode(selectedNode)">
+          <mat-icon>edit</mat-icon>
+          Edit Logic
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions-panel" *ngIf="!loading && flowData.nodes.length === 0">
+    <mat-card>
+      <mat-card-content>
+        <div class="instructions-content">
+          <mat-icon class="instructions-icon">info</mat-icon>
+          <div class="instructions-text">
+            <h3>No Survey Flow to Display</h3>
+            <p>Add questions and sections to your survey first, then return here to visualize the flow.</p>
+            <button 
+              mat-raised-button 
+              color="primary"
+              (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+              Back to Survey Editor
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Flow Statistics -->
+  <div class="statistics-panel" *ngIf="!loading && flowData.nodes.length > 0">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Flow Statistics</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">{{ getQuestionCount() }}</div>
+            <div class="stat-label">Questions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ getSectionCount() }}</div>
+            <div class="stat-label">Sections</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ getLogicRuleCount() }}</div>
+            <div class="stat-label">Logic Rules</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ getConnectionCount() }}</div>
+            <div class="stat-label">Connections</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

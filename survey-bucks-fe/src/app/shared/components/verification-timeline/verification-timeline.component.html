@@ -1,0 +1,79 @@
+<div class="verification-timeline">
+  <div class="timeline-header" *ngIf="documentName">
+    <h4 class="document-name">{{ documentName }}</h4>
+    <div class="current-status" [class]="'status-' + currentStatus">
+      <mat-icon>{{ getCurrentStatusIcon() }}</mat-icon>
+      <span>{{ getCurrentStatusText() }}</span>
+    </div>
+  </div>
+
+  <div class="timeline-container">
+    <div 
+      *ngFor="let step of timelineSteps; let i = index; trackBy: trackByStepId"
+      [class]="getStepClass(step.status)"
+      class="timeline-item">
+      
+      <!-- Timeline connector line -->
+      <div *ngIf="!isLastStep(i)" class="timeline-connector" 
+           [class.active]="step.status === 'completed'">
+      </div>
+
+      <!-- Step icon -->
+      <div [class]="getIconClass(step.status)" class="step-icon">
+        <mat-icon>{{ step.icon }}</mat-icon>
+      </div>
+
+      <!-- Step content -->
+      <div class="step-content">
+        <div class="step-header">
+          <h5 class="step-title">{{ step.title }}</h5>
+          <span *ngIf="step.status === 'active'" class="step-badge active">Current</span>
+          <span *ngIf="step.status === 'completed'" class="step-badge completed">
+            <mat-icon>check</mat-icon>
+          </span>
+        </div>
+
+        <div class="step-details">
+          <p *ngIf="step.subtitle" class="step-subtitle">{{ step.subtitle }}</p>
+          
+          <!-- Time estimate for active/pending steps -->
+          <div *ngIf="step.estimatedTime && step.status !== 'completed'" class="time-estimate">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ step.estimatedTime }}</span>
+          </div>
+
+          <!-- Rejection reason -->
+          <div *ngIf="step.id === 'complete' && currentStatus === 'rejected' && rejectionReason" 
+               class="rejection-reason">
+            <mat-icon>info</mat-icon>
+            <span>{{ rejectionReason }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons for rejected documents -->
+  <div *ngIf="currentStatus === 'rejected'" class="timeline-actions">
+    <button mat-raised-button color="primary" class="retry-button">
+      <mat-icon>cloud_upload</mat-icon>
+      Upload New Document
+    </button>
+    <button mat-button class="help-button">
+      <mat-icon>help_outline</mat-icon>
+      Get Help
+    </button>
+  </div>
+
+  <!-- Additional info for pending reviews -->
+  <div *ngIf="currentStatus === 'reviewing'" class="review-info">
+    <div class="info-card">
+      <mat-icon>info</mat-icon>
+      <div class="info-content">
+        <h6>What happens during review?</h6>
+        <p>Our verification team checks that your document is clear, valid, and matches your profile information. 
+           You'll receive a notification once the review is complete.</p>
+      </div>
+    </div>
+  </div>
+</div>

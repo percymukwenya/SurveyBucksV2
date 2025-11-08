@@ -1,0 +1,35 @@
+<div class="section-editor-dialog">
+  <h2 mat-dialog-title>{{ isEditMode ? 'Edit Section' : 'Add New Section' }}</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="sectionForm">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Section Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter section name">
+          <mat-error *ngIf="sectionForm.get('name')?.errors?.['required']">Section name is required</mat-error>
+          <mat-error *ngIf="sectionForm.get('name')?.errors?.['maxlength']">Maximum length is 150 characters</mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3" placeholder="Enter section description (optional)"></textarea>
+          <mat-error *ngIf="sectionForm.get('description')?.errors?.['maxlength']">Maximum length is 250 characters</mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+    
+    <div *ngIf="saving" class="saving-indicator">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button [disabled]="saving" (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" [disabled]="saving" (click)="onSave()">
+      {{ isEditMode ? 'Update' : 'Add' }} Section
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,53 @@
+<!-- src/app/shared/components/notification-dropdown/notification-dropdown.component.html -->
+<button mat-icon-button 
+       [matMenuTriggerFor]="notificationMenu" 
+       [matBadge]="unreadCount" 
+       [matBadgeHidden]="unreadCount === 0" 
+       matBadgeColor="accent"
+       (menuOpened)="refreshNotifications()">
+  <mat-icon>notifications</mat-icon>
+</button>
+
+<mat-menu #notificationMenu="matMenu" class="notification-dropdown-menu">
+  <div class="notification-header">
+    <h3>Notifications</h3>
+    <button mat-button color="primary" (click)="onMarkAllAsRead()" [disabled]="unreadCount === 0">
+      Mark All as Read
+    </button>
+  </div>
+  
+  <mat-divider></mat-divider>
+  
+  <div *ngIf="loading" class="loading-container">
+    <p>Loading notifications...</p>
+  </div>
+  
+  <div *ngIf="!loading && notifications.length === 0" class="empty-state">
+    <mat-icon>notifications_off</mat-icon>
+    <p>No notifications at the moment</p>
+  </div>
+  
+  <div *ngIf="!loading && notifications.length > 0" class="notification-list">
+    <div *ngFor="let notification of notifications" class="notification-item" [ngClass]="{'unread': !notification.isRead}">
+      <div class="notification-icon" [ngClass]="getNotificationTypeClass(notification.notificationTypeName)">
+        <mat-icon>{{getNotificationIcon(notification.notificationTypeName)}}</mat-icon>
+      </div>
+      
+      <div class="notification-content" 
+           [routerLink]="notification.deepLink ? notification.deepLink : '/client/notifications'" 
+           (click)="onMarkAsRead(notification)">
+        <h4>{{notification.title}}</h4>
+        <p>{{notification.message | slice:0:100}}{{notification.message.length > 100 ? '...' : ''}}</p>
+        <span class="notification-time">{{notification.createdDate | date:'short'}}</span>
+      </div>
+    </div>
+  </div>
+  
+  <mat-divider></mat-divider>
+  
+  <div class="notification-footer">
+    <button mat-button color="primary" routerLink="/client/notifications">
+      View All Notifications
+    </button>
+  </div>
+</mat-menu>

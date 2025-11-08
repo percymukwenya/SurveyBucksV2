@@ -1,0 +1,167 @@
+<!-- src/app/features/surveys/survey-details/survey-details.component.html -->
+<div class="survey-details-container">
+    <div class="back-link">
+      <a routerLink="/client/surveys" mat-button>
+        <mat-icon>arrow_back</mat-icon>
+        Back to Surveys
+      </a>
+    </div>
+    
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading survey details...</p>
+    </div>
+    
+    <div *ngIf="!loading && survey" class="survey-details">
+      <mat-card class="survey-header-card">
+        <mat-card-content>
+          <div class="survey-header">
+            <div class="survey-title">
+              <h1>{{survey.name}}</h1>
+              <div class="survey-meta">
+                <span class="company-name">{{survey.companyName}}</span>
+                <span class="industry">{{survey.industry}}</span>
+              </div>
+            </div>
+            
+            <button mat-raised-button color="primary" (click)="enrollInSurvey()" [disabled]="enrolling">
+              <mat-icon *ngIf="!enrolling">play_arrow</mat-icon>
+              <mat-progress-bar *ngIf="enrolling" mode="indeterminate" class="button-progress"></mat-progress-bar>
+              {{enrolling ? 'Enrolling...' : 'Start Survey'}}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <div class="survey-content">
+        <mat-card class="survey-info-card">
+          <mat-card-header>
+            <mat-card-title>Survey Information</mat-card-title>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <p class="survey-description">
+              {{survey.description}}
+            </p>
+            
+            <mat-divider></mat-divider>
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>timer</mat-icon>
+                  Duration
+                </div>
+                <div class="info-value">
+                  {{formatDuration(survey.durationInSeconds)}}
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>help</mat-icon>
+                  Questions
+                </div>
+                <div class="info-value">
+                  {{calculateTotalQuestions()}}
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>event</mat-icon>
+                  Available Until
+                </div>
+                <div class="info-value">
+                  {{survey.closingDateTime | date:'MMM d, y'}}
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>check_circle</mat-icon>
+                  Required Questions
+                </div>
+                <div class="info-value">
+                  {{survey.requireAllQuestions ? 'All' : 'Some'}}
+                </div>
+              </div>
+            </div>
+            
+            <mat-divider></mat-divider>
+            
+            <div class="company-info">
+              <h3>About {{survey.companyName}}</h3>
+              <p>{{survey.companyDescription}}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="rewards-card">
+          <mat-card-header>
+            <mat-card-title>Rewards</mat-card-title>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div *ngFor="let reward of survey.rewards" class="reward-item">
+              <div class="reward-icon">
+                <mat-icon>card_giftcard</mat-icon>
+              </div>
+              <div class="reward-details">
+                <h3>{{reward.name}}</h3>
+                <p>{{reward.description}}</p>
+                <div class="reward-value" *ngIf="reward.amount">
+                  <mat-icon>{{reward.rewardType === 'Points' ? 'stars' : 'redeem'}}</mat-icon>
+                  <span>{{getRewardDisplay(reward)}}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="survey-structure-card">
+          <mat-card-header>
+            <mat-card-title>Survey Structure</mat-card-title>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let section of survey.sections; let i = index">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Section {{i + 1}}: {{section.name}}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{section.questions.length}} questions
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                
+                <p *ngIf="section.description">{{section.description}}</p>
+                
+                <div *ngFor="let question of section.questions; let j = index" class="question-preview">
+                  <div class="question-number">Q{{j + 1}}</div>
+                  <div class="question-content">
+                    <div class="question-text">
+                      {{question.text}}
+                      <span *ngIf="question.isMandatory" class="mandatory-indicator">*</span>
+                    </div>
+                    <div class="question-type">
+                      {{question.questionTypeName}}
+                    </div>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+        
+        <div class="actions-footer">
+          <button mat-raised-button color="primary" (click)="enrollInSurvey()" [disabled]="enrolling">
+            <mat-icon *ngIf="!enrolling">play_arrow</mat-icon>
+            <mat-progress-bar *ngIf="enrolling" mode="indeterminate" class="button-progress"></mat-progress-bar>
+            {{enrolling ? 'Enrolling...' : 'Start Survey'}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

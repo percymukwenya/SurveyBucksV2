@@ -1,0 +1,294 @@
+<!-- src/app/features/admin/surveys/survey-results/survey-results.component.html -->
+<div class="survey-results-container">
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading survey results...</p>
+    </div>
+    
+    <div *ngIf="!loading && survey && results" class="results-content">
+      <div class="page-header">
+        <div class="header-info">
+          <h1>Survey Results: {{survey.name}}</h1>
+          <p class="subtitle">{{survey.description}}</p>
+          
+          <div class="survey-meta">
+            <div class="meta-item">
+              <span class="meta-label">Company</span>
+              <span class="meta-value">{{survey.companyName}}</span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Industry</span>
+              <span class="meta-value">{{survey.industry}}</span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Status</span>
+              <span class="meta-value">{{survey.status}}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button mat-flat-button color="primary" [matMenuTriggerFor]="exportMenu">
+            <mat-icon>file_download</mat-icon>
+            Export Results
+          </button>
+          
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportResults('csv')">
+              <mat-icon>description</mat-icon>
+              <span>Export as CSV</span>
+            </button>
+            <button mat-menu-item (click)="exportResults('xlsx')">
+              <mat-icon>table_chart</mat-icon>
+              <span>Export as Excel</span>
+            </button>
+            <button mat-menu-item (click)="exportResults('pdf')">
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>Export as PDF</span>
+            </button>
+            <button mat-menu-item (click)="exportResults('json')">
+              <mat-icon>code</mat-icon>
+              <span>Export as JSON</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+      
+      <div class="summary-cards">
+        <mat-card>
+          <mat-card-content>
+            <div class="summary-icon participants-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="summary-content">
+              <span class="summary-value">{{results.overview.totalParticipants}}</span>
+              <span class="summary-label">Total Participants</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card>
+          <mat-card-content>
+            <div class="summary-icon completions-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="summary-content">
+              <span class="summary-value">{{results.overview.completedSurveys}}</span>
+              <span class="summary-label">Completed Surveys</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card>
+            <mat-card-content>
+              <div class="summary-icon rate-icon">
+                <mat-icon>percent</mat-icon>
+              </div>
+              <div class="summary-content">
+                <span class="summary-value">{{results.overview.completionRate | percent:'1.0-0'}}</span>
+                <span class="summary-label">Completion Rate</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card>
+            <mat-card-content>
+              <div class="summary-icon time-icon">
+                <mat-icon>timer</mat-icon>
+              </div>
+              <div class="summary-content">
+                <span class="summary-value">{{results.overview.avgResponseTimeMinutes}}m</span>
+                <span class="summary-label">Avg. Response Time</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <mat-tab-group animationDuration="0ms">
+          <!-- Overview Tab -->
+          <mat-tab label="Overview">
+            <div class="tab-content">
+              <div class="charts-grid">
+                <!-- Participant Demographics Chart -->
+                <mat-card class="chart-card">
+                  <mat-card-header>
+                    <mat-card-title>Participant Demographics</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="chart-container">
+                      <canvas id="participantChart"></canvas>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+                
+                <!-- Completion Rate by Section Chart -->
+                <mat-card class="chart-card">
+                  <mat-card-header>
+                    <mat-card-title>Completion Rate by Section</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="chart-container">
+                      <canvas id="completionRateChart"></canvas>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+                
+                <!-- Response Time by Section Chart -->
+                <mat-card class="chart-card">
+                  <mat-card-header>
+                    <mat-card-title>Response Time by Section</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="chart-container">
+                      <canvas id="responseTimeChart"></canvas>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+              
+              <!-- Completion Funnel -->
+              <mat-card class="funnel-card">
+                <mat-card-header>
+                  <mat-card-title>Survey Completion Funnel</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="funnel-container">
+                    <div class="funnel-step" *ngFor="let step of results.completionFunnel; let i = index"
+                         [ngStyle]="{'width': (100 - (i * 10)) + '%'}">
+                      <div class="step-content">
+                        <div class="step-name">{{step.stage}}</div>
+                        <div class="step-count">{{step.count}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="funnel-metrics">
+                    <div class="metric-item" *ngFor="let step of results.completionFunnel; let i = index; let last = last">
+                      <div class="metric-label">{{step.stage}}</div>
+                      <div class="metric-value">{{step.count}}</div>
+                      <div class="conversion-rate" *ngIf="!last">
+                        <mat-icon>arrow_downward</mat-icon>
+                        <span>{{step.conversionRate | percent:'1.0-0'}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </mat-tab>
+          
+          <!-- Question Results Tab -->
+          <mat-tab label="Question Results">
+            <div class="tab-content">
+              <div class="section-filter">
+                <mat-form-field appearance="outline">
+                  <mat-label>Filter by Section</mat-label>
+                  <mat-select [formControl]="selectedSection">
+                    <mat-option value="all">All Sections</mat-option>
+                    <mat-option *ngFor="let section of survey.sections" [value]="section.id">
+                      {{section.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <div class="question-results">
+                <mat-card *ngFor="let question of results.questionResponses" 
+                         [hidden]="selectedSection.value !== 'all' && question.sectionId != selectedSection.value" 
+                         class="question-card">
+                  <mat-card-header>
+                    <div class="question-icon">
+                      <mat-icon>{{getQuestionTypeIcon(question.questionType)}}</mat-icon>
+                    </div>
+                    <mat-card-title>{{question.questionText}}</mat-card-title>
+                    <mat-card-subtitle>
+                      <span class="question-type">{{question.questionType}}</span>
+                      <span class="response-count">{{question.responseCount}} responses</span>
+                    </mat-card-subtitle>
+                  </mat-card-header>
+                  
+                  <mat-card-content>
+                    <!-- For Multiple Choice, Checkbox, Rating, or Scale questions, show charts -->
+                    <div *ngIf="['MultipleChoice', 'Checkbox', 'Rating', 'Scale'].includes(question.questionType)" 
+                         class="question-chart-container">
+                      <canvas [id]="'questionChart_' + question.questionId"></canvas>
+                    </div>
+                    
+                    <!-- For text questions, show response list -->
+                    <div *ngIf="question.questionType === 'Text'" class="text-responses">
+                      <div *ngFor="let response of question.textResponses" class="text-response-item">
+                        <p>"{{response.text}}"</p>
+                        <span class="response-date">{{response.submittedDate | date:'medium'}}</span>
+                      </div>
+                      
+                      <div *ngIf="question.textResponses.length === 0" class="no-responses">
+                        <p>No text responses submitted for this question.</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </mat-tab>
+          
+          <!-- Individual Responses Tab -->
+          <mat-tab label="Individual Responses">
+            <div class="tab-content">
+              <div class="responses-filter">
+                <mat-form-field appearance="outline">
+                  <mat-label>Filter by Completion Status</mat-label>
+                  <mat-select>
+                    <mat-option value="all">All Responses</mat-option>
+                    <mat-option value="complete">Completed Only</mat-option>
+                    <mat-option value="incomplete">Incomplete Only</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <div class="individual-responses">
+                <mat-card *ngFor="let response of results.individualResponses" class="response-card">
+                  <mat-card-header>
+                    <mat-card-title>Response #{{response.id}}</mat-card-title>
+                    <mat-card-subtitle>
+                      <span class="response-date">Submitted: {{response.completedDate | date:'medium'}}</span>
+                      <span *ngIf="response.isComplete" class="response-status complete">Complete</span>
+                      <span *ngIf="!response.isComplete" class="response-status incomplete">Incomplete</span>
+                    </mat-card-subtitle>
+                  </mat-card-header>
+                  
+                  <mat-card-content>
+                    <div class="response-meta">
+                      <div class="meta-item">
+                        <span class="meta-label">Participant ID</span>
+                        <span class="meta-value">{{response.participantId}}</span>
+                      </div>
+                      
+                      <div class="meta-item">
+                        <span class="meta-label">Time Spent</span>
+                        <span class="meta-value">{{response.timeSpentMinutes}} minutes</span>
+                      </div>
+                      
+                      <div class="meta-item">
+                        <span class="meta-label">Device</span>
+                        <span class="meta-value">{{response.deviceType}}</span>
+                      </div>
+                    </div>
+                    
+                    <mat-divider></mat-divider>
+                    
+                    <div class="response-answers">
+                      <div *ngFor="let answer of response.answers" class="answer-item">
+                        <div class="question-text">{{answer.questionText}}</div>
+                        <div class="answer-text">{{answer.responseText}}</div>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>

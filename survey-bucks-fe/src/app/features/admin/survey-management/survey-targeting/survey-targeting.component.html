@@ -1,0 +1,746 @@
+<div class="survey-targeting-container">
+  <div class="targeting-header">
+    <h3>Define Survey Targeting Criteria</h3>
+    <p>
+      Specify the demographic criteria to determine which users will receive
+      this survey.
+    </p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading targeting data...</p>
+  </div>
+
+  <div *ngIf="!loading" class="targeting-content">
+    <form [formGroup]="targetingForm">
+      <mat-accordion>
+        <!-- Age Range Section -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>date_range</mat-icon>
+              Age Ranges
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Define age ranges to target participants within specific age groups.
+          </p>
+
+          <div formArrayName="ageRanges" class="array-container">
+            <div
+              *ngFor="let ageRange of ageRangesArray.controls; let i = index"
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Minimum Age</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="minAge"
+                    min="0"
+                    max="120"
+                  />
+                </mat-form-field>
+
+                <span class="separator">to</span>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Maximum Age</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="maxAge"
+                    min="0"
+                    max="120"
+                  />
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeAgeRange(i)"
+                  matTooltip="Remove this age range"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="ageRangesArray.length === 0" class="empty-state">
+              <p>No age ranges defined. Users of any age will be eligible.</p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addAgeRange()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Age Range
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Gender Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>people</mat-icon>
+              Gender
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Select which gender identities to include in this survey.
+          </p>
+
+          <div formArrayName="genderTargets" class="array-container">
+            <div
+              *ngFor="
+                let genderTarget of genderTargetsArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option *ngFor="let gender of genders" [value]="gender">
+                      {{ gender }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeGenderTarget(i)"
+                  matTooltip="Remove this gender"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="genderTargetsArray.length === 0" class="empty-state">
+              <p>
+                No gender filters defined. Users of any gender will be eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addGenderTarget()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Gender
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Education Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>school</mat-icon>
+              Education
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Select education levels to target for this survey.
+          </p>
+
+          <div formArrayName="educationTargets" class="array-container">
+            <div
+              *ngFor="
+                let educationTarget of educationTargetsArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Education Level</mat-label>
+                  <mat-select formControlName="education">
+                    <mat-option
+                      *ngFor="let level of educationLevels"
+                      [value]="level"
+                    >
+                      {{ level }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeEducationTarget(i)"
+                  matTooltip="Remove this education level"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="educationTargetsArray.length === 0" class="empty-state">
+              <p>
+                No education filters defined. Users of any education level will
+                be eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addEducationTarget()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Education Level
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Income Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>attach_money</mat-icon>
+              Income
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Define income ranges to target participants within specific income
+            brackets.
+          </p>
+
+          <div formArrayName="incomeRanges" class="array-container">
+            <div
+              *ngFor="
+                let incomeRange of incomeRangesArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Minimum Income</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="minIncome"
+                    min="0"
+                  />
+                  <span matTextPrefix>$&nbsp;</span>
+                </mat-form-field>
+
+                <span class="separator">to</span>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Maximum Income</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="maxIncome"
+                    min="0"
+                  />
+                  <span matTextPrefix>$&nbsp;</span>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeIncomeRange(i)"
+                  matTooltip="Remove this income range"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="incomeRangesArray.length === 0" class="empty-state">
+              <p>
+                No income ranges defined. Users of any income level will be
+                eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addIncomeRange()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Income Range
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Location Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>location_on</mat-icon>
+              Location
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Specify countries or regions to target for this survey.
+          </p>
+
+          <mat-tab-group>
+            <mat-tab label="Countries">
+              <div class="tab-content">
+                <div formArrayName="countries" class="array-container">
+                  <mat-form-field
+                    appearance="outline"
+                    class="chip-list full-width"
+                  >
+                    <mat-label>Countries</mat-label>
+                    <mat-chip-grid #countryChipGrid aria-label="Countries">
+                      <mat-chip-row
+                        *ngFor="
+                          let country of countriesArray.controls;
+                          let i = index
+                        "
+                        [removable]="true"
+                        (removed)="removeCountry(i)"
+                      >
+                        {{ country.value.country }}
+                        <button matChipRemove aria-label="remove">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                      <input
+                        placeholder="Add country..."
+                        [matChipInputFor]="countryChipGrid"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="addCountry($event)"
+                      />
+                    </mat-chip-grid>
+                  </mat-form-field>
+
+                  <div *ngIf="countriesArray.length === 0" class="empty-state">
+                    <p>
+                      No countries defined. Users from any country will be
+                      eligible.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- Additional location tabs for States/Cities could go here -->
+            <mat-tab label="States">
+              <div class="tab-content">
+                <div formArrayName="states" class="array-container">
+                  <mat-form-field
+                    appearance="outline"
+                    class="chip-list full-width"
+                  >
+                    <mat-label>States</mat-label>
+                    <mat-chip-grid #stateChipGrid aria-label="States">
+                      <mat-chip-row
+                        *ngFor="
+                          let state of statesArray.controls;
+                          let i = index
+                        "
+                        [removable]="true"
+                        (removed)="removeState(i)"
+                      >
+                        {{ state.value.state }}
+                        <button matChipRemove>
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                      <input
+                        placeholder="Add state..."
+                        [matChipInputFor]="stateChipGrid"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="addState($event)"
+                      />
+                    </mat-chip-grid>
+                  </mat-form-field>
+
+                  <div *ngIf="statesArray.length === 0" class="empty-state">
+                    <p>
+                      No states defined. Users from any state will be eligible.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-expansion-panel>
+
+        <!-- Household Size Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>family_restroom</mat-icon>
+              Household Size
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Define household size ranges to target participants with specific
+            household sizes.
+          </p>
+
+          <div formArrayName="householdSizes" class="array-container">
+            <div
+              *ngFor="
+                let householdSize of householdSizesArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Minimum Size</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="minSize"
+                    min="1"
+                  />
+                </mat-form-field>
+
+                <span class="separator">to</span>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Maximum Size</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="maxSize"
+                    min="1"
+                  />
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeHouseholdSize(i)"
+                  matTooltip="Remove this household size range"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="householdSizesArray.length === 0" class="empty-state">
+              <p>
+                No household size ranges defined. Users with any household size
+                will be eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addHouseholdSize()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Household Size Range
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Parental Status Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>child_care</mat-icon>
+              Parental Status
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Define parental status targeting criteria.
+          </p>
+
+          <div formArrayName="parentalStatuses" class="array-container">
+            <div
+              *ngFor="
+                let parentalStatus of parentalStatusesArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Has Children</mat-label>
+                  <mat-select formControlName="hasChildren">
+                    <mat-option [value]="true">Yes</mat-option>
+                    <mat-option [value]="false">No</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeParentalStatus(i)"
+                  matTooltip="Remove this parental status"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="parentalStatusesArray.length === 0" class="empty-state">
+              <p>
+                No parental status criteria defined. Users of any parental
+                status will be eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addParentalStatus()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Parental Status
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Industry Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>business</mat-icon>
+              Industry
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Specify industries to target for this survey.
+          </p>
+
+          <div formArrayName="industries" class="array-container">
+            <mat-form-field class="full-width">
+              <mat-chip-grid #chipList aria-label="Industry selection">
+                <!-- Render existing industries from the FormArray -->
+                <mat-chip-row
+                  *ngFor="
+                    let industry of industriesArray.controls;
+                    let i = index
+                  "
+                  [removable]="true"
+                  (removed)="removeIndustry(i)"
+                >
+                  {{ industry.value.industry }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+
+                <!-- Input for new industry -->
+                <input
+                  placeholder="Add an industry..."
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="true"
+                  (matChipInputTokenEnd)="addIndustry($event)"
+                />
+              </mat-chip-grid>
+            </mat-form-field>
+
+            <div *ngIf="industriesArray.length === 0" class="empty-state">
+              <p>
+                No industries defined. Users from any industry will be eligible.
+              </p>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Marital Status Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>favorite</mat-icon>
+              Marital Status
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Select marital statuses to target for this survey.
+          </p>
+
+          <div formArrayName="maritalStatuses" class="array-container">
+            <div
+              *ngFor="
+                let maritalStatus of maritalStatusesArray.controls;
+                let i = index
+              "
+              class="array-item"
+            >
+              <div [formGroupName]="i" class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Marital Status</mat-label>
+                  <mat-select formControlName="maritalStatus">
+                    <mat-option
+                      *ngFor="let status of maritalStatuses"
+                      [value]="status"
+                    >
+                      {{ status }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeMaritalStatus(i)"
+                  matTooltip="Remove this marital status"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="maritalStatusesArray.length === 0" class="empty-state">
+              <p>
+                No marital status criteria defined. Users of any marital status
+                will be eligible.
+              </p>
+            </div>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="addMaritalStatus()"
+              class="add-button"
+            >
+              <mat-icon>add</mat-icon>
+              Add Marital Status
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Interests Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>interests</mat-icon>
+              Interests
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Specify user interests to target for this survey.
+          </p>
+
+          <div formArrayName="interests" class="array-container">
+            <mat-form-field appearance="outline" class="chip-list full-width">
+              <mat-label>Interests</mat-label>
+              <mat-chip-grid #interestChipGrid aria-label="Interests">
+                <mat-chip-row
+                  *ngFor="
+                    let interest of interestsArray.controls;
+                    let i = index
+                  "
+                  [removable]="true"
+                  (removed)="removeInterest(i)"
+                >
+                  {{ interest.value.interest }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input
+                  placeholder="Add interest..."
+                  [matChipInputFor]="interestChipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addInterest($event)"
+                />
+              </mat-chip-grid>
+            </mat-form-field>
+
+            <div *ngIf="interestsArray.length === 0" class="empty-state">
+              <p>
+                No interests defined. Users with any interests will be eligible.
+              </p>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Occupations Section -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>work</mat-icon>
+              Occupations
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p class="section-description">
+            Specify occupations to target for this survey.
+          </p>
+
+          <div formArrayName="occupations" class="array-container">
+            <mat-form-field appearance="outline" class="chip-list full-width">
+              <mat-label>Occupations</mat-label>
+              <mat-chip-grid #occupationChipGrid aria-label="Occupations">
+                <mat-chip-row
+                  *ngFor="
+                    let occupation of occupationsArray.controls;
+                    let i = index
+                  "
+                  [removable]="true"
+                  (removed)="removeOccupation(i)"
+                >
+                  {{ occupation.value.occupation }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input
+                  placeholder="Add occupation..."
+                  [matChipInputFor]="occupationChipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addOccupation($event)"
+                />
+              </mat-chip-grid>
+            </mat-form-field>
+
+            <div *ngIf="occupationsArray.length === 0" class="empty-state">
+              <p>
+                No occupations defined. Users with any occupation will be
+                eligible.
+              </p>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <div class="actions-container">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="saving"
+          (click)="saveTargeting()"
+          class="save-button"
+        >
+          <mat-icon>save</mat-icon>
+          {{ saving ? "Saving..." : "Save Targeting Criteria" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

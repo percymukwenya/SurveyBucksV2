@@ -1,0 +1,353 @@
+<div class="logic-preview-container">
+  <!-- Header -->
+  <div class="preview-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>Logic Preview & Testing</h1>
+        <p class="subtitle">Test your branching logic with different scenarios</p>
+      </div>
+      <div class="header-actions">
+        <button 
+          mat-stroked-button
+          (click)="resetExecution()"
+          [disabled]="executionLog.length === 0">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+        <button 
+          mat-stroked-button
+          (click)="exportExecutionLog()"
+          [disabled]="executionLog.length === 0">
+          <mat-icon>download</mat-icon>
+          Export Log
+        </button>
+        <button 
+          mat-icon-button
+          (click)="close()"
+          class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="preview-content">
+    
+    <!-- Test Scenarios Panel -->
+    <div class="scenarios-panel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Test Scenarios</mat-card-title>
+          <mat-card-subtitle>Pre-configured test cases</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="scenarios-list">
+            <div 
+              *ngFor="let scenario of testScenarios"
+              class="scenario-item"
+              [class.selected]="selectedScenario?.id === scenario.id"
+              (click)="applyScenario(scenario)">
+              <div class="scenario-header">
+                <div class="scenario-icon">
+                  <mat-icon>{{ scenario.id === 'empty' ? 'hourglass_empty' : 'play_circle' }}</mat-icon>
+                </div>
+                <div class="scenario-info">
+                  <div class="scenario-name">{{ scenario.name }}</div>
+                  <div class="scenario-description">{{ scenario.description }}</div>
+                </div>
+              </div>
+              <div class="scenario-stats">
+                <mat-chip class="response-count">
+                  {{ Object.keys(scenario.testResponses).length }} responses
+                </mat-chip>
+              </div>
+            </div>
+          </div>
+          
+          <div class="scenario-actions">
+            <button 
+              mat-stroked-button 
+              class="full-width"
+              (click)="clearScenario()"
+              [disabled]="!selectedScenario">
+              <mat-icon>clear</mat-icon>
+              Clear Scenario
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Execution Controls -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Execution Controls</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="execution-controls">
+            <div class="control-item">
+              <mat-checkbox 
+                [(ngModel)]="isStepByStep"
+                (change)="toggleStepByStep()">
+                Step-by-step execution
+              </mat-checkbox>
+            </div>
+            
+            <div *ngIf="isStepByStep" class="step-controls">
+              <div class="step-info">
+                Step {{ currentStep + 1 }} of {{ logicBlocks.length }}
+              </div>
+              <button 
+                mat-raised-button 
+                color="primary"
+                (click)="nextStep()"
+                [disabled]="currentStep >= logicBlocks.length">
+                <mat-icon>skip_next</mat-icon>
+                Next Step
+              </button>
+            </div>
+            
+            <button 
+              *ngIf="!isStepByStep"
+              mat-raised-button 
+              color="primary"
+              (click)="executeLogic()"
+              [disabled]="isExecuting">
+              <mat-icon>play_arrow</mat-icon>
+              Execute Logic
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Preview Questions Panel -->
+    <div class="questions-panel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Survey Preview</mat-card-title>
+          <mat-card-subtitle>Answer questions to test logic flow</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="questions-container">
+            
+            <div 
+              *ngFor="let question of previewQuestions; let i = index"
+              class="preview-question"
+              [class.hidden]="!question.isVisible"
+              [class.answered]="question.isAnswered">
+              
+              <div class="question-header">
+                <div class="question-number">Q{{ question.order }}</div>
+                <div class="question-text">{{ question.questionText }}</div>
+                <div class="visibility-indicator">
+                  <mat-icon 
+                    *ngIf="question.isVisible" 
+                    class="visible-icon"
+                    matTooltip="Question is visible">
+                    visibility
+                  </mat-icon>
+                  <mat-icon 
+                    *ngIf="!question.isVisible" 
+                    class="hidden-icon"
+                    matTooltip="Question is hidden">
+                    visibility_off
+                  </mat-icon>
+                </div>
+              </div>
+              
+              <div class="question-input" *ngIf="question.isVisible">
+                
+                <!-- Text Input -->
+                <mat-form-field 
+                  *ngIf="question.questionType.toLowerCase() === 'text' || question.questionType.toLowerCase() === 'email'"
+                  appearance="outline" 
+                  class="full-width">
+                  <input 
+                    matInput 
+                    [type]="question.questionType.toLowerCase() === 'email' ? 'email' : 'text'"
+                    [value]="question.answer || ''"
+                    (input)="onResponseChange(question.id, $event.target.value)"
+                    placeholder="Enter your answer">
+                </mat-form-field>
+                
+                <!-- Number Input -->
+                <mat-form-field 
+                  *ngIf="question.questionType.toLowerCase() === 'number'"
+                  appearance="outline" 
+                  class="full-width">
+                  <input 
+                    matInput 
+                    type="number"
+                    [value]="question.answer || ''"
+                    (input)="onResponseChange(question.id, +$event.target.value)"
+                    placeholder="Enter a number">
+                </mat-form-field>
+                
+                <!-- Yes/No Radio -->
+                <mat-radio-group 
+                  *ngIf="question.questionType.toLowerCase() === 'yesno'"
+                  [value]="question.answer"
+                  (change)="onResponseChange(question.id, $event.value)"
+                  class="yesno-group">
+                  <mat-radio-button value="Yes">Yes</mat-radio-button>
+                  <mat-radio-button value="No">No</mat-radio-button>
+                </mat-radio-group>
+                
+                <!-- Radio Options -->
+                <mat-radio-group 
+                  *ngIf="question.questionType.toLowerCase() === 'radio' && question.options"
+                  [value]="question.answer"
+                  (change)="onResponseChange(question.id, $event.value)"
+                  class="radio-group">
+                  <mat-radio-button 
+                    *ngFor="let option of question.options" 
+                    [value]="option">
+                    {{ option }}
+                  </mat-radio-button>
+                </mat-radio-group>
+                
+                <!-- Checkbox Options -->
+                <div 
+                  *ngIf="question.questionType.toLowerCase() === 'checkbox' && question.options"
+                  class="checkbox-group">
+                  <mat-checkbox 
+                    *ngFor="let option of question.options"
+                    [checked]="question.answer && question.answer.includes(option)"
+                    (change)="onCheckboxChange(question.id, option, $event.checked)">
+                    {{ option }}
+                  </mat-checkbox>
+                </div>
+                
+                <!-- Likert Scale -->
+                <mat-radio-group 
+                  *ngIf="question.questionType.toLowerCase() === 'likert' && question.options"
+                  [value]="question.answer"
+                  (change)="onResponseChange(question.id, $event.value)"
+                  class="likert-group">
+                  <div class="likert-options">
+                    <mat-radio-button 
+                      *ngFor="let option of question.options" 
+                      [value]="option"
+                      class="likert-option">
+                      {{ option }}
+                    </mat-radio-button>
+                  </div>
+                </mat-radio-group>
+                
+                <!-- Slider/Rating -->
+                <div 
+                  *ngIf="question.questionType.toLowerCase() === 'slider'"
+                  class="slider-container">
+                  <mat-slider 
+                    [min]="1" 
+                    [max]="10" 
+                    [step]="1"
+                    [value]="question.answer || 5"
+                    (input)="onResponseChange(question.id, $event.value)"
+                    class="full-width">
+                  </mat-slider>
+                  <div class="slider-value">Value: {{ question.answer || 5 }}</div>
+                </div>
+                
+              </div>
+              
+              <div *ngIf="!question.isVisible" class="hidden-message">
+                <mat-icon>visibility_off</mat-icon>
+                <span>This question is hidden by logic rules</span>
+              </div>
+              
+            </div>
+            
+            <div *ngIf="previewQuestions.length === 0" class="no-questions">
+              <mat-icon>help_outline</mat-icon>
+              <p>No questions available for preview</p>
+            </div>
+            
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Execution Log Panel -->
+    <div class="execution-panel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Execution Log</mat-card-title>
+          <mat-card-subtitle>Step-by-step logic evaluation</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          
+          <div *ngIf="isExecuting" class="execution-loading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <p>Executing logic rules...</p>
+          </div>
+          
+          <div class="execution-log" *ngIf="!isExecuting">
+            
+            <div 
+              *ngFor="let step of executionLog; let i = index"
+              class="log-entry"
+              [class.condition]="step.blockType === 'condition'"
+              [class.action]="step.blockType === 'action'"
+              [class.group]="step.blockType === 'group'">
+              
+              <div class="log-header">
+                <div class="log-icon" [style.color]="getExecutionStepColor(step)">
+                  <mat-icon>{{ getExecutionStepIcon(step) }}</mat-icon>
+                </div>
+                <div class="log-info">
+                  <div class="log-description">{{ step.description }}</div>
+                  <div class="log-result">
+                    Result: <span [style.color]="getExecutionStepColor(step)">{{ step.result }}</span>
+                  </div>
+                </div>
+                <div class="log-meta">
+                  <mat-chip class="block-type">{{ step.blockType | titlecase }}</mat-chip>
+                  <div class="log-time">{{ step.timestamp | date:'HH:mm:ss.SSS' }}</div>
+                </div>
+              </div>
+              
+            </div>
+            
+            <div *ngIf="executionLog.length === 0" class="no-execution">
+              <mat-icon>play_circle_outline</mat-icon>
+              <p>No logic executed yet. Apply a scenario or answer questions to see results.</p>
+            </div>
+            
+          </div>
+          
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Summary Stats -->
+      <mat-card *ngIf="executionLog.length > 0">
+        <mat-card-header>
+          <mat-card-title>Execution Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-stats">
+            <div class="stat-item">
+              <div class="stat-value">{{ executionLog.length }}</div>
+              <div class="stat-label">Steps Executed</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ getConditionCount() }}</div>
+              <div class="stat-label">Conditions Evaluated</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ getActionCount() }}</div>
+              <div class="stat-label">Actions Triggered</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ getVisibleQuestionCount() }}</div>
+              <div class="stat-label">Visible Questions</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+    </div>
+    
+  </div>
+</div>

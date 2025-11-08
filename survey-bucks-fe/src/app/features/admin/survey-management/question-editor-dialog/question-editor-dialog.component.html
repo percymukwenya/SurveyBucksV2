@@ -1,0 +1,347 @@
+<div class="question-editor-dialog">
+  <h2 mat-dialog-title>{{ isEditMode ? 'Edit Question' : 'Add New Question' }}</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="questionForm">
+      <mat-tab-group>
+        <!-- Basic Info Tab -->
+        <mat-tab label="Basic Info">
+          <div class="tab-content">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Question Text</mat-label>
+                <textarea matInput formControlName="text" rows="3" placeholder="Enter your question"></textarea>
+                <mat-error *ngIf="questionForm.get('text')?.hasError('required')">Question text is required</mat-error>
+                <mat-error *ngIf="questionForm.get('text')?.hasError('maxlength')">Maximum length is 500 characters</mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Question Type</mat-label>
+                <mat-select formControlName="questionTypeId">
+                  <mat-option *ngFor="let type of data.questionTypes" [value]="type.id">
+                    {{ type.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="questionForm.get('questionTypeId')?.hasError('required')">Question type is required</mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Help Text (Optional)</mat-label>
+                <input matInput formControlName="helpText" placeholder="Additional instructions for answering">
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <!-- Options Tab -->
+        <mat-tab label="Options">
+          <div class="tab-content">
+            <div class="form-row checkbox-row">
+              <mat-checkbox formControlName="isMandatory">
+                Required question
+              </mat-checkbox>
+              
+              <mat-checkbox formControlName="isScreeningQuestion">
+                Use as screening question
+              </mat-checkbox>
+            </div>
+            
+            <div class="form-row checkbox-row" *ngIf="selectedType?.hasChoices">
+              <mat-checkbox formControlName="randomizeChoices">
+                Randomize choices order
+              </mat-checkbox>
+            </div>
+            
+            <div class="form-row" *ngIf="selectedType?.hasMinMaxValues">
+              <div class="form-row-2-col">
+                <mat-form-field appearance="outline">
+                  <mat-label>Minimum Value</mat-label>
+                  <input matInput type="number" formControlName="minValue">
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline">
+                  <mat-label>Maximum Value</mat-label>
+                  <input matInput type="number" formControlName="maxValue">
+                </mat-form-field>
+              </div>
+            </div>
+            
+            <div class="form-row" *ngIf="questionForm.get('isScreeningQuestion')?.value">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Screening Logic</mat-label>
+                <textarea matInput formControlName="screeningLogic" rows="2" placeholder="Define screening logic (JSON format)"></textarea>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Validation Message (Optional)</mat-label>
+                <input matInput formControlName="validationMessage" placeholder="Custom validation error message">
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Question Timeout (Seconds)</mat-label>
+                <input matInput type="number" formControlName="timeoutInSeconds" placeholder="0 = no timeout">
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <!-- Answer Choices Tab (if applicable) -->
+        <mat-tab label="Answer Choices" *ngIf="selectedType?.hasChoices">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">Answer Choices</h3>
+              <button mat-flat-button color="primary" type="button" (click)="addChoice()">
+                <mat-icon>add</mat-icon>
+                Add Choice
+              </button>
+            </div>
+            
+            <div *ngIf="loadingChoices" class="loading-container">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              <p>Loading choices...</p>
+            </div>
+            
+            <div *ngIf="!loadingChoices && choicesArray.length === 0" class="empty-state">
+              <p>No choices added yet. Click "Add Choice" to create options for this question.</p>
+            </div>
+            
+            <div *ngIf="!loadingChoices && choicesArray.length > 0" cdkDropList (cdkDropListDropped)="onChoiceDrop($event)">
+              <div *ngFor="let choice of choicesArray.controls; let i = index" class="choice-item" cdkDrag>
+                <div class="drag-handle" cdkDragHandle>
+                  <mat-icon>drag_indicator</mat-icon>
+                </div>
+                
+                <div class="choice-fields" [formGroup]="$any(choice)">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Choice Text</mat-label>
+                    <input matInput formControlName="text" placeholder="Enter option text">
+                    <mat-error *ngIf="$any(choice).get('text')?.hasError('required')">Choice text is required</mat-error>
+                  </mat-form-field>
+                  
+                  <mat-form-field appearance="outline">
+                    <mat-label>Value (Optional)</mat-label>
+                    <input matInput formControlName="value" placeholder="Value stored in database">
+                  </mat-form-field>
+                  
+                  <mat-checkbox formControlName="isExclusiveOption">
+                    Exclusive (e.g., "None of the above")
+                  </mat-checkbox>
+                  
+                  <button mat-icon-button color="warn" type="button" (click)="removeChoice(i)" matTooltip="Remove choice">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <!-- Matrix Tab (if applicable) -->
+        <mat-tab label="Matrix" *ngIf="selectedType?.hasMatrix">
+          <div class="tab-content">
+            <div *ngIf="loadingMatrixItems" class="loading-container">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              <p>Loading matrix items...</p>
+            </div>
+            
+            <div *ngIf="!loadingMatrixItems">
+              <mat-tab-group>
+                <!-- Rows Tab -->
+                <mat-tab label="Rows">
+                  <div class="tab-content">
+                    <div class="section-header">
+                      <h4>Matrix Rows</h4>
+                      <button mat-flat-button color="primary" type="button" (click)="addMatrixRow()">
+                        <mat-icon>add</mat-icon>
+                        Add Row
+                      </button>
+                    </div>
+                    
+                    <div *ngIf="!matrixRowsArray || matrixRowsArray.length === 0" class="empty-state">
+                      <p>No rows added yet. Click "Add Row" to create rows for this matrix.</p>
+                    </div>
+                    
+                    <div *ngIf="matrixRowsArray && matrixRowsArray.length > 0" cdkDropList (cdkDropListDropped)="onMatrixRowDrop($event)">
+                      <div *ngFor="let row of matrixRowsArray.controls; let i = index" class="matrix-item" cdkDrag>
+                        <div class="drag-handle" cdkDragHandle>
+                          <mat-icon>drag_indicator</mat-icon>
+                        </div>
+                        
+                        <div class="matrix-item-fields" [formGroup]="$any(row)">
+                          <mat-form-field appearance="outline">
+                            <mat-label>Row Text</mat-label>
+                            <input matInput formControlName="text" placeholder="Enter row label">
+                            <mat-error *ngIf="$any(row).get('text')?.hasError('required')">Row text is required</mat-error>
+                          </mat-form-field>
+                          
+                          <button mat-icon-button color="warn" type="button" (click)="removeMatrixRow(i)" matTooltip="Remove row">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </mat-tab>
+                
+                <!-- Columns Tab -->
+                <mat-tab label="Columns">
+                  <div class="tab-content">
+                    <div class="section-header">
+                      <h4>Matrix Columns</h4>
+                      <button mat-flat-button color="primary" type="button" (click)="addMatrixColumn()">
+                        <mat-icon>add</mat-icon>
+                        Add Column
+                      </button>
+                    </div>
+                    
+                    <div *ngIf="!matrixColumnsArray || matrixColumnsArray.length === 0" class="empty-state">
+                      <p>No columns added yet. Click "Add Column" to create columns for this matrix.</p>
+                    </div>
+                    
+                    <div *ngIf="matrixColumnsArray && matrixColumnsArray.length > 0" cdkDropList (cdkDropListDropped)="onMatrixColumnDrop($event)">
+                      <div *ngFor="let column of matrixColumnsArray.controls; let i = index" class="matrix-item" cdkDrag>
+                        <div class="drag-handle" cdkDragHandle>
+                          <mat-icon>drag_indicator</mat-icon>
+                        </div>
+                        
+                        <div class="matrix-item-fields" [formGroup]="$any(column)">
+                          <mat-form-field appearance="outline">
+                            <mat-label>Column Text</mat-label>
+                            <input matInput formControlName="text" placeholder="Enter column label">
+                            <mat-error *ngIf="$any(column).get('text')?.hasError('required')">Column text is required</mat-error>
+                          </mat-form-field>
+                          
+                          <mat-form-field appearance="outline">
+                            <mat-label>Value</mat-label>
+                            <input matInput formControlName="value" placeholder="Value stored in database">
+                            <mat-error *ngIf="$any(column).get('value')?.hasError('required')">Value is required</mat-error>
+                          </mat-form-field>
+                          
+                          <button mat-icon-button color="warn" type="button" (click)="removeMatrixColumn(i)" matTooltip="Remove column">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </mat-tab>
+              </mat-tab-group>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <!-- Logic Rules Tab -->
+        <mat-tab label="Logic Rules">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">Conditional Display Logic</h3>
+              <p class="description">Define when this question should be shown or hidden based on previous answers.</p>
+              
+              <button mat-flat-button color="primary" type="button" (click)="addLogicRule()" [disabled]="availableQuestions.length === 0">
+                <mat-icon>add</mat-icon>
+                Add Logic Rule
+              </button>
+            </div>
+            
+            <div *ngIf="availableQuestions.length === 0" class="empty-state">
+              <p>
+                <mat-icon>info</mat-icon>
+                Logic rules require previous questions to refer to. Add this question first, then you can add logic rules when editing.
+              </p>
+            </div>
+            
+            <div *ngIf="loadingLogicRules" class="loading-container">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              <p>Loading logic rules...</p>
+            </div>
+            
+            <div *ngIf="!loadingLogicRules && availableQuestions.length > 0">
+              <div *ngIf="logicRulesArray.length === 0" class="empty-state">
+                <p>No logic rules defined. This question will always be shown unless you add conditions.</p>
+              </div>
+              
+              <div *ngIf="logicRulesArray.length > 0" class="logic-rules-list">
+                <div *ngFor="let rule of logicRulesArray.controls; let i = index" class="logic-rule-item">
+                  <div class="rule-fields" [formGroup]="$any(rule)">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Logic Type</mat-label>
+                      <mat-select formControlName="logicType">
+                        <mat-option value="ShowIf">Show Question If</mat-option>
+                        <mat-option value="HideIf">Hide Question If</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Question</mat-label>
+                      <mat-select formControlName="sourceQuestionId">
+                        <mat-option *ngFor="let question of availableQuestions" [value]="question.id">
+                          {{question.text}}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="$any(rule).get('sourceQuestionId')?.hasError('required')">
+                        Source question is required
+                      </mat-error>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Condition</mat-label>
+                      <mat-select formControlName="conditionType">
+                        <mat-option value="Equals">Equals</mat-option>
+                        <mat-option value="NotEquals">Does Not Equal</mat-option>
+                        <mat-option value="Contains">Contains</mat-option>
+                        <mat-option value="GreaterThan">Greater Than</mat-option>
+                        <mat-option value="LessThan">Less Than</mat-option>
+                        <mat-option value="Selected">Is Answered</mat-option>
+                        <mat-option value="NotSelected">Is Not Answered</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" *ngIf="showConditionValueField($any(rule).get('conditionType')?.value)">
+                      <mat-label>Value</mat-label>
+                      <input matInput formControlName="conditionValue" placeholder="Value to compare against">
+                    </mat-form-field>
+                    
+                    <button mat-icon-button color="warn" type="button" (click)="removeLogicRule(i)" matTooltip="Remove rule">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="logic-explanation" *ngIf="logicRulesArray.length > 0">
+                <mat-divider></mat-divider>
+                <h4>How Logic Rules Work</h4>
+                <ul>
+                  <li><strong>Show If</strong>: Question will be shown ONLY if this condition is true</li>
+                  <li><strong>Hide If</strong>: Question will be hidden when this condition is true</li>
+                  <li>Multiple "Show If" rules: Question shows if ANY condition is true (OR logic)</li>
+                  <li>Multiple "Hide If" rules: Question hides if ANY condition is true (OR logic)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </form>
+    
+    <div *ngIf="saving" class="saving-indicator">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Saving question...</p>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button [disabled]="saving" (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" [disabled]="saving" (click)="onSave()">
+      {{ isEditMode ? 'Update' : 'Add' }} Question
+    </button>
+  </mat-dialog-actions>
+</div>

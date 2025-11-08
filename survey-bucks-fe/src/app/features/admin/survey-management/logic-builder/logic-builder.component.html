@@ -1,0 +1,472 @@
+<div class="logic-builder-container">
+  <div class="builder-grid">
+    
+    <!-- Toolbox Panel -->
+    <div class="toolbox-panel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Logic Elements</mat-card-title>
+          <mat-card-subtitle>Drag elements to build your logic</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          
+          <!-- Conditions Section -->
+          <div class="toolbox-section">
+            <h3>
+              <mat-icon>help_outline</mat-icon>
+              Conditions
+            </h3>
+            <div 
+              class="toolbox-items"
+              cdkDropList
+              [cdkDropListData]="toolbox.items.filter(item => item.type === 'condition')"
+              cdkDropListSortingDisabled>
+              
+              <div 
+                *ngFor="let condition of toolbox.items.filter(item => item.type === 'condition')"
+                class="toolbox-item condition-item"
+                cdkDrag
+                [cdkDragData]="condition">
+                <div class="item-content">
+                  <div class="item-icon" [style.background-color]="getBlockColor(condition)">
+                    {{ getBlockIcon(condition) }}
+                  </div>
+                  <div class="item-label">
+                    {{ conditionTypes.find(c => c.value === condition.data.conditionType)?.label }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Actions Section -->
+          <div class="toolbox-section">
+            <h3>
+              <mat-icon>settings</mat-icon>
+              Actions
+            </h3>
+            <div 
+              class="toolbox-items"
+              cdkDropList
+              [cdkDropListData]="toolbox.items.filter(item => item.type === 'action')"
+              cdkDropListSortingDisabled>
+              
+              <div 
+                *ngFor="let action of toolbox.items.filter(item => item.type === 'action')"
+                class="toolbox-item action-item"
+                cdkDrag
+                [cdkDragData]="action">
+                <div class="item-content">
+                  <div class="item-icon" [style.background-color]="getBlockColor(action)">
+                    <mat-icon>{{ getBlockIcon(action) }}</mat-icon>
+                  </div>
+                  <div class="item-label">
+                    {{ actionTypes.find(a => a.value === action.data.actionType)?.label }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Groups Section -->
+          <div class="toolbox-section">
+            <h3>
+              <mat-icon>folder</mat-icon>
+              Groups
+            </h3>
+            <div 
+              class="toolbox-items"
+              cdkDropList
+              [cdkDropListData]="toolbox.items.filter(item => item.type === 'group')"
+              cdkDropListSortingDisabled>
+              
+              <div 
+                *ngFor="let group of toolbox.items.filter(item => item.type === 'group')"
+                class="toolbox-item group-item"
+                cdkDrag
+                [cdkDragData]="group">
+                <div class="item-content">
+                  <div class="item-icon" [style.background-color]="getBlockColor(group)">
+                    <mat-icon>{{ getBlockIcon(group) }}</mat-icon>
+                  </div>
+                  <div class="item-label">AND/OR Group</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <!-- Workspace Panel -->
+    <div class="workspace-panel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Logic Flow</mat-card-title>
+          <mat-card-subtitle>Drop and arrange logic elements</mat-card-subtitle>
+          <div class="header-actions">
+            <button 
+              mat-icon-button 
+              (click)="previewLogic()"
+              matTooltip="Preview logic"
+              [disabled]="workspace.items.length === 0">
+              <mat-icon>preview</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              (click)="clearWorkspace()"
+              matTooltip="Clear all"
+              [disabled]="workspace.items.length === 0">
+              <mat-icon>clear_all</mat-icon>
+            </button>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          
+          <div 
+            class="workspace-area"
+            cdkDropList
+            [cdkDropListData]="workspace.items"
+            [cdkDropListConnectedTo]="['toolbox']"
+            (cdkDropListDropped)="onDrop($event)">
+            
+            <!-- Empty State -->
+            <div *ngIf="workspace.items.length === 0" class="empty-workspace">
+              <mat-icon>drag_indicator</mat-icon>
+              <p>Drag logic elements here to build your conditional flow</p>
+              <div class="example-flow">
+                <div class="example-step">1. Add a condition</div>
+                <div class="example-arrow">→</div>
+                <div class="example-step">2. Add an action</div>
+                <div class="example-arrow">→</div>
+                <div class="example-step">3. Configure & save</div>
+              </div>
+            </div>
+            
+            <!-- Logic Blocks -->
+            <div 
+              *ngFor="let block of workspace.items; let i = index; trackBy: trackByBlockId"
+              class="logic-block-wrapper">
+              
+              <!-- Regular Block -->
+              <div 
+                *ngIf="block.type !== 'group'"
+                class="logic-block"
+                [class.configured]="isBlockConfigured(block)"
+                [class.inactive]="!block.isActive"
+                cdkDrag>
+                
+                <div class="block-header">
+                  <div class="block-icon" [style.background-color]="getBlockColor(block)">
+                    <mat-icon *ngIf="block.type === 'action'">{{ getBlockIcon(block) }}</mat-icon>
+                    <span *ngIf="block.type === 'condition'">{{ getBlockIcon(block) }}</span>
+                  </div>
+                  <div class="block-info">
+                    <div class="block-type">{{ block.type | titlecase }}</div>
+                    <div class="block-description">{{ getBlockDisplayText(block) }}</div>
+                  </div>
+                  <div class="block-status">
+                    <mat-icon 
+                      *ngIf="isBlockConfigured(block)" 
+                      class="configured-icon"
+                      matTooltip="Configured">
+                      check_circle
+                    </mat-icon>
+                    <mat-icon 
+                      *ngIf="!isBlockConfigured(block)" 
+                      class="unconfigured-icon"
+                      matTooltip="Needs configuration">
+                      warning
+                    </mat-icon>
+                  </div>
+                  <div class="block-actions">
+                    <button 
+                      mat-icon-button 
+                      (click)="editBlock(block)"
+                      matTooltip="Edit block">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      (click)="toggleBlock(block)"
+                      [matTooltip]="block.isActive ? 'Disable block' : 'Enable block'">
+                      <mat-icon>{{ block.isActive ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      (click)="duplicateBlock(block)"
+                      matTooltip="Duplicate block">
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deleteBlock(block)"
+                      matTooltip="Delete block">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                
+                <div *ngIf="!isBlockConfigured(block)" class="configuration-hint">
+                  <mat-icon>info</mat-icon>
+                  <span>Click edit to configure this {{ block.type }}</span>
+                </div>
+              </div>
+              
+              <!-- Group Block -->
+              <div 
+                *ngIf="block.type === 'group'"
+                class="group-block"
+                [class.expanded]="block.isExpanded"
+                cdkDrag>
+                
+                <div class="group-header" (click)="block.isExpanded = !block.isExpanded">
+                  <div class="group-icon" [style.background-color]="getBlockColor(block)">
+                    <mat-icon>{{ getBlockIcon(block) }}</mat-icon>
+                  </div>
+                  <div class="group-info">
+                    <div class="group-type">Group ({{ block.data.operator }})</div>
+                    <div class="group-description">
+                      {{ block.data.children?.length || 0 }} conditions
+                    </div>
+                  </div>
+                  <div class="group-toggle">
+                    <mat-icon>{{ block.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                  </div>
+                  <div class="group-actions" (click)="$event.stopPropagation()">
+                    <button 
+                      mat-icon-button 
+                      (click)="editBlock(block)"
+                      matTooltip="Edit group">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deleteBlock(block)"
+                      matTooltip="Delete group">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                
+                <div *ngIf="block.isExpanded" class="group-content">
+                  <div 
+                    class="group-dropzone"
+                    cdkDropList
+                    [cdkDropListData]="block.data.children || []"
+                    (cdkDropListDropped)="onDrop($event)">
+                    
+                    <div *ngIf="!block.data.children || block.data.children.length === 0" class="empty-group">
+                      <p>Drop conditions here to group them</p>
+                    </div>
+                    
+                    <div 
+                      *ngFor="let child of block.data.children"
+                      class="group-child-block"
+                      cdkDrag>
+                      <div class="child-block-content">
+                        <div class="child-icon" [style.background-color]="getBlockColor(child)">
+                          <mat-icon *ngIf="child.type === 'action'">{{ getBlockIcon(child) }}</mat-icon>
+                          <span *ngIf="child.type === 'condition'">{{ getBlockIcon(child) }}</span>
+                        </div>
+                        <div class="child-info">
+                          <div class="child-description">{{ getBlockDisplayText(child) }}</div>
+                        </div>
+                        <button 
+                          mat-icon-button 
+                          (click)="removeFromGroup(child, block)"
+                          matTooltip="Remove from group">
+                          <mat-icon>remove</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Flow Connector -->
+              <div *ngIf="i < workspace.items.length - 1" class="flow-connector">
+                <div class="connector-line"></div>
+                <div class="connector-label">THEN</div>
+              </div>
+            </div>
+          </div>
+          
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <!-- Edit Panel -->
+    <div class="edit-panel" [class.visible]="showEditPanel">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            Edit {{ editingBlock?.type | titlecase }} Block
+          </mat-card-title>
+          <button 
+            mat-icon-button 
+            (click)="cancelBlockEdit()"
+            class="close-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          
+          <form [formGroup]="editForm" *ngIf="editingBlock" class="edit-form">
+            
+            <!-- Condition Block Edit -->
+            <div *ngIf="editingBlock.type === 'condition'" class="condition-edit">
+              <h3>Configure Condition</h3>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Condition Type</mat-label>
+                <mat-select formControlName="conditionType" (selectionChange)="onConditionTypeChange()">
+                  <mat-option *ngFor="let condition of conditionTypes" [value]="condition.value">
+                    <div class="condition-option">
+                      <span class="condition-icon">{{ condition.icon }}</span>
+                      <span>{{ condition.label }}</span>
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Value</mat-label>
+                <input matInput formControlName="conditionValue" placeholder="Enter comparison value">
+              </mat-form-field>
+              
+              <mat-form-field 
+                *ngIf="editForm.get('conditionType')?.value === 'between'"
+                appearance="outline" 
+                class="full-width">
+                <mat-label>Upper Bound</mat-label>
+                <input matInput formControlName="conditionValue2" placeholder="Enter upper bound">
+              </mat-form-field>
+            </div>
+            
+            <!-- Action Block Edit -->
+            <div *ngIf="editingBlock.type === 'action'" class="action-edit">
+              <h3>Configure Action</h3>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Action Type</mat-label>
+                <mat-select formControlName="actionType" (selectionChange)="onActionTypeChange()">
+                  <mat-option *ngFor="let action of actionTypes" [value]="action.value">
+                    <div class="action-option">
+                      <mat-icon [style.color]="action.color">{{ action.icon }}</mat-icon>
+                      <span>{{ action.label }}</span>
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <!-- Single Question Target -->
+              <mat-form-field 
+                *ngIf="['show_question', 'hide_question', 'jump_to_question'].includes(editForm.get('actionType')?.value)"
+                appearance="outline" 
+                class="full-width">
+                <mat-label>Target Question</mat-label>
+                <mat-select formControlName="targetQuestionId">
+                  <mat-option 
+                    *ngFor="let question of questions" 
+                    [value]="question.id"
+                    [disabled]="question.id === questionId">
+                    Q{{ question.order }}: {{ question.questionText | slice:0:50 }}{{ question.questionText.length > 50 ? '...' : '' }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <!-- Multiple Questions Target -->
+              <div 
+                *ngIf="['show_questions', 'hide_questions'].includes(editForm.get('actionType')?.value)"
+                class="multiple-questions-edit">
+                <label>Target Questions</label>
+                <div class="questions-list">
+                  <mat-checkbox 
+                    *ngFor="let question of questions"
+                    [checked]="isQuestionSelected(question.id)"
+                    [disabled]="question.id === questionId"
+                    (change)="onQuestionSelectionChange(question.id, $event.checked)">
+                    Q{{ question.order }}: {{ question.questionText | slice:0:40 }}{{ question.questionText.length > 40 ? '...' : '' }}
+                  </mat-checkbox>
+                </div>
+              </div>
+              
+              <!-- Section Target -->
+              <mat-form-field 
+                *ngIf="editForm.get('actionType')?.value === 'jump_to_section'"
+                appearance="outline" 
+                class="full-width">
+                <mat-label>Target Section</mat-label>
+                <mat-select formControlName="targetSectionId">
+                  <mat-option *ngFor="let section of sections" [value]="section.id">
+                    {{ section.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <!-- Message for termination actions -->
+              <mat-form-field 
+                *ngIf="['end_survey', 'disqualify'].includes(editForm.get('actionType')?.value)"
+                appearance="outline" 
+                class="full-width">
+                <mat-label>Message to User</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="message" 
+                  rows="3"
+                  placeholder="Enter message to display to user"></textarea>
+              </mat-form-field>
+            </div>
+            
+            <!-- Group Block Edit -->
+            <div *ngIf="editingBlock.type === 'group'" class="group-edit">
+              <h3>Configure Group</h3>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Logical Operator</mat-label>
+                <mat-select formControlName="operator">
+                  <mat-option value="AND">
+                    <div class="operator-option">
+                      <mat-icon>check_box</mat-icon>
+                      <span>AND - All conditions must be true</span>
+                    </div>
+                  </mat-option>
+                  <mat-option value="OR">
+                    <div class="operator-option">
+                      <mat-icon>radio_button_checked</mat-icon>
+                      <span>OR - Any condition can be true</span>
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <!-- Common Settings -->
+            <div class="common-settings">
+              <mat-slide-toggle formControlName="isActive">
+                Block is Active
+              </mat-slide-toggle>
+            </div>
+            
+          </form>
+          
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="cancelBlockEdit()">Cancel</button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="saveBlockEdit()"
+            [disabled]="editForm.invalid">
+            Save Changes
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    
+  </div>
+</div>

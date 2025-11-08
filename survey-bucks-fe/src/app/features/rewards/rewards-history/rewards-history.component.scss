@@ -1,0 +1,219 @@
+/* src/app/features/rewards/rewards-history/rewards-history.component.scss */
+.rewards-history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    
+    .page-header {
+      margin-bottom: 24px;
+      
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+      }
+      
+      .subtitle {
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 4px;
+      }
+      
+      .header-actions {
+        margin-top: 16px;
+      }
+    }
+  }
+  
+  .points-summary {
+    margin-bottom: 24px;
+    
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding: 16px;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .summary-item {
+        display: flex;
+        align-items: center;
+        
+        @media (max-width: 768px) {
+          width: 100%;
+        }
+        
+        .summary-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          margin-right: 16px;
+          
+          mat-icon {
+            color: white;
+          }
+          
+          &.current-icon {
+            background-color: #673ab7;
+          }
+          
+          &.earned-icon {
+            background-color: #4caf50;
+          }
+          
+          &.spent-icon {
+            background-color: #f44336;
+          }
+        }
+        
+        .summary-content {
+          .summary-value {
+            display: block;
+            font-size: 20px;
+            font-weight: 500;
+          }
+          
+          .summary-label {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+      }
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 48px 0;
+    
+    p {
+      margin-top: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .tab-content {
+    padding: 24px 0;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    
+    table {
+      width: 100%;
+      
+      .mat-mdc-header-cell {
+        font-weight: 500;
+      }
+      
+      .transaction-type {
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 12px;
+        width: fit-content;
+        
+        mat-icon {
+          font-size: 16px;
+          height: 16px;
+          width: 16px;
+          margin-right: 4px;
+        }
+        
+        &.type-earned {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+        }
+        
+        &.type-redeemed {
+          background-color: #ffebee;
+          color: #c62828;
+        }
+        
+        &.type-bonus {
+          background-color: #e3f2fd;
+          color: #1565c0;
+        }
+        
+        &.type-adjustment {
+          background-color: #fff8e1;
+          color: #f57f17;
+        }
+      }
+      
+      .positive {
+        color: #4caf50;
+        font-weight: 500;
+      }
+      
+      .negative {
+        color: #f44336;
+        font-weight: 500;
+      }
+      
+      .reward-name {
+        .reward-description {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+          margin: 4px 0 0;
+        }
+      }
+      
+      .reward-status {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 12px;
+        margin-bottom: 8px;
+        
+        &.status-ready {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+        }
+        
+        &.status-pending {
+          background-color: #fff8e1;
+          color: #f57f17;
+        }
+        
+        &.status-claimed {
+          background-color: #e3f2fd;
+          color: #1565c0;
+        }
+        
+        &.status-expired {
+          background-color: #ffebee;
+          color: #c62828;
+        }
+      }
+      
+      .no-data-message {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 0;
+        
+        mat-icon {
+          font-size: 48px;
+          height: 48px;
+          width: 48px;
+          margin-bottom: 16px;
+          color: rgba(0, 0, 0, 0.3);
+        }
+        
+        p {
+          margin: 0;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+    }
+  }

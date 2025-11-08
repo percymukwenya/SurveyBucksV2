@@ -1,0 +1,48 @@
+<div class="document-verification-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Document Verification</h1>
+      <p class="subtitle">Review and verify user documents</p>
+    </div>
+  </div>
+
+  <div class="navigation-tabs">
+    <nav class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button 
+        class="nav-link active" 
+        routerLink="dashboard" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}">
+        Dashboard
+      </button>
+      <button 
+        class="nav-link" 
+        routerLink="pending" 
+        routerLinkActive="active">
+        Pending Review
+      </button>
+      <button 
+        class="nav-link" 
+        routerLink="approved" 
+        routerLinkActive="active">
+        Approved
+      </button>
+      <button 
+        class="nav-link" 
+        routerLink="rejected" 
+        routerLinkActive="active">
+        Rejected
+      </button>
+      <button 
+        class="nav-link" 
+        routerLink="search" 
+        routerLinkActive="active">
+        Search
+      </button>
+    </nav>
+  </div>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>

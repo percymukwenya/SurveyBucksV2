@@ -1,0 +1,65 @@
+<div class="section-list-container">
+  <div class="section-header">
+    <h2>Survey Sections</h2>
+    <button mat-flat-button color="primary" (click)="openSectionDialog()">
+      <mat-icon>add</mat-icon>
+      Add Section
+    </button>
+  </div>
+  
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading sections...</p>
+  </div>
+  
+  <div *ngIf="!loading && sections.length === 0" class="empty-state">
+    <mat-icon>category</mat-icon>
+    <h3>No Sections Added Yet</h3>
+    <p>Start by adding your first survey section.</p>
+    <button mat-flat-button color="primary" (click)="openSectionDialog()">
+      <mat-icon>add</mat-icon>
+      Add First Section
+    </button>
+  </div>
+  
+  <div *ngIf="!loading && sections.length > 0" class="sections-list" cdkDropList (cdkDropListDropped)="onSectionDrop($event)">
+    <mat-card *ngFor="let section of sections" class="section-card" cdkDrag>
+      <div class="drag-handle" cdkDragHandle matTooltip="Drag to reorder">
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+      
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div class="section-title">
+              <span class="section-order">{{section.order + 1}}</span>
+              <span class="section-name">{{section.name}}</span>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="section-actions">
+              <button mat-icon-button color="primary" (click)="openSectionDialog(section); $event.stopPropagation()" matTooltip="Edit Section">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteSection(section); $event.stopPropagation()" matTooltip="Delete Section">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        
+        <div class="section-details">
+          <p class="section-description" *ngIf="section.description">{{section.description}}</p>
+          
+          <!-- Questions in this section -->
+          <app-survey-question-list [sectionId]="section.id"></app-survey-question-list>
+        </div>
+      </mat-expansion-panel>
+    </mat-card>
+  </div>
+  
+  <div *ngIf="saving" class="saving-overlay">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Saving changes...</p>
+  </div>
+</div>

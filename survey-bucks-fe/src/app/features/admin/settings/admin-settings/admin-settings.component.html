@@ -1,0 +1,277 @@
+<div class="admin-settings">
+  <h1 class="page-title">System Settings</h1>
+
+  <mat-card class="settings-card">
+    <mat-tab-group animationDuration="200ms">
+      <!-- General Settings Tab -->
+      <mat-tab label="General">
+        <div class="tab-content">
+          <form [formGroup]="generalForm">
+            <div class="form-group">
+              <h3>Site Information</h3>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Site Name</mat-label>
+                <input matInput formControlName="siteName" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Admin Email</mat-label>
+                <input matInput formControlName="adminEmail" type="email" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Site Description</mat-label>
+                <textarea
+                  matInput
+                  formControlName="siteDescription"
+                  rows="3"
+                ></textarea>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <h3>Default Settings</h3>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Default Language</mat-label>
+                <mat-select formControlName="defaultLanguage">
+                  <mat-option value="en">English</mat-option>
+                  <mat-option value="es">Spanish</mat-option>
+                  <mat-option value="fr">French</mat-option>
+                  <mat-option value="de">German</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Default Timezone</mat-label>
+                <mat-select formControlName="defaultTimezone">
+                  <mat-option value="UTC">UTC</mat-option>
+                  <mat-option value="America/New_York"
+                    >Eastern Time (ET)</mat-option
+                  >
+                  <mat-option value="America/Chicago"
+                    >Central Time (CT)</mat-option
+                  >
+                  <mat-option value="America/Denver"
+                    >Mountain Time (MT)</mat-option
+                  >
+                  <mat-option value="America/Los_Angeles"
+                    >Pacific Time (PT)</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit">
+                  Save Changes
+                </button>
+                <button mat-stroked-button type="button">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Email Settings Tab -->
+      <mat-tab label="Email">
+        <div class="tab-content">
+          <form [formGroup]="emailForm">
+            <div class="form-group">
+              <h3>Email Service Configuration</h3>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>SMTP Host</mat-label>
+                <input matInput formControlName="smtpHost" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>SMTP Port</mat-label>
+                <input matInput formControlName="smtpPort" type="number" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>SMTP Username</mat-label>
+                <input matInput formControlName="smtpUsername" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>SMTP Password</mat-label>
+                <input
+                  matInput
+                  formControlName="smtpPassword"
+                  type="password"
+                />
+              </mat-form-field>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableSsl"
+                  >Enable SSL</mat-slide-toggle
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <h3>Email Templates</h3>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Welcome Email</mat-label>
+                <textarea
+                  matInput
+                  formControlName="welcomeEmail"
+                  rows="5"
+                ></textarea>
+                <mat-hint
+                  >Use {{ '{' }}name{{ '}' }} for user name, {{ '{' }}email{{ '}' }} for user email</mat-hint
+                >
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit">
+                  Save Changes
+                </button>
+                <button mat-stroked-button type="button">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Security Settings Tab -->
+      <mat-tab label="Security">
+        <div class="tab-content">
+          <form [formGroup]="securityForm">
+            <div class="form-group">
+              <h3>Authentication Settings</h3>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableTwoFactor"
+                  >Enable Two-Factor Authentication</mat-slide-toggle
+                >
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Password Policy</mat-label>
+                <mat-select formControlName="passwordPolicy">
+                  <mat-option value="low"
+                    >Low (minimum 6 characters)</mat-option
+                  >
+                  <mat-option value="medium"
+                    >Medium (minimum 8 characters with numbers)</mat-option
+                  >
+                  <mat-option value="high"
+                    >High (minimum 10 characters with numbers and special
+                    characters)</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Session Timeout (minutes)</mat-label>
+                <input
+                  matInput
+                  formControlName="sessionTimeout"
+                  type="number"
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <h3>API Security</h3>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableApiRateLimit"
+                  >Enable API Rate Limiting</mat-slide-toggle
+                >
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Rate Limit (requests per minute)</mat-label>
+                <input matInput formControlName="apiRateLimit" type="number" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit">
+                  Save Changes
+                </button>
+                <button mat-stroked-button type="button">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Notifications Settings Tab -->
+      <mat-tab label="Notifications">
+        <div class="tab-content">
+          <form [formGroup]="notificationForm">
+            <div class="form-group">
+              <h3>System Notifications</h3>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableUserRegistration"
+                  >User Registration Notifications</mat-slide-toggle
+                >
+              </div>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableSurveyCompletion"
+                  >Survey Completion Notifications</mat-slide-toggle
+                >
+              </div>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enablePaymentProcessing"
+                  >Payment Processing Notifications</mat-slide-toggle
+                >
+              </div>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableSystemErrors"
+                  >System Error Notifications</mat-slide-toggle
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <h3>Notification Delivery</h3>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableEmailNotification"
+                  >Email Notifications</mat-slide-toggle
+                >
+              </div>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enablePushNotification"
+                  >Push Notifications</mat-slide-toggle
+                >
+              </div>
+
+              <div class="toggle-field">
+                <mat-slide-toggle formControlName="enableSlackNotification"
+                  >Slack Notifications</mat-slide-toggle
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit">
+                  Save Changes
+                </button>
+                <button mat-stroked-button type="button">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

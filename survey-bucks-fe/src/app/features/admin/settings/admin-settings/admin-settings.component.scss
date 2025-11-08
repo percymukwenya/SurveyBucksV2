@@ -1,0 +1,51 @@
+.admin-settings {
+      padding: 0 16px;
+      
+      .page-title {
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 24px;
+        color: #333;
+      }
+      
+      .settings-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        
+        .tab-content {
+          padding: 24px;
+          
+          .form-group {
+            margin-bottom: 24px;
+            
+            h3 {
+              font-size: 18px;
+              font-weight: 500;
+              margin-bottom: 16px;
+              color: #333;
+            }
+            
+            .form-field {
+              width: 100%;
+              margin-bottom: 16px;
+            }
+            
+            .toggle-field {
+              margin-bottom: 16px;
+              
+              mat-slide-toggle {
+                margin-right: 8px;
+              }
+            }
+            
+            .form-actions {
+              display: flex;
+              gap: 16px;
+              
+              button {
+                min-width: 120px;
+              }
+            }
+          }
+        }
+      }
+    }

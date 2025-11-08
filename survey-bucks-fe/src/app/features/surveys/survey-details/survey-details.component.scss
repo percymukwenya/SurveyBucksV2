@@ -1,0 +1,274 @@
+/* src/app/features/surveys/survey-details/survey-details.component.scss */
+.survey-details-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .back-link {
+    margin-bottom: 24px;
+    
+    a {
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 48px 0;
+    
+    p {
+      margin-top: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .survey-header-card {
+    margin-bottom: 24px;
+    
+    .survey-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        button {
+          margin-top: 16px;
+          width: 100%;
+        }
+      }
+      
+      .survey-title {
+        h1 {
+          margin: 0 0 8px 0;
+          font-size: 24px;
+          font-weight: 500;
+        }
+        
+        .survey-meta {
+          display: flex;
+          align-items: center;
+          color: rgba(0, 0, 0, 0.6);
+          
+          .company-name {
+            font-weight: 500;
+          }
+          
+          .company-name:after {
+            content: '•';
+            margin: 0 8px;
+          }
+        }
+      }
+    }
+  }
+  
+  .survey-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+    
+    .survey-info-card {
+      grid-column: span 2;
+      
+      @media (max-width: 992px) {
+        grid-column: span 1;
+      }
+      
+      .survey-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+      
+      mat-divider {
+        margin: 16px 0;
+      }
+      
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        
+        @media (max-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
+        }
+        
+        .info-item {
+          background-color: #f5f5f5;
+          padding: 16px;
+          border-radius: 8px;
+          
+          .info-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 8px;
+            
+            mat-icon {
+              font-size: 16px;
+              height: 16px;
+              width: 16px;
+              margin-right: 8px;
+            }
+          }
+          
+          .info-value {
+            font-size: 18px;
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .company-info {
+        margin-top: 24px;
+        
+        h3 {
+          margin: 0 0 8px 0;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0;
+          line-height: 1.6;
+          color: rgba(0, 0, 0, 0.7);
+        }
+      }
+    }
+    
+    .rewards-card {
+      .reward-item {
+        display: flex;
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .reward-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 48px;
+          height: 48px;
+          background-color: #e3f2fd;
+          border-radius: 50%;
+          margin-right: 16px;
+          
+          mat-icon {
+            color: #2196f3;
+          }
+        }
+        
+        .reward-details {
+          h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 500;
+          }
+          
+          p {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+          
+          .reward-value {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #673ab7;
+            
+            mat-icon {
+              font-size: 16px;
+              height: 16px;
+              width: 16px;
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+    }
+    
+    .survey-structure-card {
+      grid-column: span 2;
+      
+      @media (max-width: 992px) {
+        grid-column: span 1;
+      }
+      
+      .question-preview {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .question-number {
+          min-width: 40px;
+          font-weight: 500;
+          color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .question-content {
+          flex: 1;
+          
+          .question-text {
+            margin-bottom: 4px;
+            
+            .mandatory-indicator {
+              color: #f44336;
+              margin-left: 4px;
+            }
+          }
+          
+          .question-type {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.6);
+            background-color: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+  
+  .actions-footer {
+    margin-top: 24px;
+    text-align: center;
+    
+    button {
+      min-width: 200px;
+    }
+  }
+  
+  .button-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }

@@ -1,0 +1,229 @@
+.dashboard-container {
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    &.total {
+      border-left-color: #6c757d;
+      .stat-icon {
+        background: linear-gradient(45deg, #6c757d, #868e96);
+      }
+    }
+
+    &.pending {
+      border-left-color: #ffc107;
+      .stat-icon {
+        background: linear-gradient(45deg, #ffc107, #ffcd39);
+      }
+    }
+
+    &.approved {
+      border-left-color: #28a745;
+      .stat-icon {
+        background: linear-gradient(45deg, #28a745, #34ce57);
+      }
+    }
+
+    &.rejected {
+      border-left-color: #dc3545;
+      .stat-icon {
+        background: linear-gradient(45deg, #dc3545, #e4606d);
+      }
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .stat-content {
+      h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      p {
+        margin: 0.25rem 0 0 0;
+        color: #6c757d;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .card {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+
+    .card-header {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      border-radius: 12px 12px 0 0 !important;
+      padding: 1rem 1.5rem;
+
+      .card-title {
+        color: #2c3e50;
+        font-weight: 600;
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f4;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      font-weight: 500;
+      color: #6c757d;
+    }
+
+    .metric-value {
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1rem;
+    }
+  }
+
+  .trends-container {
+    max-height: 300px;
+    overflow-y: auto;
+
+    .trend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f3f4;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .trend-date {
+        font-weight: 600;
+        color: #2c3e50;
+        min-width: 80px;
+      }
+
+      .trend-stats {
+        display: flex;
+        gap: 1rem;
+
+        .trend-stat {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.9rem;
+          
+          &.submitted {
+            color: #007bff;
+          }
+          
+          &.verified {
+            color: #28a745;
+          }
+        }
+      }
+    }
+  }
+
+  .table {
+    th {
+      border-top: none;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 0.9rem;
+    }
+
+    td {
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+  }
+
+  .approval-rate {
+    .rate-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+
+      &.high {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      &.medium {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      &.low {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-container {
+    .stat-card {
+      flex-direction: column;
+      text-align: center;
+
+      .stat-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+    }
+
+    .trends-container {
+      .trend-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+
+    .table-responsive {
+      font-size: 0.8rem;
+    }
+  }
+}

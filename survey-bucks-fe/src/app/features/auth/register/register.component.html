@@ -1,0 +1,175 @@
+<div class="auth-container">
+  <div class="auth-panel">
+    <div class="auth-header">
+      <h1>Join <span class="highlight">SurveyBucks</span></h1>
+      <p>Create your account and start earning rewards today</p>
+    </div>
+
+    <!-- Server Error Messages -->
+    <div class="server-errors" *ngIf="showServerErrors && serverErrors.length > 0">
+      <mat-icon class="error-icon">error</mat-icon>
+      <div class="error-content">
+        <h4>Registration Failed</h4>
+        <ul>
+          <li *ngFor="let error of serverErrors">{{ error }}</li>
+        </ul>
+      </div>
+    </div>
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>First Name</mat-label>
+          <input 
+            matInput 
+            formControlName="firstName" 
+            placeholder="First Name"
+            autocomplete="given-name"
+            (focus)="clearServerErrors()"
+          >
+          <mat-error *ngIf="registerForm.get('firstName')?.touched && getFirstNameError()">
+            {{ getFirstNameError() }}
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Last Name</mat-label>
+          <input 
+            matInput 
+            formControlName="lastName" 
+            placeholder="Last Name"
+            autocomplete="family-name"
+            (focus)="clearServerErrors()"
+          >
+          <mat-error *ngIf="registerForm.get('lastName')?.touched && getLastNameError()">
+            {{ getLastNameError() }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Email Address</mat-label>
+        <input 
+          matInput 
+          formControlName="email" 
+          type="email" 
+          placeholder="your@email.com"
+          autocomplete="email"
+          (focus)="clearServerErrors()"
+        >
+        <mat-error *ngIf="registerForm.get('email')?.touched && getEmailError()">
+          {{ getEmailError() }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Phone Number (Optional)</mat-label>
+        <input 
+          matInput 
+          formControlName="phoneNumber" 
+          type="tel" 
+          placeholder="+1 (555) 123-4567"
+          autocomplete="tel"
+          (focus)="clearServerErrors()"
+        >
+        <mat-error *ngIf="registerForm.get('phoneNumber')?.touched && getPhoneError()">
+          {{ getPhoneError() }}
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Password</mat-label>
+        <input 
+          matInput 
+          formControlName="password" 
+          [type]="hidePassword ? 'password' : 'text'"
+          placeholder="Create a strong password"
+          autocomplete="new-password"
+          (focus)="clearServerErrors()"
+        >
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Hide password'"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.touched && getPasswordError()">
+          {{ getPasswordError() }}
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Confirm Password</mat-label>
+        <input 
+          matInput 
+          formControlName="confirmPassword" 
+          [type]="hideConfirmPassword ? 'password' : 'text'"
+          placeholder="Confirm your password"
+          autocomplete="new-password"
+          (focus)="clearServerErrors()"
+        >
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="toggleConfirmPasswordVisibility()"
+          [attr.aria-label]="'Hide password'"
+        >
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('confirmPassword')?.touched && getConfirmPasswordError()">
+          {{ getConfirmPasswordError() }}
+        </mat-error>
+      </mat-form-field>
+      
+      <div class="terms-checkbox">
+        <mat-checkbox formControlName="terms" color="primary">
+          I agree to the 
+          <a href="/terms" target="_blank" class="terms-link">Terms of Service</a> 
+          and 
+          <a href="/privacy" target="_blank" class="terms-link">Privacy Policy</a>
+        </mat-checkbox>
+        <div class="terms-error" *ngIf="registerForm.get('terms')?.touched && getTermsError()">
+          {{ getTermsError() }}
+        </div>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        class="submit-btn" 
+        [disabled]="registerForm.invalid || loading"
+      >
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        <span *ngIf="!loading">Create SurveyBucks Account</span>
+        <span *ngIf="loading">Creating Account...</span>
+      </button>
+    </form>
+    
+    <div class="auth-footer">
+      <p>Already have an account? 
+        <a routerLink="/auth/login" class="signin-link">Sign in</a>
+      </p>
+    </div>
+  </div>
+  
+  <div class="auth-image">
+    <div class="info-overlay">
+      <h2>Why Join SurveyBucks?</h2>
+      <ul>
+        <li>Earn cash rewards for every completed survey</li>
+        <li>Receive survey recommendations based on your interests</li>
+        <li>Join a community of 10,000+ active participants</li>
+        <li>Flexible payout options - PayPal or gift cards</li>
+        <li>No minimum payout threshold</li>
+      </ul>
+      <div class="testimonial">
+        
+      </div>
+    </div>
+  </div>
+</div>

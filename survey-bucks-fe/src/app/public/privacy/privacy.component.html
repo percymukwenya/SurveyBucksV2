@@ -1,0 +1,38 @@
+<div class="legal-page">
+      <div class="container">
+        <div class="header">
+          <button mat-icon-button routerLink="/" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="header-content">
+            <h1>Privacy Policy</h1>
+            <p class="last-updated">Last updated: January 15, 2025</p>
+          </div>
+        </div>
+
+        <div class="content">
+          <section class="intro">
+            <p>At SurveyBucks, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your information when you use our services.</p>
+          </section>
+
+          <section *ngFor="let section of privacySections" class="section">
+            <h2>{{ section.title }}</h2>
+            <div *ngFor="let subsection of section.content" class="subsection">
+              <h3 *ngIf="subsection.subtitle">{{ subsection.subtitle }}</h3>
+              <p>{{ subsection.text }}</p>
+              <ul *ngIf="subsection.list">
+                <li *ngFor="let item of subsection.list">{{ item }}</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="contact">
+            <h2>Contact Information</h2>
+            <p>If you have questions about this Privacy Policy, please contact us at:</p>
+            <p><strong>Email:</strong> privacy&#64;surveybucks.com</p>
+            <p><strong>Data Protection Officer:</strong> dpo&#64;surveybucks.com</p>
+            <p><strong>Address:</strong> SurveyBucks Inc., 123 Research Way, Suite 100, San Francisco, CA 94105</p>
+          </section>
+        </div>
+      </div>
+    </div>

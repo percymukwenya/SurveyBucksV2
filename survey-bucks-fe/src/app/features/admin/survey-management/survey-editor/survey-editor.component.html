@@ -1,0 +1,268 @@
+<div class="survey-editor-container">
+  <!-- Header section -->
+  <div class="page-header">
+    <h1>{{ isEditMode ? "Edit Survey" : "Create New Survey" }}</h1>
+    <p class="subtitle">
+      {{
+        isEditMode
+          ? "Update survey details and manage content"
+          : "Create a new survey for participants"
+      }}
+    </p>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading survey data...</p>
+  </div>
+
+  <!-- Editor layout -->
+  <div *ngIf="!loading" class="editor-content">
+    <mat-card>
+      <mat-card-content>
+        <mat-tab-group>
+          <!-- Tab 1: Basic Info -->
+          <mat-tab label="Basic Info">
+            <div class="tab-content">
+              <form [formGroup]="surveyForm" (ngSubmit)="saveSurvey()">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Survey Name</mat-label>
+                    <input
+                      matInput
+                      formControlName="name"
+                      placeholder="Enter a descriptive name for the survey"
+                    />
+                    <mat-error
+                      *ngIf="surveyForm.get('name')?.errors?.['required']"
+                      >Survey name is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="surveyForm.get('name')?.errors?.['maxlength']"
+                      >Maximum length is 150 characters</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="description"
+                      rows="3"
+                      placeholder="Describe the purpose of this survey"
+                    ></textarea>
+                    <mat-error
+                      *ngIf="surveyForm.get('description')?.errors?.['required']"
+                      >Description is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="surveyForm.get('description')?.errors?.['maxlength']"
+                      >Maximum length is 500 characters</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row form-row-2-col">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Opening Date & Time</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="openingPicker"
+                      formControlName="openingDateTime"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="openingPicker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #openingPicker></mat-datepicker>
+                    <mat-error
+                      *ngIf="surveyForm.get('openingDateTime')?.errors?.['required']"
+                      >Opening date is required</mat-error
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Closing Date & Time</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="closingPicker"
+                      formControlName="closingDateTime"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="closingPicker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #closingPicker></mat-datepicker>
+                    <mat-error
+                      *ngIf="surveyForm.get('closingDateTime')?.errors?.['required']"
+                      >Closing date is required</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row form-row-2-col">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Company Name</mat-label>
+                    <input
+                      matInput
+                      formControlName="companyName"
+                      placeholder="Company conducting the survey (optional)"
+                    />
+                    <mat-error
+                      *ngIf="surveyForm.get('companyName')?.errors?.['maxlength']"
+                      >Maximum length is 150 characters</mat-error
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Industry</mat-label>
+                    <mat-select formControlName="industry">
+                      <mat-option value="">-- None --</mat-option>
+                      <mat-option
+                        *ngFor="let industry of industries"
+                        [value]="industry"
+                        >{{ industry }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Company Description</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="companyDescription"
+                      rows="2"
+                      placeholder="Company description (optional)"
+                    ></textarea>
+                    <mat-error
+                      *ngIf="surveyForm.get('companyDescription')?.errors?.['maxlength']"
+                      >Maximum length is 250 characters</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row form-row-3-col">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Duration (seconds)</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="durationInSeconds"
+                      min="60"
+                    />
+                    <mat-hint>Maximum time to complete the survey</mat-hint>
+                    <mat-error
+                      *ngIf="surveyForm.get('durationInSeconds')?.errors?.['required']"
+                      >Duration is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="surveyForm.get('durationInSeconds')?.errors?.['min']"
+                      >Must be at least 60 seconds</mat-error
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Min. Questions</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="minQuestions"
+                      min="1"
+                    />
+                    <mat-hint>Minimum questions to ask</mat-hint>
+                    <mat-error
+                      *ngIf="surveyForm.get('minQuestions')?.errors?.['required']"
+                      >This field is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="surveyForm.get('minQuestions')?.errors?.['min']"
+                      >Must be at least 1</mat-error
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Max Time (minutes)</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="maxTimeInMins"
+                      min="1"
+                    />
+                    <mat-hint>Maximum estimated completion time</mat-hint>
+                    <mat-error
+                      *ngIf="surveyForm.get('maxTimeInMins')?.errors?.['required']"
+                      >This field is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="surveyForm.get('maxTimeInMins')?.errors?.['min']"
+                      >Must be at least 1</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row form-row-2-col checkbox-row">
+                  <mat-checkbox formControlName="requireAllQuestions">
+                    Require all questions to be answered
+                  </mat-checkbox>
+
+                  <mat-slide-toggle formControlName="isActive" color="primary">
+                    Survey is active
+                  </mat-slide-toggle>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" mat-stroked-button (click)="cancel()">
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="saving"
+                  >
+                    <mat-icon>save</mat-icon>
+                    {{ saving ? "Saving..." : "Save Survey" }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 2: Sections & Questions (only visible in edit mode) -->
+          <mat-tab label="Sections & Questions" [disabled]="!isEditMode">
+            <div class="tab-content" *ngIf="isEditMode && surveyId">
+              <app-survey-section-list
+                [surveyId]="surveyId"
+              ></app-survey-section-list>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 3: Targeting (only visible in edit mode) -->
+          <mat-tab label="Targeting" [disabled]="!isEditMode">
+            <div class="tab-content" *ngIf="isEditMode && surveyId">
+              <app-survey-targeting
+                [surveyId]="surveyId"
+              ></app-survey-targeting>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 4: Settings (only visible in edit mode) -->
+          <mat-tab label="Settings" [disabled]="!isEditMode">
+            <div class="tab-content" *ngIf="isEditMode">
+              <p class="placeholder-message">
+                <mat-icon>construction</mat-icon>
+                Additional survey settings will be implemented in a future
+                update.
+              </p>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,197 @@
+/* src/app/features/admin/surveys/question-editor-dialog/question-editor-dialog.component.scss */
+.question-editor-dialog {
+  .mat-mdc-dialog-content {
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  
+  .tab-content {
+    padding: 16px 0;
+  }
+  
+  .form-section {
+    margin-bottom: 24px;
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  
+  .form-row {
+    margin-bottom: 16px;
+    
+    &.form-row-2-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    &.checkbox-row {
+      display: flex;
+      gap: 24px;
+      
+      @media (max-width: 576px) {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 16px 0;
+    
+    p {
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .empty-state {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 16px;
+    
+    p {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: rgba(0, 0, 0, 0.6);
+      
+      mat-icon {
+        color: #673ab7;
+      }
+    }
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    
+    h3, h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .description {
+      flex-basis: 100%;
+      color: rgba(0, 0, 0, 0.6);
+      margin: 8px 0 16px 0;
+    }
+
+    // Ensure button appears on next line in small screens
+    @media (max-width: 576px) {
+      button {
+        margin-top: 8px;
+      }
+    }
+  }
+  
+  .choice-item, .matrix-item, .logic-rule-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: white;
+    
+    &.cdk-drag-preview {
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    }
+    
+    &.cdk-drag-placeholder {
+      opacity: 0;
+    }
+    
+    &.cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    
+    .drag-handle {
+      cursor: move;
+      color: rgba(0, 0, 0, 0.3);
+      margin-right: 8px;
+    }
+    
+    .choice-fields, .matrix-item-fields, .rule-fields {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+      gap: 16px;
+      align-items: center;
+      
+      mat-form-field {
+        flex: 1;
+        min-width: 180px;
+      }
+      
+      mat-checkbox {
+        margin: 8px 0;
+      }
+    }
+  }
+  
+  .logic-explanation {
+    margin-top: 24px;
+    padding-top: 16px;
+    
+    h4 {
+      margin: 16px 0 8px;
+      font-size: 16px;
+    }
+    
+    ul {
+      margin: 0;
+      padding-left: 24px;
+      
+      li {
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  .saving-indicator {
+    margin-top: 24px;
+    text-align: center;
+    
+    p {
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+// Global styles to properly render tab group
+::ng-deep .mat-mdc-tab-body-content {
+  padding: 16px 0;
+}
+
+::ng-deep .mat-mdc-tab-header {
+  margin-bottom: 16px;
+}
+
+::ng-deep .mat-mdc-tab-group {
+  margin-bottom: 16px;
+}

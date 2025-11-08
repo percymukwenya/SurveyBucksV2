@@ -1,0 +1,246 @@
+<div class="admin-dashboard-container">
+    <div class="page-header">
+      <h1>Admin Dashboard</h1>
+      <p class="subtitle">Platform overview and management</p>
+    </div>
+    
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading dashboard data...</p>
+    </div>
+    
+    <div *ngIf="!loading && dashboardStats" class="dashboard-content">
+      <!-- Key Metrics Cards -->
+      <div class="metrics-row">
+        <mat-card class="metric-card">
+          <mat-card-content>
+            <div class="metric-icon users-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="metric-content">
+              <span class="metric-value">{{dashboardStats.totalUsers}}</span>
+              <span class="metric-label">Total Users</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="metric-card">
+          <mat-card-content>
+            <div class="metric-icon surveys-icon">
+              <mat-icon>assignment</mat-icon>
+            </div>
+            <div class="metric-content">
+              <span class="metric-value">{{dashboardStats.activeSurveys}}</span>
+              <span class="metric-label">Active Surveys</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="metric-card">
+          <mat-card-content>
+            <div class="metric-icon completions-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="metric-content">
+              <span class="metric-value">{{dashboardStats.surveyCompletions}}</span>
+              <span class="metric-label">Survey Completions</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="metric-card">
+          <mat-card-content>
+            <div class="metric-icon rewards-icon">
+              <mat-icon>card_giftcard</mat-icon>
+            </div>
+            <div class="metric-content">
+              <span class="metric-value">{{dashboardStats.rewardsRedeemed}}</span>
+              <span class="metric-label">Rewards Redeemed</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <!-- Management Sections -->
+      <div class="management-grid">
+        <!-- Survey Management -->
+        <mat-card class="management-card">
+          <mat-card-header>
+            <mat-card-title>Survey Management</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="management-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.totalSurveys}}</span>
+                <span class="stat-label">Total Surveys</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.draftSurveys}}</span>
+                <span class="stat-label">Drafts</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.publishedSurveys}}</span>
+                <span class="stat-label">Published</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.completedSurveys}}</span>
+                <span class="stat-label">Completed</span>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button color="primary" routerLink="/admin/surveys">
+              Manage Surveys
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/admin/surveys/create">
+              Create Survey
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- User Management -->
+        <mat-card class="management-card">
+          <mat-card-header>
+            <mat-card-title>User Management</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="management-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.activeUsers}}</span>
+                <span class="stat-label">Active Users</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.newUsersToday}}</span>
+                <span class="stat-label">New Today</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.averageProfileCompletion}}%</span>
+                <span class="stat-label">Avg. Profile Completion</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.pendingVerifications}}</span>
+                <span class="stat-label">Pending Verifications</span>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button color="primary" routerLink="/admin/users">
+              Manage Users
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/admin/user-groups">
+              Manage User Groups
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Results & Analytics -->
+        <mat-card class="management-card">
+          <mat-card-header>
+            <mat-card-title>Results & Analytics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="management-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.surveysWithNewResults}}</span>
+                <span class="stat-label">Surveys with New Results</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.exportsPending}}</span>
+                <span class="stat-label">Exports Pending</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.averageCompletionRate | percent:'1.0-0'}}</span>
+                <span class="stat-label">Avg. Completion Rate</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.averageResponseTime}}</span>
+                <span class="stat-label">Avg. Response Time</span>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button color="primary" routerLink="/admin/results">
+              View Results
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/admin/analytics">
+              View Analytics
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Reward Management -->
+        <mat-card class="management-card">
+          <mat-card-header>
+            <mat-card-title>Reward Management</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="management-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.activeRewards}}</span>
+                <span class="stat-label">Active Rewards</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.pendingRedemptions}}</span>
+                <span class="stat-label">Pending Redemptions</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.pointsIssued | number}}</span>
+                <span class="stat-label">Points Issued</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{dashboardStats.pointsRedeemed | number}}</span>
+                <span class="stat-label">Points Redeemed</span>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button color="primary" routerLink="/admin/rewards">
+              Manage Rewards
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/admin/redemptions">
+              Review Redemptions
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+      
+      <!-- Recent Activity -->
+      <div class="activity-section">
+        <div class="section-header">
+          <h2>Recent Activity</h2>
+          <button mat-button routerLink="/admin/activity">
+            View All Activity
+          </button>
+        </div>
+        
+        <mat-card>
+          <mat-card-content>
+            <div *ngIf="recentActivity.length === 0" class="empty-state">
+              <mat-icon>history</mat-icon>
+              <h3>No Recent Activity</h3>
+              <p>There hasn't been any activity in the time period specified.</p>
+            </div>
+            
+            <div *ngIf="recentActivity.length > 0" class="activity-list">
+              <div *ngFor="let activity of recentActivity" class="activity-item" 
+                  [ngClass]="getActivityClass(activity.activityType)">
+                <div class="activity-icon">
+                  <mat-icon>{{getActivityIcon(activity.activityType)}}</mat-icon>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-header">
+                    <h3>{{activity.title}}</h3>
+                    <span class="activity-time">{{activity.timestamp | date:'short'}}</span>
+                  </div>
+                  <p>{{activity.description}}</p>
+                  <a *ngIf="activity.actionUrl" [routerLink]="activity.actionUrl" class="activity-link">
+                    View Details
+                  </a>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>

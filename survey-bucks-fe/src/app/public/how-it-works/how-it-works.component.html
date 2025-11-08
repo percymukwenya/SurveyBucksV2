@@ -1,0 +1,129 @@
+<div class="how-it-works-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>How Our Platform Works</h1>
+      <p>We're building South Africa's most engaging survey platform, connecting businesses with valuable consumer insights while rewarding participants fairly.</p>
+      <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-btn">
+        Join the Community
+      </button>
+    </div>
+  </section>
+
+  <!-- Steps Section -->
+  <section class="steps-section">
+    <div class="container">
+      <h2>Getting Started is Easy</h2>
+      <div class="steps-grid">
+        <div class="step-card" *ngFor="let step of steps; let i = index">
+          <div class="step-number">{{ i + 1 }}</div>
+          <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+          <div class="step-details">
+            <ul>
+              <li *ngFor="let detail of step.details">{{ detail }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Survey Types Section -->
+  <section class="survey-types-section">
+    <div class="container">
+      <h2>Survey Categories</h2>
+      <p class="section-subtitle">We match you to surveys in these areas based on your profile and interests</p>
+      <div class="survey-types-grid">
+        <div class="survey-type" *ngFor="let type of surveyTypes">
+          <mat-icon class="type-icon">{{ type.icon }}</mat-icon>
+          <h3>{{ type.title }}</h3>
+          <p>{{ type.description }}</p>
+          <div class="earning-range">{{ type.earningRange }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gamification Section -->
+  <section class="gamification-section">
+    <div class="container">
+      <h2>Gamified Experience</h2>
+      <p class="section-subtitle">Make survey-taking engaging and rewarding</p>
+      <div class="gamification-grid">
+        <div class="feature" *ngFor="let feature of gamificationFeatures">
+          <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="container">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-item" *ngFor="let faq of faqs">
+          <h3>{{ faq.question }}</h3>
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requirements Section -->
+  <section class="requirements-section">
+    <div class="container">
+      <h2>Who Can Participate</h2>
+      <div class="requirements-grid">
+        <div class="requirement" *ngFor="let req of requirements">
+          <mat-icon class="req-icon" [class.check]="req.required">
+            {{ req.required ? 'check_circle' : 'info' }}
+          </mat-icon>
+          <h3>{{ req.title }}</h3>
+          <p>{{ req.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- For Business Partners Section -->
+  <section class="business-section">
+    <div class="container">
+      <h2>How Our Smart Matching Works</h2>
+      <p>We don't send you random surveys. Our intelligent matching system ensures you only receive invitations for surveys that are relevant to your demographics, interests, and lifestyle.</p>
+      <div class="business-benefits">
+        <ul>
+          <li><strong>Profile Analysis:</strong> We analyze your demographics, location, and interests</li>
+          <li><strong>Target Matching:</strong> Only invite you to surveys where you fit the target audience</li>
+          <li><strong>Quality Assurance:</strong> Better matches mean more meaningful responses</li>
+          <li><strong>Time Saving:</strong> No wasted time on surveys you won't qualify for</li>
+          <li><strong>Higher Success Rate:</strong> Increased chance of completing surveys you're invited to</li>
+        </ul>
+      </div>
+      <p><strong>For Business Partners:</strong> Get higher quality responses by reaching exactly the demographics you need for your research.</p>
+      <button mat-stroked-button routerLink="/business-partnership" class="business-cta">
+        Partner With Us
+      </button>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="final-cta-section">
+    <div class="container">
+      <h2>Ready to Start Earning?</h2>
+      <p>Join our growing community and be part of shaping products and services in South Africa</p>
+      <div class="cta-buttons">
+        <button mat-raised-button color="primary" routerLink="/auth/register" class="primary-cta">
+          Sign Up Now
+        </button>
+        <button mat-stroked-button routerLink="/rewards" class="secondary-cta">
+          Learn About Rewards
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

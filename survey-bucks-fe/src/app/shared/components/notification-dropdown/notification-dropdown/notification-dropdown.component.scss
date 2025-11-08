@@ -1,0 +1,166 @@
+/* src/app/shared/components/notification-dropdown/notification-dropdown.component.scss */
+::ng-deep .notification-dropdown-menu {
+    max-width: 360px !important;
+    width: 360px;
+    
+    @media (max-width: 400px) {
+      max-width: 90vw !important;
+      width: 90vw;
+    }
+    
+    .mat-mdc-menu-content {
+      padding: 0 !important;
+    }
+  }
+  
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 16px;
+    
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    text-align: center;
+    
+    mat-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+      margin-bottom: 8px;
+      color: rgba(0, 0, 0, 0.3);
+    }
+    
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+    
+    .notification-item {
+      display: flex;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+      
+      &.unread {
+        background-color: rgba(103, 58, 183, 0.05);
+        
+        &:hover {
+          background-color: rgba(103, 58, 183, 0.1);
+        }
+      }
+      
+      .notification-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        margin-right: 12px;
+        
+        &.type-survey {
+          background-color: #e3f2fd;
+          
+          mat-icon {
+            color: #2196f3;
+          }
+        }
+        
+        &.type-reward {
+          background-color: #f3e5f5;
+          
+          mat-icon {
+            color: #9c27b0;
+          }
+        }
+        
+        &.type-achievement {
+          background-color: #fff8e1;
+          
+          mat-icon {
+            color: #ff9800;
+          }
+        }
+        
+        &.type-challenge {
+          background-color: #e8f5e9;
+          
+          mat-icon {
+            color: #4caf50;
+          }
+        }
+        
+        &.type-system {
+          background-color: #f5f5f5;
+          
+          mat-icon {
+            color: #757575;
+          }
+        }
+        
+        mat-icon {
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
+        }
+      }
+      
+      .notification-content {
+        flex: 1;
+        
+        h4 {
+          margin: 0 0 4px 0;
+          font-size: 14px;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0 0 4px 0;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .notification-time {
+          font-size: 11px;
+          color: rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+  }
+  
+  .notification-footer {
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+  }

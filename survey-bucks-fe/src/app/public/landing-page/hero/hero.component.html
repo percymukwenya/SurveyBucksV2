@@ -1,0 +1,23 @@
+<section class="hero">
+  <div class="hero-content">
+    <h1>
+      Earn Cash by Taking Surveys with
+      <span class="highlight">SurveyBucks</span>
+    </h1>
+    <p>Join thousands earning rewards by sharing their opinion</p>
+    <button
+      mat-raised-button
+      color="primary"
+      routerLink="/auth/register"
+      class="start-btn"
+    >
+      Start Earning Now
+    </button>
+  </div>
+  <div class="stats" *ngIf="stats.length">
+    <div class="stat-item" *ngFor="let stat of stats">
+      <h2>{{ stat.value }}</h2>
+      <p>{{ stat.label }}</p>
+    </div>
+  </div>
+</section>

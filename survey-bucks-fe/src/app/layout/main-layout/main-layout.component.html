@@ -1,0 +1,136 @@
+<div class="main-layout-container" [class.dark-mode]="isDarkMode">
+  <mat-toolbar color="primary" class="main-toolbar">
+    <div class="toolbar-left">
+      <button mat-icon-button *ngIf="isMobileView" (click)="toggleSidenav()" aria-label="Menu toggle">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="logo" routerLink="/">
+        <img style="height: 60px;" src="assets/SurveyBucksLogoHorizontal.png" alt="SurveyBucks Logo">
+      </div>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- Search button (can be expanded) -->
+      <button mat-icon-button aria-label="Search" matTooltip="Search" class="search-btn">
+        <mat-icon>search</mat-icon>
+      </button>
+      
+      <!-- Dark mode toggle -->
+      <button mat-icon-button (click)="toggleTheme()" [matTooltip]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+        <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      
+      <!-- Notification dropdown -->
+      <app-notification-dropdown 
+        [maxItems]="5" 
+        (markAsRead)="onNotificationRead($event)">
+      </app-notification-dropdown>
+      
+      <!-- User menu -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+        <div class="user-avatar" [style.background-color]="isDarkMode ? '#4f4f4f' : '#eeeeee'">
+          <span>{{currentUser?.firstName?.charAt(0)}}{{currentUser?.lastName?.charAt(0)}}</span>
+        </div>
+        <span class="user-name">{{currentUser?.firstName}} {{currentUser?.lastName}}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <div class="user-menu-header">
+          <div class="user-info">
+            <div class="user-avatar-large">
+              <span>{{currentUser?.firstName?.charAt(0)}}{{currentUser?.lastName?.charAt(0)}}</span>
+            </div>
+            <div class="user-details">
+              <h3>{{currentUser?.firstName}} {{currentUser?.lastName}}</h3>
+              <p>{{currentUser?.email}}</p>
+            </div>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/client/profile">
+          <mat-icon>person</mat-icon>
+          <span>My Profile</span>
+        </button>
+        <button mat-menu-item routerLink="/client/settings">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <button mat-menu-item routerLink="/client/wallet">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <span>Wallet</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/client/help">
+          <mat-icon>help</mat-icon>
+          <span>Help & Support</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  </mat-toolbar>
+  
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav [mode]="isMobileView ? 'over' : 'side'" 
+                [opened]="sidenavOpen" 
+                [fixedInViewport]="isMobileView"
+                [disableClose]="!isMobileView"
+                class="sidenav">
+      <div class="sidenav-header">
+        <h2>Menu</h2>
+      </div>
+      
+      <mat-nav-list>
+        <a mat-list-item *ngFor="let item of navigation" 
+           [routerLink]="item.route" 
+           routerLinkActive="active-link" 
+           [class.active-link]="activePage === item.route"
+           class="nav-item"
+           matRipple>
+          <div class="nav-item-content">
+            <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+            <div class="nav-item-details">
+              <span matListItemLine class="nav-item-label">{{item.label}}</span>
+              <span matListItemLine class="nav-item-description">{{item.description}}</span>
+            </div>
+            <span *ngIf="item.label === 'Notifications' && unreadNotifications > 0" 
+                  class="notification-badge">
+              {{unreadNotifications}}
+            </span>
+          </div>
+        </a>
+      </mat-nav-list>
+      
+      <div class="sidenav-footer">
+        
+      </div>
+    </mat-sidenav>
+    
+    <mat-sidenav-content class="content-container">
+      <div class="page-header" *ngIf="activePage">
+        <h1 class="page-title">
+          <!-- {{ navigation.find(nav => nav.route === activePage)?.label || 'Dashboard' }} -->
+        </h1>
+        <breadcrumb></breadcrumb>
+      </div>
+      
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+      
+      <footer class="footer">
+        <div class="copyright">
+          &copy; 2025 SurveyBucks. All rights reserved.
+        </div>
+        <div class="footer-links">
+          <a routerLink="/terms">Terms</a>
+          <a routerLink="/privacy">Privacy</a>
+          <a routerLink="/contact">Contact</a>
+        </div>
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

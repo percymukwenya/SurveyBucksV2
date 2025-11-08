@@ -1,0 +1,39 @@
+<div class="banking-verification-container">
+  <div class="header-section">
+    <h2>Banking Verification</h2>
+    <p class="subtitle">Verify user banking details for payment processing</p>
+  </div>
+
+  <div class="navigation-tabs">
+    <div class="tab-buttons">
+      <button 
+        class="tab-button" 
+        routerLink="dashboard" 
+        routerLinkActive="active">
+        Dashboard
+      </button>
+      <button 
+        class="tab-button" 
+        routerLink="pending" 
+        routerLinkActive="active">
+        Pending
+      </button>
+      <button 
+        class="tab-button" 
+        routerLink="approved" 
+        routerLinkActive="active">
+        Approved
+      </button>
+      <button 
+        class="tab-button" 
+        routerLink="rejected" 
+        routerLinkActive="active">
+        Rejected
+      </button>
+    </div>
+  </div>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>

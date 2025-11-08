@@ -1,0 +1,209 @@
+/* src/app/features/rewards/reward-claim/reward-claim.component.scss */
+.reward-claim-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .back-link {
+    margin-bottom: 24px;
+    
+    a {
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 48px 0;
+    
+    p {
+      margin-top: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .reward-header {
+    display: flex;
+    margin-bottom: 32px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+    
+    .reward-image {
+      width: 300px;
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 8px;
+      margin-right: 24px;
+      
+      @media (max-width: 768px) {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 16px;
+      }
+    }
+    
+    .reward-info {
+      flex: 1;
+      
+      h1 {
+        margin: 0 0 16px 0;
+        font-size: 24px;
+        font-weight: 500;
+      }
+      
+      .reward-description {
+        margin: 0 0 16px 0;
+        color: rgba(0, 0, 0, 0.7);
+      }
+      
+      .reward-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        
+        .meta-item {
+          .meta-label {
+            display: block;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 4px;
+          }
+          
+          .meta-value {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+  
+  .claim-process {
+    h2 {
+      margin: 0 0 24px 0;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    
+    .step-content {
+      margin: 16px 0 32px 0;
+      
+      p {
+        margin: 0 0 16px 0;
+      }
+      
+      .reward-details-list,
+      .terms-list {
+        margin: 0 0 24px 0;
+        padding-left: 24px;
+        
+        li {
+          margin-bottom: 8px;
+        }
+      }
+      
+      .step-actions {
+        display: flex;
+        gap: 16px;
+      }
+    }
+  }
+  
+  .claim-success {
+    mat-card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 32px 24px;
+      
+      .success-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background-color: #e8f5e9;
+        border-radius: 50%;
+        margin-bottom: 24px;
+        
+        mat-icon {
+          font-size: 48px;
+          height: 48px;
+          width: 48px;
+          color: #4caf50;
+        }
+      }
+      
+      h2 {
+        margin: 0 0 16px 0;
+        font-size: 24px;
+        font-weight: 500;
+        color: #4caf50;
+      }
+      
+      p {
+        margin: 0 0 24px 0;
+        max-width: 500px;
+      }
+      
+      .redemption-code {
+        margin-bottom: 24px;
+        
+        h3 {
+          margin: 0 0 16px 0;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        .code-display {
+          display: inline-block;
+          padding: 16px 24px;
+          background-color: #f5f5f5;
+          border-radius: 8px;
+          font-family: monospace;
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: 2px;
+          margin-bottom: 16px;
+        }
+        
+        .code-instructions {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.6);
+          margin-bottom: 0;
+        }
+      }
+      
+      .redemption-instructions {
+        margin-bottom: 24px;
+        
+        h3 {
+          margin: 0 0 16px 0;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0;
+          text-align: left;
+        }
+      }
+    }
+  }
+  
+  .button-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }

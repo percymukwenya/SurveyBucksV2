@@ -1,0 +1,141 @@
+<div class="auth-container">
+  <div class="auth-panel">
+    <div class="auth-header">
+      <h1>Welcome Back to <span class="highlight">SurveyBucks</span></h1>
+      <p>Sign in to access your rewards and surveys</p>
+    </div>
+
+    <!-- Server Error Messages -->
+    <div class="server-errors" *ngIf="showServerErrors && serverErrors.length > 0">
+      <mat-icon class="error-icon">error</mat-icon>
+      <div class="error-content">
+        <h4 *ngIf="isAccountLocked">Account Temporarily Locked</h4>
+        <h4 *ngIf="requiresEmailConfirmation">Email Confirmation Required</h4>
+        <h4 *ngIf="!isAccountLocked && !requiresEmailConfirmation">Sign In Failed</h4>
+        <ul>
+          <li *ngFor="let error of serverErrors">{{ error }}</li>
+        </ul>
+        
+        <!-- Account Locked Actions -->
+        <div class="error-actions" *ngIf="isAccountLocked">
+          <button mat-stroked-button color="primary" routerLink="/auth/forgot-password" 
+                  [queryParams]="{email: userEmail}">
+            <mat-icon>lock_reset</mat-icon>
+            Reset Password
+          </button>
+        </div>
+        
+        <!-- Email Confirmation Actions -->
+        <div class="error-actions" *ngIf="requiresEmailConfirmation">
+          <button mat-stroked-button color="primary" 
+                  (click)="onResendConfirmation()" 
+                  [disabled]="resendingConfirmation">
+            <mat-spinner diameter="16" *ngIf="resendingConfirmation"></mat-spinner>
+            <mat-icon *ngIf="!resendingConfirmation">email</mat-icon>
+            <span *ngIf="!resendingConfirmation">Resend Confirmation Email</span>
+            <span *ngIf="resendingConfirmation">Sending...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Email Address</mat-label>
+        <input 
+          matInput 
+          formControlName="email" 
+          type="email" 
+          placeholder="your@email.com"
+          autocomplete="email"
+          (focus)="clearServerErrors()"
+        >
+        <mat-error *ngIf="loginForm.get('email')?.touched && getEmailError()">
+          {{ getEmailError() }}
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Password</mat-label>
+        <input 
+          matInput 
+          formControlName="password" 
+          [type]="hidePassword ? 'password' : 'text'"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          (focus)="clearServerErrors()"
+        >
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hidePassword"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.touched && getPasswordError()">
+          {{ getPasswordError() }}
+        </mat-error>
+      </mat-form-field>
+      
+      <div class="form-options">
+        <mat-checkbox formControlName="rememberMe" color="primary">
+          Remember me
+        </mat-checkbox>
+        <a routerLink="/auth/forgot-password" class="forgot-password">
+          Forgot password?
+        </a>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        class="submit-btn" 
+        [disabled]="loginForm.invalid || loading"
+      >
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        <span *ngIf="!loading">Sign In to SurveyBucks</span>
+        <span *ngIf="loading">Signing in...</span>
+      </button>
+    </form>
+    
+    <!-- Social Login Section (placeholder for future implementation) -->
+    <div class="social-login" *ngIf="false">
+      <p>Or sign in with</p>
+      <div class="social-buttons">
+        <button mat-stroked-button class="social-btn google" disabled>
+          <mat-icon>account_circle</mat-icon>
+          <span>Google</span>
+        </button>
+        <button mat-stroked-button class="social-btn facebook" disabled>
+          <mat-icon>account_circle</mat-icon>
+          <span>Facebook</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="auth-footer">
+      <p>Don't have an account? 
+        <a routerLink="/auth/register" class="signup-link">Sign up for free</a>
+      </p>
+    </div>
+  </div>
+  
+  <div class="auth-image">
+    <div class="info-overlay">
+      <h2>Join Our Community of Survey Takers</h2>
+      <ul>
+        <li>Earn rewards for your valuable opinions</li>
+        <li>Help shape the future of products and services</li>
+        <li>Get paid In Real Cash or gift cards</li>
+        <li>Flexible survey schedules that fit your lifestyle</li>
+      </ul>
+      <div class="stats-container">
+        
+      </div>
+    </div>
+  </div>
+</div>

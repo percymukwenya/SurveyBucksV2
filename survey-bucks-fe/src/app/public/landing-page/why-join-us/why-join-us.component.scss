@@ -1,0 +1,83 @@
+.why-join-section {
+      padding: 4rem 2rem;
+      background-color: #f5f5f5;
+    }
+    
+    .why-join-container {
+      display: flex;
+      max-width: 1000px;
+      margin: 0 auto;
+      gap: 3rem;
+      align-items: center;
+    }
+    
+    .image-container {
+      flex: 1;
+      height: 400px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background-image: url('../../../../assets/images/woman-tablet.png');
+        background-size: cover;
+        background-position: center;
+
+    }
+    
+    img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .content {
+      flex: 1;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    
+    .benefits {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+    }
+    
+    .benefits li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+    
+    .bullet {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background-color: #16D2CB;
+      border-radius: 50%;
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+    
+    .register-btn {
+      background-color: #caff29;
+      color: #333;
+      border: none;
+      border-radius: 25px;
+      padding: 0.8rem 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .register-btn:hover {
+      background-color: #FDD835;
+    }
+    
+    @media (max-width: 768px) {
+      .why-join-container {
+        flex-direction: column;
+      }
+    }

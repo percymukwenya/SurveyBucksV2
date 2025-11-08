@@ -1,0 +1,632 @@
+<div class="survey-take-container">
+  <!-- Header with navigation -->
+  <div class="survey-header">
+    <button
+      mat-icon-button
+      (click)="pauseSurvey()"
+      matTooltip="Pause Survey"
+      [disabled]="saving || completing"
+    >
+      <mat-icon>{{ saving ? "hourglass_empty" : "pause" }}</mat-icon>
+    </button>
+
+    <div class="survey-title-section">
+      <h1 *ngIf="surveyProgress">{{ surveyProgress.surveyName }}</h1>
+      <div class="progress-info">
+        <span class="progress-text"
+          >{{ getProgressPercentage() }}% Complete</span
+        >
+        <span class="answered-questions" *ngIf="surveyProgress">
+          {{ surveyProgress.answeredQuestions }} /
+          {{ surveyProgress.totalQuestions }} questions answered
+        </span>
+        <span class="time-remaining" *ngIf="surveyProgress?.maxTimeInSeconds">
+          {{ formatTimeRemaining() }}
+        </span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="getProgressPercentage()"
+        [color]="getProgressColor()"
+      >
+      </mat-progress-bar>
+    </div>
+
+    <div class="header-actions">
+      <!-- Auto-save indicator -->
+      <div
+        class="auto-save-indicator"
+        *ngIf="surveyService.hasPendingResponses()"
+      >
+        <mat-icon class="pending-icon">cloud_upload</mat-icon>
+        <span>{{ surveyService.getPendingResponses().length }} unsaved</span>
+      </div>
+
+      <!-- Smart navigation helper -->
+      <button
+        mat-icon-button
+        (click)="showProgressSummary()"
+        matTooltip="Progress Summary"
+        class="progress-helper"
+        [matBadge]="getIncompleteSectionCount() > 0 ? getIncompleteSectionCount() : null"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+      >
+        <mat-icon>analytics</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        routerLink="/client/surveys"
+        matTooltip="Exit Survey"
+        (click)="confirmExit($event)"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Global loading state -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading survey...</p>
+  </div>
+
+  <!-- Survey navigation tabs -->
+  <mat-card *ngIf="!loading && navigation" class="navigation-card">
+    <mat-tab-group
+      [(selectedIndex)]="currentSectionIndex"
+      (selectedIndexChange)="goToSection($event)"
+      animationDuration="200ms"
+      class="enhanced-tab-group"
+    >
+      <mat-tab
+        *ngFor="let section of navigation.sections; let i = index"
+        [disabled]="sectionLoading"
+      >
+        <ng-template mat-tab-label>
+          <div class="section-tab-label">
+            <span>{{ section.name }}</span>
+
+            <!-- Progress ring -->
+            <div class="progress-ring-container">
+              <svg class="progress-ring" width="24" height="24">
+                <circle
+                  class="progress-ring-background"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#e0e0e0"
+                  stroke-width="2"
+                  fill="transparent"
+                ></circle>
+                <circle
+                  class="progress-ring-progress"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#4caf50"
+                  stroke-width="2"
+                  fill="transparent"
+                  [style.stroke-dasharray]="62.83"
+                  [style.stroke-dashoffset]="
+                    62.83 - (62.83 * section.completionPercentage) / 100
+                  "
+                  [style.stroke]="
+                    getSectionProgressColor(section.completionPercentage)
+                  "
+                ></circle>
+              </svg>
+              <span class="progress-percentage"
+                >{{ section.completionPercentage }}%</span
+              >
+            </div>
+            <span class="question-count"
+              >{{ section.answeredCount }}/{{ section.questionCount }}</span
+            >
+          </div>
+        </ng-template>
+
+        <!-- Section content loaded here -->
+        <div class="section-content">
+          <!-- Section loading state -->
+          <div *ngIf="sectionLoading" class="section-loading">
+            <div class="loading-spinner-container">
+              <mat-progress-spinner
+                diameter="40"
+                mode="indeterminate"
+              ></mat-progress-spinner>
+              <p>Loading section questions...</p>
+            </div>
+          </div>
+
+          <!-- Current section form -->
+          <form
+            *ngIf="
+              !sectionLoading && currentSection && i === currentSectionIndex
+            "
+            [formGroup]="sectionForm"
+            class="section-form"
+          >
+            <mat-card class="section-details-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <span>{{ currentSection.name }}</span>
+                  <mat-chip-set class="section-chips">
+                    <mat-chip
+                      *ngIf="currentSection.requireAllQuestions"
+                      color="accent"
+                    >
+                      <mat-icon matChipAvatar>assignment_turned_in</mat-icon>
+                      All Required
+                    </mat-chip>
+                    <mat-chip *ngIf="currentSection.maxTimeInMins">
+                      <mat-icon matChipAvatar>timer</mat-icon>
+                      {{ currentSection.maxTimeInMins }} min limit
+                    </mat-chip>
+                  </mat-chip-set>
+                </mat-card-title>
+                <mat-card-subtitle *ngIf="currentSection.description">
+                  {{ currentSection.description }}
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+
+            <!-- Questions container -->
+            <div class="questions-container">
+              <div
+                *ngFor="
+                  let question of currentSection.questions;
+                  let qIndex = index
+                "
+                class="question-wrapper"
+                [class.has-errors]="getQuestionErrors(question).length > 0"
+                [class.answered]="isQuestionAnswered(question)"
+                [class.mandatory]="question.isMandatory"
+                [attr.data-question-id]="question.id"
+              >
+                <!-- Question header -->
+                <div class="question-header">
+                  <div class="question-title-row">
+                    <h3 class="question-text">
+                      <span class="question-number">{{ qIndex + 1 }}</span>
+                      <span class="question-content">{{ question.text }}</span>
+                      <span
+                        *ngIf="question.isMandatory"
+                        class="mandatory-indicator"
+                        matTooltip="Required"
+                        >*</span
+                      >
+                    </h3>
+
+                    <!-- Question status indicator -->
+                    <div class="question-status">
+                      <mat-icon
+                        *ngIf="isQuestionAnswered(question)"
+                        class="status-icon answered"
+                        matTooltip="Answered"
+                      >
+                        check_circle
+                      </mat-icon>
+                      <mat-icon
+                        *ngIf="
+                          !isQuestionAnswered(question) && question.isMandatory
+                        "
+                        class="status-icon required"
+                        matTooltip="Required"
+                      >
+                        radio_button_unchecked
+                      </mat-icon>
+                    </div>
+                  </div>
+                  <div *ngIf="question.helpText" class="help-text">
+                    <mat-icon class="help-icon">help_outline</mat-icon>
+                    <span>{{ question.helpText }}</span>
+                  </div>
+
+                  <!-- Validation errors -->
+                  <div
+                    *ngIf="getQuestionErrors(question).length > 0" class="validation-errors">
+                    <mat-icon class="error-icon">error</mat-icon>
+                    <div class="error-content">
+                      <strong>Please fix the following:</strong>
+                      <ul class="error-list">
+                        <li *ngFor="let error of getQuestionErrors(question)">{{ error }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Question input based on type -->
+                <div class="question-input" [ngSwitch]="question.questionTypeName">
+                  <!-- Short Text -->
+                  <mat-form-field
+                    *ngSwitchCase="'ShortText'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <input
+                      matInput
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Your answer"
+                      [maxlength]="question.maxValue || 255"
+                    />
+                    <mat-hint *ngIf="question.maxValue">
+                      Maximum {{ question.maxValue }} characters
+                    </mat-hint>
+                  </mat-form-field>
+
+                  <!-- Long Text -->
+                  <mat-form-field
+                    *ngSwitchCase="'LongText'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <textarea
+                      matInput
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Your detailed answer"
+                      rows="4"
+                      [maxlength]="question.maxValue || 1000"
+                    >
+                    </textarea>
+                    <mat-hint *ngIf="question.maxValue">
+                      Maximum {{ question.maxValue }} characters
+                    </mat-hint>
+                  </mat-form-field>
+
+                  <!-- Email -->
+                  <mat-form-field
+                    *ngSwitchCase="'Email'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <input
+                      matInput
+                      type="email"
+                      [formControlName]="'question_' + question.id"
+                      placeholder="your.email@example.com"
+                    />
+                    <mat-icon matSuffix>email</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Phone -->
+                  <mat-form-field
+                    *ngSwitchCase="'Phone'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <input
+                      matInput
+                      type="tel"
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Your phone number"
+                    />
+                    <mat-icon matSuffix>phone</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Number Input -->
+                  <mat-form-field
+                    *ngSwitchCase="'NumberInput'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <input
+                      matInput
+                      type="number"
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Enter a number"
+                      [min]="question.minValue ?? null"
+                      [max]="question.maxValue ?? null"
+                    />
+                    <mat-hint *ngIf="question.minValue && question.maxValue">
+                      Between {{ question.minValue }} and
+                      {{ question.maxValue }}
+                    </mat-hint>
+                  </mat-form-field>
+
+                  <!-- Single Choice -->
+                  <mat-radio-group
+                    *ngSwitchCase="'SingleChoice'"
+                    [formControlName]="'question_' + question.id"
+                    class="radio-group"
+                  >
+                    <mat-radio-button
+                      *ngFor="let choice of question.responseChoices"
+                      [value]="choice.value"
+                      class="radio-option"
+                    >
+                      {{ choice.text }}
+                    </mat-radio-button>
+                  </mat-radio-group>
+
+                  <!-- Multiple Choice -->
+                  <div *ngSwitchCase="'MultipleChoice'" class="checkbox-group">
+                    <div [formArrayName]="'question_' + question.id">
+                      <mat-checkbox
+                        *ngFor="
+                          let choice of question.responseChoices;
+                          let choiceIndex = index
+                        "
+                        [formControlName]="choiceIndex"
+                        (change)="
+                          onMultipleChoiceChange(question, choiceIndex, $event)
+                        "
+                        class="checkbox-option"
+                        [class.exclusive]="choice.isExclusiveOption"
+                      >
+                        {{ choice.text }}
+                        <span
+                          *ngIf="choice.isExclusiveOption"
+                          class="exclusive-label"
+                          >(Select only this)</span
+                        >
+                      </mat-checkbox>
+                    </div>
+                  </div>
+
+                  <!-- Dropdown -->
+                  <mat-form-field
+                    *ngSwitchCase="'Dropdown'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <mat-select
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Select an option"
+                    >
+                      <mat-option
+                        *ngFor="let choice of question.responseChoices"
+                        [value]="choice.value"
+                      >
+                        {{ choice.text }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <!-- Rating Scale -->
+                  <div *ngSwitchCase="'Rating'" class="rating-container">
+                    <div class="rating-labels">
+                      <span>{{ question.minValue || 1 }}</span>
+                      <span>{{ question.maxValue || 5 }}</span>
+                    </div>
+                    <mat-slider
+                      [min]="question.minValue || 1"
+                      [max]="question.maxValue || 5"
+                      [step]="1"
+                      [discrete]="true"
+                      class="rating-slider"
+                    >
+                      <input
+                        matSliderThumb
+                        [formControlName]="'question_' + question.id"
+                      />
+                    </mat-slider>
+                    <div
+                      class="current-value"
+                      *ngIf="sectionForm.get('question_' + question.id)?.value"
+                    >
+                      Selected:
+                      {{ sectionForm.get("question_" + question.id)?.value }}
+                    </div>
+                  </div>
+
+                  <!-- Likert Scale -->
+                  <div *ngSwitchCase="'LikertScale'" class="likert-container">
+                    <mat-radio-group
+                      [formControlName]="'question_' + question.id"
+                      class="likert-group"
+                    >
+                      <div class="likert-options">
+                        <div
+                          *ngFor="let choice of question.responseChoices"
+                          class="likert-option"
+                        >
+                          <mat-radio-button [value]="choice.value">
+                            {{ choice.text }}
+                          </mat-radio-button>
+                        </div>
+                      </div>
+                    </mat-radio-group>
+                  </div>
+
+                  <!-- Matrix -->
+                  <div *ngSwitchCase="'Matrix'" class="matrix-container">
+                    <div [formGroupName]="'question_' + question.id">
+                      <div class="matrix-table-container">
+                        <table class="matrix-table">
+                          <thead>
+                            <tr>
+                              <th class="matrix-corner"></th>
+                              <th
+                                *ngFor="let column of question.matrixColumns"
+                                class="matrix-header"
+                              >
+                                {{ column.text }}
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              *ngFor="
+                                let row of question.matrixRows;
+                                let rowIndex = index
+                              "
+                              class="matrix-row"
+                              [class.error-row]="
+                                question.isMandatory &&
+                                !sectionForm.get(
+                                  'question_' + question.id + '.' + row.id
+                                )?.value
+                              "
+                            >
+                              <td class="row-label">
+                                {{ row.text }}
+                                <span
+                                  *ngIf="question.isMandatory"
+                                  class="mandatory-indicator"
+                                  >*</span
+                                >
+                              </td>
+                              <td
+                                *ngFor="let column of question.matrixColumns"
+                                class="matrix-cell"
+                              >
+                                <mat-radio-button
+                                  [value]="column.value"
+                                  [formControlName]="row.id.toString()"
+                                  [name]="
+                                    'matrix_' + question.id + '_' + row.id
+                                  "
+                                >
+                                </mat-radio-button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <!-- Matrix validation summary -->
+                      <div
+                        *ngIf="question.isMandatory"
+                        class="matrix-validation-summary"
+                      >
+                        <ng-container
+                          *ngIf="getUnansweredMatrixRows(question).length > 0"
+                        >
+                          <mat-icon class="warning-icon">warning</mat-icon>
+                          <span
+                            >{{
+                              getUnansweredMatrixRows(question).length
+                            }}
+                            row(s) still need answers</span
+                          >
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Date -->
+                  <mat-form-field
+                    *ngSwitchCase="'Date'"
+                    appearance="outline"
+                    class="full-width"
+                  >
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      [formControlName]="'question_' + question.id"
+                      placeholder="Choose a date"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Yes/No -->
+                  <mat-radio-group
+                    *ngSwitchCase="'YesNo'"
+                    [formControlName]="'question_' + question.id"
+                    class="yesno-group"
+                  >
+                    <mat-radio-button value="yes" class="radio-option"
+                      >Yes</mat-radio-button
+                    >
+                    <mat-radio-button value="no" class="radio-option"
+                      >No</mat-radio-button
+                    >
+                  </mat-radio-group>
+
+                  <!-- Default case -->
+                  <div *ngSwitchDefault class="unsupported-question">
+                    <mat-icon>help_outline</mat-icon>
+                    <span
+                      >Question type "{{ question.questionTypeName }}" is not
+                      yet supported</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+
+  <!-- Navigation footer -->
+  <mat-card class="navigation-footer">
+    <mat-card-actions class="footer-actions">
+      <!-- Previous button -->
+      <button 
+        mat-button 
+        color="primary"
+        [disabled]="currentSectionIndex <= 0 || sectionLoading || saving"
+        (click)="prevSection()">
+        <mat-icon>chevron_left</mat-icon>
+        Previous
+      </button>
+      
+      <!-- Save progress button with enhanced feedback -->
+      <button 
+        mat-stroked-button 
+        color="accent"
+        [disabled]="saving || sectionLoading"
+        (click)="saveCurrentResponses(true)">
+        <mat-icon *ngIf="!saving">{{ surveyService.hasPendingResponses() ? 'cloud_upload' : 'check' }}</mat-icon>
+        <mat-progress-spinner 
+          *ngIf="saving" 
+          diameter="16" 
+          mode="indeterminate">
+        </mat-progress-spinner>
+        {{ saving ? 'Saving...' : (surveyService.hasPendingResponses() ? 'Save Changes' : 'Saved') }}
+      </button>
+      
+      <div class="spacer"></div>
+      
+      <!-- Enhanced progress indicator -->
+      <div class="progress-summary" *ngIf="navigation && surveyProgress">
+        <div class="section-indicator">
+          Section {{ currentSectionIndex + 1 }} of {{ navigation.sections.length }}
+        </div>
+        <div class="completion-indicator">
+          <mat-icon class="completion-icon">assignment</mat-icon>
+          {{ surveyProgress.answeredQuestions }}/{{ surveyProgress.totalQuestions }} answered
+        </div>
+      </div>
+      
+      <!-- Next/Complete button with enhanced validation feedback -->
+      <button 
+        *ngIf="navigation && currentSectionIndex < navigation.sections.length - 1"
+        mat-flat-button 
+        color="primary"
+        [disabled]="sectionLoading || (!isSectionComplete() && currentSection?.requireAllQuestions)"
+        (click)="nextSection()">
+        <span *ngIf="!isSectionComplete() && currentSection?.requireAllQuestions">
+          Complete Required Questions
+        </span>
+        <span *ngIf="isSectionComplete() || !currentSection?.requireAllQuestions">
+          Next Section
+        </span>
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      
+      <button 
+        *ngIf="navigation && currentSectionIndex === navigation.sections.length - 1"
+        mat-flat-button 
+        color="primary"
+        [disabled]="completing || !canCompleteSurvey()"
+        (click)="completeSurvey()">
+        <mat-icon *ngIf="!completing">{{ canCompleteSurvey() ? 'check' : 'warning' }}</mat-icon>
+        <mat-progress-spinner 
+          *ngIf="completing" 
+          diameter="16" 
+          mode="indeterminate">
+        </mat-progress-spinner>
+        {{ completing ? 'Submitting...' : (canCompleteSurvey() ? 'Complete Survey' : 'Complete Required Questions') }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

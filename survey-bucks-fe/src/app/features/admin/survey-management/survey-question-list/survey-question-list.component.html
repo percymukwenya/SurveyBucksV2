@@ -1,0 +1,73 @@
+<div class="question-list-container">
+  <div class="question-header">
+    <h3>Questions</h3>
+    <button mat-flat-button color="primary" (click)="openQuestionDialog()">
+      <mat-icon>add</mat-icon>
+      Add Question
+    </button>
+  </div>
+  
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Loading questions...</p>
+  </div>
+  
+  <div *ngIf="!loading && questions.length === 0" class="empty-state">
+    <mat-icon>help_outline</mat-icon>
+    <h4>No Questions Added</h4>
+    <p>Start adding questions to this section</p>
+    <button mat-flat-button color="primary" (click)="openQuestionDialog()">
+      <mat-icon>add</mat-icon>
+      Add First Question
+    </button>
+  </div>
+  
+  <div *ngIf="!loading && questions.length > 0" class="questions-list" cdkDropList (cdkDropListDropped)="onQuestionDrop($event)">
+    <mat-card *ngFor="let question of questions; let i = index" class="question-card" cdkDrag>
+      <div class="drag-handle" cdkDragHandle matTooltip="Drag to reorder">
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+      
+      <div class="question-content">
+        <div class="question-header-row">
+          <div class="question-index">Q{{i + 1}}</div>
+          <div class="question-type">
+            <mat-icon [matTooltip]="getQuestionTypeLabel(question.questionTypeId)">
+              {{getQuestionTypeIcon(question.questionTypeId)}}
+            </mat-icon>
+            <span>{{getQuestionTypeLabel(question.questionTypeId)}}</span>
+          </div>
+          <div class="question-status">
+            <mat-chip-listbox>
+              <mat-chip-option *ngIf="question.isMandatory" color="primary" selected disableRipple>Required</mat-chip-option>
+              <mat-chip-option *ngIf="question.isScreeningQuestion" color="warn" selected disableRipple>Screening</mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </div>
+        
+        <div class="question-text">{{question.text}}</div>
+        
+        <div class="question-footer">
+          <div *ngIf="question.helpText" class="question-help">
+            <mat-icon>info</mat-icon>
+            <span>{{question.helpText}}</span>
+          </div>
+          
+          <div class="question-actions">
+            <button mat-icon-button color="primary" (click)="openQuestionDialog(question)" matTooltip="Edit Question">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteQuestion(question)" matTooltip="Delete Question">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  
+  <div *ngIf="saving" class="saving-overlay">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Saving changes...</p>
+  </div>
+</div>

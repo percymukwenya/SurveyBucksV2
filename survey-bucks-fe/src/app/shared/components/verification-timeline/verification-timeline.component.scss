@@ -1,0 +1,306 @@
+.verification-timeline {
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+
+    .document-name {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .current-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+
+      &.status-uploaded {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      &.status-reviewing {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      &.status-approved {
+        background-color: #e8f5e8;
+        color: #388e3c;
+      }
+
+      &.status-rejected {
+        background-color: #ffebee;
+        color: #d32f2f;
+      }
+    }
+  }
+
+  .timeline-container {
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .timeline-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-connector {
+      position: absolute;
+      left: 20px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% + 1rem);
+      background-color: #e9ecef;
+      transition: background-color 0.3s ease;
+
+      &.active {
+        background-color: #28a745;
+      }
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.timeline-icon-completed {
+        background-color: #28a745;
+        color: white;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+      }
+
+      &.timeline-icon-active {
+        background-color: #ffc107;
+        color: white;
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        animation: pulse 2s infinite;
+      }
+
+      &.timeline-icon-pending {
+        background-color: #6c757d;
+        color: white;
+      }
+    }
+
+    .step-content {
+      flex: 1;
+      min-width: 0;
+
+      .step-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+
+        .step-title {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #2c3e50;
+        }
+
+        .step-badge {
+          padding: 0.25rem 0.75rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          &.active {
+            background-color: #fff3cd;
+            color: #856404;
+          }
+
+          &.completed {
+            background-color: #d4edda;
+            color: #155724;
+
+            mat-icon {
+              font-size: 14px;
+              width: 14px;
+              height: 14px;
+            }
+          }
+        }
+      }
+
+      .step-details {
+        .step-subtitle {
+          margin: 0 0 0.5rem 0;
+          color: #6c757d;
+          font-size: 0.9rem;
+        }
+
+        .time-estimate, .rejection-reason {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+          font-size: 0.85rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        .time-estimate {
+          color: #17a2b8;
+        }
+
+        .rejection-reason {
+          color: #dc3545;
+          background-color: #f8d7da;
+          padding: 0.5rem;
+          border-radius: 4px;
+          border-left: 3px solid #dc3545;
+        }
+      }
+    }
+
+    // Different states
+    &.timeline-step-completed {
+      .step-content .step-title {
+        color: #28a745;
+      }
+    }
+
+    &.timeline-step-active {
+      .step-content .step-title {
+        color: #ffc107;
+        font-weight: 700;
+      }
+    }
+
+    &.timeline-step-pending {
+      opacity: 0.6;
+    }
+  }
+
+  .timeline-actions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .retry-button {
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .help-button {
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .review-info {
+    margin-top: 1.5rem;
+
+    .info-card {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+
+      mat-icon {
+        color: #17a2b8;
+        margin-top: 0.25rem;
+      }
+
+      .info-content {
+        flex: 1;
+
+        h6 {
+          margin: 0 0 0.5rem 0;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #2c3e50;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.85rem;
+          color: #6c757d;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+}
+
+// Pulse animation for active steps
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(255, 193, 7, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .verification-timeline {
+    .timeline-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .timeline-actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

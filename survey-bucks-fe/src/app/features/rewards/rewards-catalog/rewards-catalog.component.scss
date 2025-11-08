@@ -1,0 +1,397 @@
+/* src/app/features/rewards/rewards-catalog/rewards-catalog.component.scss */
+.rewards-catalog-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    
+    .page-header {
+      margin-bottom: 24px;
+      
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+      }
+      
+      .subtitle {
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 4px;
+      }
+    }
+  }
+  
+  .rewards-status-bar {
+    margin-bottom: 24px;
+    
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 16px;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .status-section {
+        display: flex;
+        align-items: center;
+        
+        &.points-section {
+          flex: 1;
+          
+          .status-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background-color: #f3e5f5;
+            border-radius: 50%;
+            margin-right: 16px;
+            
+            mat-icon {
+              color: #673ab7;
+              font-size: 28px;
+              height: 28px;
+              width: 28px;
+            }
+          }
+          
+          .status-content {
+            .status-value {
+              font-size: 24px;
+              font-weight: 500;
+              color: #673ab7;
+              display: block;
+            }
+            
+            .status-label {
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.6);
+            }
+          }
+        }
+        
+        &.level-section {
+          flex: 2;
+          
+          .level-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background-color: #673ab7;
+            color: white;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-right: 16px;
+          }
+          
+          .status-content {
+            flex: 1;
+            
+            .level-progress {
+              .progress-text {
+                display: block;
+                margin-bottom: 8px;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.6);
+              }
+            }
+          }
+        }
+        
+        &.history-section {
+          button {
+            mat-icon {
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 48px 0;
+    
+    p {
+      margin-top: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .tab-content {
+    padding: 24px 0;
+  }
+  
+  .filters-section {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+    
+    mat-form-field {
+      flex: 1;
+    }
+  }
+  
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    
+    .reward-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      
+      .reward-level-lock {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 2;
+        border-radius: 4px;
+        
+        mat-icon {
+          font-size: 48px;
+          height: 48px;
+          width: 48px;
+          margin-bottom: 8px;
+        }
+        
+        span {
+          font-size: 18px;
+          font-weight: 500;
+        }
+      }
+      
+      .reward-image {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        
+        .reward-category {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          padding: 4px 8px;
+          background-color: rgba(0, 0, 0, 0.6);
+          color: white;
+          font-size: 12px;
+          border-radius: 4px;
+        }
+      }
+      
+      mat-card-content {
+        flex: 1;
+        padding: 16px;
+        
+        .reward-name {
+          margin: 0 0 8px 0;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        .reward-description {
+          margin: 0 0 16px 0;
+          color: rgba(0, 0, 0, 0.7);
+          font-size: 14px;
+          min-height: 60px;
+        }
+        
+        .reward-points {
+          display: flex;
+          align-items: center;
+          color: #673ab7;
+          font-weight: 500;
+          margin-bottom: 8px;
+          
+          mat-icon {
+            margin-right: 4px;
+            font-size: 20px;
+            height: 20px;
+            width: 20px;
+          }
+        }
+        
+        .reward-quantity {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+          
+          .low-quantity {
+            color: #f44336;
+          }
+        }
+      }
+      
+      mat-card-actions {
+        padding: 8px 16px 16px;
+        
+        button {
+          width: 100%;
+        }
+        
+        .insufficient-points {
+          text-align: center;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+          margin-top: 8px;
+        }
+      }
+    }
+    
+    .no-rewards {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 0;
+      text-align: center;
+      
+      mat-icon {
+        font-size: 48px;
+        height: 48px;
+        width: 48px;
+        margin-bottom: 16px;
+        color: rgba(0, 0, 0, 0.3);
+      }
+      
+      h3 {
+        margin: 0 0 8px 0;
+        font-weight: 500;
+      }
+      
+      p {
+        margin: 0;
+        color: rgba(0, 0, 0, 0.6);
+        max-width: 400px;
+      }
+    }
+  }
+  
+  .user-rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    
+    .user-reward-card {
+      display: flex;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
+      
+      .reward-image {
+        width: 200px;
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        
+        @media (max-width: 768px) {
+          width: 100%;
+        }
+        
+        .reward-status {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          padding: 4px 8px;
+          color: white;
+          font-size: 12px;
+          border-radius: 4px;
+          
+          &.ready {
+            background-color: #4caf50;
+          }
+          
+          &.pending {
+            background-color: #ff9800;
+          }
+          
+          &.claimed {
+            background-color: #673ab7;
+          }
+          
+          &.expired {
+            background-color: #f44336;
+          }
+        }
+      }
+      
+      mat-card-content {
+        flex: 1;
+        padding: 16px;
+        
+        .reward-name {
+          margin: 0 0 8px 0;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        .reward-description {
+          margin: 0 0 16px 0;
+          color: rgba(0, 0, 0, 0.7);
+          font-size: 14px;
+        }
+        
+        .reward-details {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 16px;
+          
+          .detail-item {
+            .detail-label {
+              display: block;
+              font-size: 12px;
+              color: rgba(0, 0, 0, 0.6);
+              margin-bottom: 4px;
+            }
+            
+            .detail-value {
+              font-weight: 500;
+              
+              &.code {
+                font-family: monospace;
+                background-color: #f5f5f5;
+                padding: 4px 8px;
+                border-radius: 4px;
+              }
+            }
+          }
+        }
+      }
+      
+      mat-card-actions {
+        padding: 16px;
+        display: flex;
+        justify-content: flex-end;
+        
+        @media (max-width: 768px) {
+          button {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }

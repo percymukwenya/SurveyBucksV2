@@ -1,0 +1,785 @@
+.about-page {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(135deg, #16d2cb 0%, #00acc1 100%);
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+// Story Section
+.story-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.story-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.story-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.story-text p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.story-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat h3 {
+  font-size: 2rem;
+  color: #16d2cb;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.stat p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.story-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-placeholder {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.image-placeholder mat-icon {
+  font-size: 5rem;
+  height: 5rem;
+  width: 5rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.image-placeholder p {
+  color: #555;
+  font-weight: 500;
+  margin: 0;
+}
+
+// Mission Section
+.mission-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.mission-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.value-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+}
+
+.value-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.value-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.value-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+// How We Work Section
+.how-we-work-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.how-we-work-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.work-process {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.process-item {
+  display: grid;
+  grid-template-columns: 60px 1fr 60px;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.process-number {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #16d2cb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.process-content h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.process-content p {
+  color: #666;
+  margin: 0;
+}
+
+.process-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #16d2cb;
+}
+
+// Team Section
+.team-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.team-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.team-intro {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.team-member {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.member-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #16d2cb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto 1rem;
+}
+
+.team-member h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.member-role {
+  color: #16d2cb;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.member-bio {
+  color: #666;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+// Partners Section
+.partners-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.partners-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.partners-section > .container > p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+}
+
+.partner-category h3 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #16d2cb;
+  font-size: 1.2rem;
+}
+
+.partner-logos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.logo-placeholder {
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.logo-placeholder:hover {
+  border-color: #16d2cb;
+  color: #16d2cb;
+}
+
+// Security Section
+.security-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.security-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.security-item {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.security-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.security-item h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.security-item p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.certifications {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.certifications h3 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.cert-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.cert-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+}
+
+// Contact Section
+.contact-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.contact-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.contact-method {
+  text-align: center;
+  padding: 2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.contact-method:hover {
+  border-color: #16d2cb;
+  transform: translateY(-3px);
+}
+
+.contact-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.contact-method h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.contact-method p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.contact-link {
+  color: #16d2cb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #00acc1;
+  text-decoration: underline;
+}
+
+// Final CTA Section
+.final-cta {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #16d2cb 0%, #00acc1 100%);
+  color: white;
+  text-align: center;
+}
+
+.final-cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.final-cta p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.cta-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #caff29 !important;
+  color: #333 !important;
+}
+
+.current-status {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  border-left: 4px solid #16d2cb;
+}
+
+.current-status h3 {
+  color: #16d2cb;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.current-status p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.focus-areas h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.focus-areas ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.focus-areas li {
+  padding: 0.5rem 0;
+  color: #555;
+  position: relative;
+  padding-left: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.focus-areas li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #16d2cb;
+  font-weight: bold;
+}
+
+.focus-areas li:last-child {
+  border-bottom: none;
+}
+
+// Why We're Building Section
+.why-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.why-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.why-card {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  border-top: 4px solid #16d2cb;
+  transition: transform 0.3s ease;
+}
+
+.why-card:hover {
+  transform: translateY(-3px);
+}
+
+.why-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #16d2cb;
+  margin-bottom: 1rem;
+}
+
+.why-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.why-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+// Platform Features Section
+.platform-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.platform-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.platform-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.platform-card:hover {
+  transform: translateY(-5px);
+}
+
+.platform-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #caff29;
+  margin-bottom: 1rem;
+}
+
+.platform-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.platform-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+// Updated image placeholder for SA theme
+.image-placeholder {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  border: 3px solid #4caf50;
+}
+
+.image-placeholder mat-icon {
+  font-size: 5rem;
+  height: 5rem;
+  width: 5rem;
+  color: #2e7d32;
+  margin-bottom: 1rem;
+}
+
+.image-placeholder p {
+  color: #2e7d32;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+// Remove team section styles and update other sections
+.mission-section {
+  padding: 5rem 0;
+  background-color: white; // Changed from #f8f9fa to white
+}
+
+// Security section update for SA compliance
+.security-section {
+  padding: 5rem 0;
+  background-color: #f8f9fa;
+}
+
+.security-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.security-item {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.security-item:hover {
+  transform: translateY(-3px);
+}
+
+.security-icon {
+  font-size: 3rem;
+  height: 3rem;
+  width: 3rem;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.security-item h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.security-item p {
+  color: #666;
+  line-height: 1.6;
+}
+
+// Contact section updates
+.contact-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .story-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .story-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .process-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .cert-badges {
+    flex-direction: column;
+    align-items: center;
+  }
+}

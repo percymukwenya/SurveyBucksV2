@@ -1,0 +1,374 @@
+<!-- src/app/features/surveys/survey-list/survey-list.component.html -->
+<div class="survey-list-container">
+  <div class="page-header">
+    <h1>Surveys</h1>
+    <p class="subtitle">
+      Find and participate in surveys that match your profile
+    </p>
+  </div>
+
+  <div class="filter-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="filter-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Search</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              placeholder="Search by name or keyword"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Industry</mat-label>
+            <mat-select [(ngModel)]="selectedIndustry">
+              <mat-option value="">All Industries</mat-option>
+              <mat-option
+                *ngFor="let industry of industries"
+                [value]="industry"
+              >
+                {{ industry }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="filter-actions">
+            <button mat-flat-button color="primary" (click)="applyFilters()">
+              Apply Filters
+            </button>
+            <button mat-stroked-button (click)="clearFilters()">Clear</button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Survey Preview Section - Show when profile incomplete -->
+  <div class="survey-preview-main" *ngIf="!hasSurveyAccess && !loading">
+    <mat-card class="preview-card">
+      <mat-card-header>
+        <div mat-card-avatar>
+          <mat-icon>lock</mat-icon>
+        </div>
+        <mat-card-title>Complete Your Profile to Access Surveys</mat-card-title>
+        <mat-card-subtitle>{{ availableSurveys.length }} surveys are waiting for you</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Survey Teasers Grid -->
+        <div class="survey-preview-grid">
+          <div *ngFor="let survey of availableSurveys.slice(0, 6)" class="survey-preview-card">
+            <div class="preview-header">
+              <h3>{{ survey.name }}</h3>
+              <div class="lock-badge">
+                <mat-icon>lock</mat-icon>
+              </div>
+            </div>
+            <p class="preview-description">
+              {{ survey.description ? (survey.description | slice:0:100) : 'Survey opportunity' }}{{ survey.description && survey.description.length > 100 ? '...' : '' }}
+            </p>
+            <div class="preview-meta">
+              <div class="meta-item">
+                <mat-icon>paid</mat-icon>
+                <span>{{ survey.reward?.amount || 50 }} points</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatTimeEstimate((survey.durationInSeconds || 600) / 60) }}</span>
+              </div>
+              <div class="meta-item" *ngIf="survey.industry">
+                <mat-icon>business</mat-icon>
+                <span>{{ survey.industry }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Rewards Summary -->
+        <div class="rewards-summary">
+          <div class="summary-card">
+            <h2>{{ potentialPoints }}+ Points Available</h2>
+            <p>Complete your profile to unlock {{ availableSurveys.length }} surveys</p>
+            <div class="completion-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="profileCompletion"></div>
+              </div>
+              <span class="progress-text">{{ profileCompletion }}% Complete</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="next-steps-section" *ngIf="nextSteps.length > 0">
+          <h3>🎯 Complete These Steps to Unlock Surveys</h3>
+          <div class="steps-grid">
+            <div *ngFor="let step of nextSteps" class="step-card">
+              <div class="step-number">{{ nextSteps.indexOf(step) + 1 }}</div>
+              <div class="step-content">
+                <h4>{{ step.title }}</h4>
+                <p>{{ step.description }}</p>
+                <div class="step-meta">
+                  <span class="time-estimate">{{ step.estimatedMinutes }} minutes</span>
+                </div>
+              </div>
+              <button mat-raised-button color="primary" (click)="navigateToSection(step.section)">
+                Start Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main CTA -->
+        <div class="main-cta">
+          <button mat-raised-button color="primary" class="large-cta-button" (click)="navigateToProfile()">
+            <mat-icon>person</mat-icon>
+            Complete My Profile Now
+          </button>
+          <p class="cta-subtitle">{{ blockingMessage }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-tab-group animationDuration="0ms" *ngIf="hasSurveyAccess">
+    <mat-tab label="Available Surveys">
+      <div class="tab-content">
+        <div *ngIf="loading" class="loading-container">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <p>Loading surveys...</p>
+        </div>
+
+        <div
+          *ngIf="!loading && availableSurveys.length === 0"
+          class="empty-state"
+        >
+          <mat-icon>assignment_turned_in</mat-icon>
+          <h3>No Surveys Available</h3>
+          <p>
+            There are no surveys available that match your profile at the
+            moment.
+          </p>
+        </div>
+
+        <div
+          *ngIf="!loading && availableSurveys.length > 0"
+          class="survey-grid"
+        >
+          <mat-card *ngFor="let survey of availableSurveys" class="survey-card">
+            <mat-card-header>
+              <mat-card-title>{{ survey.name }}</mat-card-title>
+              <!-- <mat-card-subtitle
+                >{{ survey.companyName }} •
+                {{ survey.industry }}</mat-card-subtitle
+              > -->
+              <div
+                class="match-score-indicator"
+                [ngClass]="getMatchScoreColor(survey.matchScore)"
+                matTooltip="Match score based on your profile"
+              >
+                {{ survey.matchScore }}%
+              </div>
+            </mat-card-header>
+
+            <mat-card-content>
+              <p class="survey-description">
+                {{ survey.description | slice : 0 : 150
+                }}{{ survey.description.length > 150 ? "..." : "" }}
+              </p>
+
+              <div class="survey-meta">
+                <div class="meta-item">
+                  <mat-icon>timer</mat-icon>
+                  <span>{{ formatDuration(survey.durationInSeconds) }}</span>
+                </div>
+
+                <div class="meta-item">
+                  <mat-icon>event</mat-icon>
+                  <span
+                    >Closes:
+                    {{ survey.closingDateTime | date : "MMM d, y" }}</span
+                  >
+                </div>
+              </div>
+
+              <div class="reward-info">
+                <mat-icon>card_giftcard</mat-icon>
+                <div>
+                  <span class="reward-label">Reward:</span>
+                  <span class="reward-value">
+                    {{
+                      survey.reward?.rewardType === "Points"
+                        ? survey.reward.amount + " Points"
+                        : survey.reward?.name || "Points TBD"
+                    }}
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <button
+                mat-flat-button
+                color="primary"
+                [routerLink]="['/client/surveys', survey.id]"
+              >
+                View Details
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="In Progress">
+      <div class="tab-content">
+        <div *ngIf="inProgressSurveys.length === 0" class="empty-state">
+          <mat-icon>assignment_late</mat-icon>
+          <h3>No Surveys In Progress</h3>
+          <p>
+            You don't have any enrolled or in-progress surveys at the moment.
+          </p>
+        </div>
+
+        <div *ngIf="inProgressSurveys.length > 0" class="survey-list">
+          <mat-card
+            *ngFor="let participation of inProgressSurveys"
+            class="participation-card"
+          >
+            <mat-card-header>
+              <mat-card-title>{{ participation.surveyName }}</mat-card-title>
+              <mat-card-subtitle>
+                <span *ngIf="participation.statusName === 'Enrolled'">
+                  Enrolled: {{ participation.enrolmentDateTime | date }}
+                </span>
+                <span *ngIf="participation.statusName === 'InProgress'">
+                  Started: {{ participation.startedAtDateTime | date }}
+                </span>
+              </mat-card-subtitle>
+
+              <!-- Status badge -->
+              <div
+                class="status-badge"
+                [ngClass]="participation.statusName?.toLowerCase() || 'unknown'"
+              >
+                <mat-icon *ngIf="participation.statusName === 'Enrolled'"
+                  >assignment_ind</mat-icon
+                >
+                <mat-icon *ngIf="participation.statusName === 'InProgress'"
+                  >assignment</mat-icon
+                >
+              </div>
+            </mat-card-header>
+
+            <mat-card-content>
+              <!-- Show different content based on status -->
+              <div
+                *ngIf="participation.statusName === 'Enrolled'"
+                class="enrollment-info"
+              >
+                <p>Ready to start this survey whenever you're ready!</p>
+              </div>
+
+              <div
+                *ngIf="participation.statusName === 'InProgress'"
+                class="progress-section"
+              >
+                <div class="progress-label">
+                  <span>{{ participation.progressPercentage }}% Complete</span>
+                  <span
+                    *ngIf="
+                      participation.completedSections &&
+                      participation.totalSections
+                    "
+                  >
+                    {{ participation.completedSections }}/{{
+                      participation.totalSections
+                    }}
+                    sections
+                  </span>
+                </div>
+                <mat-progress-bar
+                  mode="determinate"
+                  [value]="participation.progressPercentage"
+                ></mat-progress-bar>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <!-- Show different buttons based on status -->
+              <button
+                mat-flat-button
+                color="primary"
+                *ngIf="participation.statusName === 'Enrolled'"
+                [routerLink]="['/client/surveys/take', participation.id]"
+              >
+                <mat-icon>play_arrow</mat-icon>
+                Start Survey
+              </button>
+
+              <button
+                mat-flat-button
+                color="primary"
+                *ngIf="participation.statusName === 'InProgress'"
+                [routerLink]="['/client/surveys/take', participation.id]"
+              >
+                <mat-icon>play_arrow</mat-icon>
+                Continue Survey
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Completed">
+      <div class="tab-content">
+        <div *ngIf="completedSurveys.length === 0" class="empty-state">
+          <mat-icon>assignment_turned_in</mat-icon>
+          <h3>No Completed Surveys</h3>
+          <p>You haven't completed any surveys yet.</p>
+        </div>
+
+        <div *ngIf="completedSurveys.length > 0" class="survey-list">
+          <mat-card
+            *ngFor="let participation of completedSurveys"
+            class="participation-card completed"
+          >
+            <mat-card-header>
+              <mat-card-title>{{ participation.surveyTitle }}</mat-card-title>
+              <mat-card-subtitle
+                >Completed:
+                {{ participation.completionDate | date }}</mat-card-subtitle
+              >
+              <div class="completion-badge">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="reward-info">
+                <mat-icon>card_giftcard</mat-icon>
+                <div>
+                  <span class="reward-label">Reward:</span>
+                  <span class="reward-value">
+                    {{ participation.rewardEarned }} Points
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <button
+                mat-stroked-button
+                [routerLink]="['/client/surveys', participation.surveyId]"
+              >
+                View Survey
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

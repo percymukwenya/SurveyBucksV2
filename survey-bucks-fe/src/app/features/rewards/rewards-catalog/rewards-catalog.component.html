@@ -1,0 +1,191 @@
+<!-- src/app/features/rewards/rewards-catalog/rewards-catalog.component.html -->
+<div class="rewards-catalog-container">
+    <div class="page-header">
+      <h1>Rewards Catalog</h1>
+      <p class="subtitle">Redeem your points for exciting rewards</p>
+    </div>
+    
+    <div class="rewards-status-bar">
+      <mat-card>
+        <mat-card-content>
+          <div class="status-section points-section">
+            <div class="status-icon">
+              <mat-icon>stars</mat-icon>
+            </div>
+            <div class="status-content">
+              <span class="status-value">{{userPoints.currentPoints | number}}</span>
+              <span class="status-label">Available Points</span>
+            </div>
+          </div>
+          
+          <div class="status-section level-section">
+            <div class="level-badge">
+              {{userLevel.currentLevel}}
+            </div>
+            <div class="status-content">
+              <div class="level-progress">
+                <span class="progress-text">
+                  {{userLevel.currentPoints}} / {{userLevel.pointsRequiredForNextLevel}} to Level {{userLevel.currentLevel + 1}}
+                </span>
+                <mat-progress-bar mode="determinate" 
+                                 [value]="(userLevel.currentPoints / userLevel.pointsRequiredForNextLevel) * 100">
+                </mat-progress-bar>
+              </div>
+            </div>
+          </div>
+          
+          <div class="status-section history-section">
+            <button mat-stroked-button color="primary" routerLink="/client/rewards/history">
+              <mat-icon>history</mat-icon>
+              Redemption History
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading rewards...</p>
+    </div>
+    
+    <div *ngIf="!loading" class="rewards-content">
+      <mat-tab-group animationDuration="0ms">
+        <mat-tab label="Available Rewards">
+          <div class="tab-content">
+            <!-- Filters -->
+            <div class="filters-section">
+              <mat-form-field appearance="outline">
+                <mat-label>Category</mat-label>
+                <mat-select [(ngModel)]="selectedCategory">
+                  <mat-option value="all">All Categories</mat-option>
+                  <mat-option value="Gift Cards">Gift Cards</mat-option>
+                  <mat-option value="Merchandise">Merchandise</mat-option>
+                  <mat-option value="Cash">Cash Rewards</mat-option>
+                  <mat-option value="Donations">Charitable Donations</mat-option>
+                  <mat-option value="Experiences">Experiences</mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Sort By</mat-label>
+                <mat-select [(ngModel)]="sortOption">
+                  <mat-option value="popular">Most Popular</mat-option>
+                  <mat-option value="points-low">Points: Low to High</mat-option>
+                  <mat-option value="points-high">Points: High to Low</mat-option>
+                  <mat-option value="newest">Newest First</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <!-- Rewards Grid -->
+            <div class="rewards-grid">
+              <mat-card *ngFor="let reward of filterRewards()" class="reward-card">
+                <div class="reward-level-lock" *ngIf="userLevel.currentLevel < reward.minimumUserLevel">
+                  <mat-icon>lock</mat-icon>
+                  <span>Level {{reward.minimumUserLevel}}</span>
+                </div>
+                
+                <div class="reward-image" [style.background-image]="'url(' + reward.imageUrl + ')'">
+                  <div class="reward-category">{{reward.rewardCategory}}</div>
+                </div>
+                
+                <mat-card-content>
+                  <h2 class="reward-name">{{reward.name}}</h2>
+                  <p class="reward-description">{{reward.description}}</p>
+                  
+                  <div class="reward-points">
+                    <mat-icon>stars</mat-icon>
+                    <span>{{reward.pointsCost | number}} Points</span>
+                  </div>
+                  
+                  <div *ngIf="reward.availableQuantity !== null" class="reward-quantity">
+                    <span [ngClass]="{'low-quantity': reward.availableQuantity < 10}">
+                      {{reward.availableQuantity}} remaining
+                    </span>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions>
+                  <button mat-flat-button 
+                         color="primary" 
+                         [disabled]="!canRedeem(reward)"
+                         (click)="redeemReward(reward)">
+                    Redeem Reward
+                  </button>
+                  
+                  <div *ngIf="!canRedeem(reward)" class="insufficient-points">
+                    <span *ngIf="userPoints.currentPoints < reward.pointsCost">
+                      Need {{reward.pointsCost - userPoints.currentPoints | number}} more points
+                    </span>
+                    <span *ngIf="userLevel.currentLevel < reward.minimumUserLevel">
+                      {{getLevelLockMessage(reward)}}
+                    </span>
+                  </div>
+                </mat-card-actions>
+              </mat-card>
+              
+              <div *ngIf="filterRewards().length === 0" class="no-rewards">
+                <mat-icon>card_giftcard</mat-icon>
+                <h3>No rewards found</h3>
+                <p>No rewards match the current filter criteria. Try changing your filters or check back later for new rewards.</p>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="My Rewards">
+          <div class="tab-content">
+            <div *ngIf="userRewards.length === 0" class="no-rewards">
+              <mat-icon>card_giftcard</mat-icon>
+              <h3>No rewards yet</h3>
+              <p>You haven't redeemed any rewards yet. Browse the available rewards and redeem your points!</p>
+            </div>
+            
+            <div *ngIf="userRewards.length > 0" class="user-rewards-list">
+              <mat-card *ngFor="let reward of userRewards" class="user-reward-card">
+                <div class="reward-image" [style.background-image]="'url(' + reward.imageUrl + ')'">
+                  <div class="reward-status" [ngClass]="reward.redemptionStatus.toLowerCase()">
+                    {{reward.redemptionStatus}}
+                  </div>
+                </div>
+                
+                <mat-card-content>
+                  <h2 class="reward-name">{{reward.rewardName}}</h2>
+                  <p class="reward-description">{{reward.rewardDescription}}</p>
+                  
+                  <div class="reward-details">
+                    <div class="detail-item">
+                      <span class="detail-label">Redeemed On</span>
+                      <span class="detail-value">{{reward.earnedDate | date}}</span>
+                    </div>
+                    
+                    <div class="detail-item" *ngIf="reward.redemptionStatus === 'Ready'">
+                      <span class="detail-label">Points Cost</span>
+                      <span class="detail-value">{{reward.rewardAmount | number}} Points</span>
+                    </div>
+                    
+                    <div class="detail-item" *ngIf="reward.redemptionCode">
+                      <span class="detail-label">Redemption Code</span>
+                      <span class="detail-value code">{{reward.redemptionCode}}</span>
+                    </div>
+                    
+                    <div class="detail-item" *ngIf="reward.claimedDate">
+                      <span class="detail-label">Claimed On</span>
+                      <span class="detail-value">{{reward.claimedDate | date}}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions *ngIf="reward.redemptionStatus === 'Ready'">
+                  <button mat-flat-button color="primary" [routerLink]="['/client/rewards/claim', reward.id]">
+                    Claim Reward
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>

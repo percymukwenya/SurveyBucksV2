@@ -1,0 +1,131 @@
+<div class="dashboard-container" *ngIf="!loading">
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <mat-icon>pending</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats?.pendingBankingDetails | number }}</h3>
+        <p>Pending</p>
+      </div>
+    </div>
+
+    <div class="stat-card approved">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats?.approvedBankingDetails | number }}</h3>
+        <p>Approved</p>
+      </div>
+    </div>
+
+    <div class="stat-card rejected">
+      <div class="stat-icon">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats?.rejectedBankingDetails | number }}</h3>
+        <p>Rejected</p>
+      </div>
+    </div>
+
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats?.totalBankingDetails | number }}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="action-card">
+      <h4>Quick Actions</h4>
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" routerLink="../pending">
+          <mat-icon>pending_actions</mat-icon>
+          Review Pending ({{ stats?.pendingBankingDetails || 0 }})
+        </button>
+        <button mat-button routerLink="../approved">
+          <mat-icon>list</mat-icon>
+          View Approved
+        </button>
+        <button mat-button routerLink="../rejected">
+          <mat-icon>list</mat-icon>
+          View Rejected
+        </button>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <h4>Today's Activity</h4>
+      <div class="performance-stats">
+        <div class="performance-item">
+          <span class="label">Submissions:</span>
+          <span class="value">{{ stats?.bankingDetailsSubmittedToday || 0 }}</span>
+        </div>
+        <div class="performance-item">
+          <span class="label">Verifications:</span>
+          <span class="value">{{ stats?.bankingDetailsVerifiedToday || 0 }}</span>
+        </div>
+        <div class="performance-item">
+          <span class="label">Avg. Review Time:</span>
+          <span class="value">{{ stats?.averageVerificationTimeHours || 0 }} hours</span>
+        </div>
+        <div class="performance-item">
+          <span class="label">Approval Rate:</span>
+          <span class="value">{{ getApprovalRate() | number:'1.1-1' }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bank Statistics -->
+  <div class="bank-stats" *ngIf="stats && stats.topBanks && stats.topBanks.length > 0">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Banking Institution Statistics</mat-card-title>
+        <mat-card-subtitle>Top banks by submission volume and approval rates</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="stats.topBanks || []" class="bank-table">
+          
+          <ng-container matColumnDef="bankName">
+            <th mat-header-cell *matHeaderCellDef>Bank Name</th>
+            <td mat-cell *matCellDef="let bank">{{ bank.bankName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="count">
+            <th mat-header-cell *matHeaderCellDef class="text-center">Total</th>
+            <td mat-cell *matCellDef="let bank" class="text-center">{{ bank.count }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="approvalRate">
+            <th mat-header-cell *matHeaderCellDef class="text-center">Approval Rate</th>
+            <td mat-cell *matCellDef="let bank" class="text-center">
+              <span class="approval-rate" 
+                    [class.high]="bank.approvalRate >= 80" 
+                    [class.medium]="bank.approvalRate >= 60 && bank.approvalRate < 80" 
+                    [class.low]="bank.approvalRate < 60">
+                {{ bank.approvalRate | number:'1.1-1' }}%
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-container">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  <p>Loading banking verification statistics...</p>
+</div>

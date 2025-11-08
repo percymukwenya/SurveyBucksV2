@@ -1,0 +1,536 @@
+<div class="dashboard-container" *ngIf="!loading && !hasError">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <div class="user-welcome">
+      <h1>{{ getGreetingMessage() }}</h1>
+      <p class="subtitle">Here's what's happening with your survey journey today.</p>
+    </div>
+    
+    <div class="user-stats">
+      <div class="stat-card points-card">
+        <mat-icon>star</mat-icon>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatPointsDisplay(pointsBalance) }}</div>
+          <div class="stat-label">Points Balance</div>
+        </div>
+      </div>
+      
+      <div class="stat-card level-card">
+        <mat-icon>equalizer</mat-icon>
+        <div class="stat-content">
+          <div class="stat-value">Level {{ currentLevel }}</div>
+          <div class="stat-label">{{ pointsToNextLevel }} points to next level</div>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="levelProgressPercentage"
+            class="mini-progress">
+          </mat-progress-bar>
+        </div>
+      </div>
+      
+      <div class="stat-card surveys-card">
+        <mat-icon>poll</mat-icon>
+        <div class="stat-content">
+          <div class="stat-value">{{ completedSurveys }}</div>
+          <div class="stat-label">Surveys Completed</div>
+        </div>
+      </div>
+      
+      <button mat-raised-button color="primary" 
+              [matBadge]="unreadNotifications"
+              [matBadgeHidden]="unreadNotifications === 0"
+              matBadgeColor="accent"
+              (click)="navigateToNotifications()"
+              class="notifications-btn">
+        <mat-icon>notifications</mat-icon>
+        Notifications
+      </button>
+    </div>
+  </div>
+  
+  <!-- Document Verification Status Banner -->
+  <div class="document-verification-status" *ngIf="hasDocumentVerificationIssues">
+    <mat-card class="alert-card rejection-alert">
+      <mat-card-content>
+        <div class="alert-header">
+          <div class="alert-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="alert-content">
+            <h3>Action Required: Document Verification</h3>
+            <p *ngIf="rejectedDocumentsCount > 0">
+              {{ rejectedDocumentsCount }} document{{ rejectedDocumentsCount > 1 ? 's' : '' }} need{{ rejectedDocumentsCount === 1 ? 's' : '' }} to be re-uploaded.
+            </p>
+          </div>
+        </div>
+        <div class="alert-actions">
+          <button mat-raised-button color="warn" (click)="navigateToSection('Documents')">
+            <mat-icon>cloud_upload</mat-icon>
+            Fix Documents
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Documents in Review Banner -->
+  <div class="document-review-status" *ngIf="documentsInReview > 0 && !hasDocumentVerificationIssues">
+    <mat-card class="alert-card review-alert">
+      <mat-card-content>
+        <div class="alert-header">
+          <div class="alert-icon">
+            <mat-icon>search</mat-icon>
+          </div>
+          <div class="alert-content">
+            <h3>Documents Under Review</h3>
+            <p>
+              {{ documentsInReview }} document{{ documentsInReview > 1 ? 's are' : ' is' }} being verified.
+              {{ getNextUpdateText() }}.
+            </p>
+          </div>
+        </div>
+        <div class="alert-actions">
+          <button mat-button color="primary" (click)="navigateToSection('Documents')">
+            <mat-icon>visibility</mat-icon>
+            View Status
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Smart Survey Access Banner -->
+  <div class="survey-access-banner" *ngIf="surveysBlocked">
+    <mat-card class="access-card">
+      <mat-card-content>
+        <div class="access-header">
+          <div class="access-icon">
+            <mat-icon>lock</mat-icon>
+          </div>
+          <div class="access-content">
+            <h3>Unlock Your Surveys</h3>
+            <p class="smart-message">{{ smartBlockingMessage }}</p>
+          </div>
+          <div class="access-stats" *ngIf="surveyAccessInfo?.surveysUnlocked">
+            <div class="stat">
+              <span class="stat-number">{{ surveyAccessInfo?.surveysUnlocked }}</span>
+              <span class="stat-label">Surveys Available</span>
+            </div>
+            <div class="stat" *ngIf="surveyAccessInfo?.potentialPoints">
+              <span class="stat-number">{{ surveyAccessInfo?.potentialPoints }}+</span>
+              <span class="stat-label">Points Waiting</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Next Steps -->
+        <div class="next-steps" *ngIf="criticalNextSteps.length > 0">
+          <h4>Next Steps:</h4>
+          <div class="steps-list">
+            <div 
+              *ngFor="let step of criticalNextSteps.slice(0, 2)" 
+              class="step-item"
+              [class]="getPriorityClass(step.priority)">
+              <div class="step-icon">
+                <mat-icon>{{ getPriorityIcon(step.priority) }}</mat-icon>
+              </div>
+              <div class="step-content">
+                <h5>{{ step.title }}</h5>
+                <p>{{ step.description }}</p>
+                <span class="time-estimate">{{ step.estimatedMinutes }} minutes</span>
+              </div>
+              <button 
+                mat-raised-button 
+                color="primary"
+                (click)="navigateToSection(step.section)">
+                Start
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Profile Completion Banner (Only show if no survey access issues) -->
+  <div class="profile-completion" *ngIf="profileCompletion < 100 && !surveysBlocked">
+    <mat-card class="completion-card">
+      <mat-card-content>
+        <div class="completion-header">
+          <div class="completion-text">
+            <h2>Complete Your Profile</h2>
+            <p>Complete your profile to get matched with more surveys and earn additional rewards!</p>
+          </div>
+          <div class="completion-stats">
+            <div class="completion-circle" [class]="getCompletionPercentageClass(profileCompletion)">
+              <span class="percentage">{{ profileCompletion }}%</span>
+            </div>
+          </div>
+        </div>
+        <mat-progress-bar 
+          mode="determinate" 
+          [value]="profileCompletion"
+          [class]="getCompletionPercentageClass(profileCompletion)">
+        </mat-progress-bar>
+        <div class="completion-actions">
+          <button mat-raised-button color="primary" (click)="navigateToProfile()">
+            <mat-icon>person</mat-icon>
+            Complete Profile
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Daily Streak Card -->
+  <div class="streak-banner" *ngIf="currentStreak > 0">
+    <mat-card class="streak-card">
+      <mat-card-content>
+        <div class="streak-content">
+          <div class="streak-icon">
+            <mat-icon>local_fire_department</mat-icon>
+          </div>
+          <div class="streak-info">
+            <h3>{{ currentStreak }}-Day Streak!</h3>
+            <p>You're on fire! Keep logging in daily to maintain your streak and earn bonus points.</p>
+          </div>
+          <div class="streak-number">
+            <span class="number">{{ currentStreak }}</span>
+            <span class="label">DAYS</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-grid">
+    <!-- Available Surveys Section - Show different content based on access -->
+    <mat-card class="dashboard-card surveys-available" *ngIf="hasSurveyAccess">
+      <mat-card-header>
+        <mat-card-title>Available Surveys</mat-card-title>
+        <mat-card-subtitle>{{ availableSurveys.length }} surveys ready to take</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="availableSurveys.length === 0" class="empty-state">
+          <mat-icon>assignment</mat-icon>
+          <h3>No surveys available</h3>
+          <p>Check back soon for new opportunities!</p>
+          <button mat-button color="primary" (click)="refreshDashboard()">
+            <mat-icon>refresh</mat-icon>
+            Refresh
+          </button>
+        </div>
+        
+        <div *ngIf="availableSurveys.length > 0" class="surveys-list">
+          <div *ngFor="let survey of availableSurveys; trackBy: trackBySurveyId" 
+               class="survey-item">
+            <div class="survey-info">
+              <h3>{{ survey.title }}</h3>
+              <p class="survey-description">
+                {{ survey.description ? (survey.description | slice:0:120) : '' }}{{ survey.description && survey.description.length > 120 ? '...' : '' }}
+              </p>
+              <div class="survey-meta">
+                <span class="time-badge">
+                  <mat-icon>timer</mat-icon> 
+                  {{ formatTimeEstimate(survey.estimatedTimeMinutes) }}
+                </span>
+                <span class="points-badge">
+                  <mat-icon>paid</mat-icon> 
+                  {{ survey.rewardPoints }} pts
+                </span>
+                <span *ngIf="survey.category" class="category-badge">
+                  {{ survey.category }}
+                </span>
+              </div>
+            </div>
+            <div class="survey-actions">
+              <button mat-stroked-button 
+                      color="primary" 
+                      (click)="viewSurveyDetails(survey.id)">
+                View Details
+              </button>
+            </div>
+          </div>
+          
+          <button mat-button color="primary" 
+                  class="see-all-button" 
+                  (click)="navigateToSurveys()">
+            <mat-icon>arrow_forward</mat-icon>
+            See All Surveys
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Survey Preview Section - Show when profile incomplete -->
+    <mat-card class="dashboard-card survey-preview-section" *ngIf="!hasSurveyAccess && availableSurveys.length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>lock</mat-icon>
+          Surveys Waiting for You
+        </mat-card-title>
+        <mat-card-subtitle>Complete your profile to unlock these opportunities</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="survey-teasers">
+          <div *ngFor="let survey of availableSurveys.slice(0, 3); trackBy: trackBySurveyId" 
+               class="survey-teaser">
+            <div class="teaser-content">
+              <h4>{{ survey.title }}</h4>
+              <p class="teaser-description">
+                {{ survey.description ? (survey.description | slice:0:80) : 'Survey opportunity' }}{{ survey.description && survey.description.length > 80 ? '...' : '' }}
+              </p>
+              <div class="teaser-rewards">
+                <div class="reward-item">
+                  <mat-icon>paid</mat-icon>
+                  <span>{{ survey.rewardPoints || 50 }} points</span>
+                </div>
+                <div class="reward-item">
+                  <mat-icon>schedule</mat-icon>
+                  <span>{{ formatTimeEstimate(survey.estimatedTimeMinutes || 10) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="lock-overlay">
+              <mat-icon>lock</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total potential rewards -->
+        <div class="potential-rewards" *ngIf="surveyAccessInfo?.potentialPoints">
+          <div class="rewards-summary">
+            <h3>{{ surveyAccessInfo?.surveysUnlocked }} Surveys Available</h3>
+            <p class="total-points">
+              <mat-icon>star</mat-icon>
+              {{ surveyAccessInfo?.potentialPoints }}+ points waiting
+            </p>
+          </div>
+        </div>
+
+        <!-- Unlock CTA -->
+        <div class="unlock-section">
+          <h3>🎯 Ready to get started?</h3>
+          <p class="unlock-message">{{ smartBlockingMessage }}</p>
+          
+          <div class="unlock-actions" *ngIf="criticalNextSteps.length > 0">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="primary-unlock-btn"
+              (click)="navigateToSection(criticalNextSteps[0].section)">
+              <mat-icon>play_arrow</mat-icon>
+              {{ criticalNextSteps[0].title }} ({{ criticalNextSteps[0].estimatedMinutes }} min)
+            </button>
+            
+            <button 
+              mat-button 
+              color="primary"
+              (click)="navigateToProfile()">
+              <mat-icon>person</mat-icon>
+              View Full Profile
+            </button>
+          </div>
+
+          <div class="progress-hint" *ngIf="profileCompletion > 0">
+            <div class="completion-bar">
+              <div class="completion-fill" [style.width.%]="profileCompletion"></div>
+            </div>
+            <p>{{ profileCompletion }}% complete - You're {{ 100 - profileCompletion }}% away from surveys!</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <!-- In Progress Surveys Section -->
+    <mat-card class="dashboard-card surveys-progress" *ngIf="inProgressSurveys.length > 0">
+      <mat-card-header>
+        <mat-card-title>Continue Where You Left Off</mat-card-title>
+        <mat-card-subtitle>{{ inProgressSurveys.length }} surveys in progress</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let survey of inProgressSurveys; trackBy: trackByParticipationId" 
+             class="progress-survey-item">
+          <div class="survey-info">
+            <h3>{{ survey.surveyTitle }}</h3>
+            <div class="progress-details">
+              <div class="progress-bar-container">
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="survey.completionPercentage">
+                </mat-progress-bar>
+                <span class="progress-text">{{ survey.completionPercentage }}% Complete</span>
+              </div>
+              <div class="last-activity">
+                Last activity: {{ survey.lastActivityDate | date:'short' }}
+              </div>
+            </div>
+          </div>
+          <div class="survey-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="continueSurvey(survey.participationId)">
+              <mat-icon>play_arrow</mat-icon>
+              Continue
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <!-- Recent Achievements Section -->
+    <mat-card class="dashboard-card achievements">
+      <mat-card-header>
+        <mat-card-title>Recent Achievements</mat-card-title>
+        <mat-card-subtitle>Your latest accomplishments</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="recentAchievements.length === 0" class="empty-state">
+          <mat-icon>emoji_events</mat-icon>
+          <h3>No achievements yet</h3>
+          <p>Complete surveys to earn your first achievement!</p>
+        </div>
+        
+        <div *ngIf="recentAchievements.length > 0" class="achievements-list">
+          <div *ngFor="let achievement of recentAchievements; trackBy: trackByAchievementId" 
+               class="achievement-item"
+               [class]="getAchievementRarityClass(achievement.rarity)">
+            <div class="achievement-icon" [class]="achievement.rarity.toLowerCase()">
+              <mat-icon>{{ achievement.iconName || 'emoji_events' }}</mat-icon>
+            </div>
+            <div class="achievement-info">
+              <h4>{{ achievement.name }}</h4>
+              <p>{{ achievement.description }}</p>
+              <div class="achievement-meta">
+                <span class="rarity-badge" [class]="achievement.rarity.toLowerCase()">
+                  {{ achievement.rarity }}
+                </span>
+                <span class="points-earned">+{{ achievement.pointsReward }} pts</span>
+                <span class="date-earned">{{ achievement.dateEarned | date:'short' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <button mat-button color="primary" 
+                  class="see-all-button" 
+                  (click)="navigateToAchievements()">
+            <mat-icon>arrow_forward</mat-icon>
+            See All Achievements
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <!-- Active Challenges Section -->
+    <mat-card class="dashboard-card challenges" *ngIf="activeChallenges.length > 0">
+      <mat-card-header>
+        <mat-card-title>Active Challenges</mat-card-title>
+        <mat-card-subtitle>Limited-time opportunities</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let challenge of activeChallenges; trackBy: trackByChallengeId" 
+             class="challenge-item"
+             [class]="getChallengeProgressClass(challenge)">
+          <div class="challenge-header">
+            <h4>{{ challenge.name }}</h4>
+            <span class="challenge-reward">+{{ challenge.pointsReward }} pts</span>
+          </div>
+          <p class="challenge-description">{{ challenge.description }}</p>
+          <div class="challenge-progress">
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="challenge.progressPercentage">
+            </mat-progress-bar>
+            <div class="progress-info">
+              <span>{{ challenge.currentProgress }} / {{ challenge.targetValue }}</span>
+              <span class="time-remaining">
+                {{ getDaysUntilChallenge(challenge.endDate) }} days left
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <button mat-button color="primary" 
+                class="see-all-button" 
+                (click)="navigateToChallenges()">
+          <mat-icon>arrow_forward</mat-icon>
+          See All Challenges
+        </button>
+      </mat-card-content>
+    </mat-card>
+    
+    <!-- Rewards Summary Section -->
+    <mat-card class="dashboard-card rewards-summary">
+      <mat-card-header>
+        <mat-card-title>Your Rewards</mat-card-title>
+        <mat-card-subtitle>Points and progress</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="rewards-display">
+          <div class="points-circle">
+            <span class="points-amount">{{ formatPointsDisplay(pointsBalance) }}</span>
+            <span class="points-label">POINTS</span>
+          </div>
+          <div class="rewards-info">
+            <div class="level-progress">
+              <h4>Level {{ currentLevel }}</h4>
+              <p>{{ pointsToNextLevel }} points to Level {{ currentLevel + 1 }}</p>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="levelProgressPercentage"
+                class="level-progress-bar">
+              </mat-progress-bar>
+            </div>
+            <div class="quick-stats" *ngIf="userPoints">
+              <div class="stat">
+                <span class="value">{{ formatPointsDisplay(userPoints.totalEarned) }}</span>
+                <span class="label">Total Earned</span>
+              </div>
+              <div class="stat">
+                <span class="value">{{ formatPointsDisplay(userPoints.totalRedeemed) }}</span>
+                <span class="label">Total Redeemed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="rewards-actions">
+          <button mat-raised-button color="accent" (click)="navigateToRewards()">
+            <mat-icon>redeem</mat-icon>
+            Browse Rewards
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="loading" class="loading-container">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+  <h3>Loading your dashboard...</h3>
+  <p>Gathering your latest survey data and rewards</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="hasError" class="error-container">
+  <mat-card class="error-card">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h3>Unable to load dashboard</h3>
+        <p>We're having trouble loading your dashboard data. Please try again.</p>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="retryLoadData()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+          <button mat-button (click)="navigateToSurveys()">
+            Go to Surveys
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

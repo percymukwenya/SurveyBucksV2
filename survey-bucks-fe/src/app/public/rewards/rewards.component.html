@@ -1,0 +1,175 @@
+<div class="rewards-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>Rewards That Grow With Us</h1>
+      <p>Start earning points immediately with cash payouts available now. More reward options coming as we build partnerships with South African businesses.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <h3>R50+</h3>
+          <p>Available from Day 1</p>
+        </div>
+        <div class="stat">
+          <h3>24-48hrs</h3>
+          <p>EFT Processing</p>
+        </div>
+        <div class="stat">
+          <h3>Growing</h3>
+          <p>Reward Options</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-btn">
+        Start Earning Points
+      </button>
+    </div>
+  </section>
+
+  <!-- Current Rewards -->
+  <section class="categories-section">
+    <div class="container">
+      <h2>Available Now</h2>
+      <mat-tab-group class="reward-tabs">
+        <mat-tab label="Cash Payouts">
+          <div class="tab-content">
+            <div class="rewards-grid">
+              <div class="reward-card" *ngFor="let reward of cashRewards">
+                <mat-icon class="reward-icon">{{ reward.icon }}</mat-icon>
+                <div class="reward-info">
+                  <h3>{{ reward.name }}</h3>
+                  <p>{{ reward.description }}</p>
+                  <div class="reward-value">{{ reward.value }}</div>
+                  <div class="reward-features">
+                    <span *ngFor="let feature of reward.features" class="feature-tag">
+                      {{ feature }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Platform Rewards">
+          <div class="tab-content">
+            <div class="rewards-grid">
+              <div class="reward-card" *ngFor="let reward of currentRewards">
+                <mat-icon class="reward-icon">{{ reward.icon }}</mat-icon>
+                <div class="reward-info">
+                  <h3>{{ reward.name }}</h3>
+                  <p>{{ reward.description }}</p>
+                  <div class="reward-value">{{ reward.value }}</div>
+                  <div class="reward-features">
+                    <span *ngFor="let feature of reward.features" class="feature-tag">
+                      {{ feature }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Coming Soon">
+          <div class="tab-content">
+            <p class="coming-soon-note">We're working on partnerships to bring you these reward options:</p>
+            <div class="rewards-grid">
+              <div class="reward-card future-reward" *ngFor="let reward of futureGiftCards">
+                <mat-icon class="reward-icon">{{ reward.icon }}</mat-icon>
+                <div class="reward-info">
+                  <h3>{{ reward.name }}</h3>
+                  <p>{{ reward.description }}</p>
+                  <div class="reward-value coming-soon">{{ reward.value }}</div>
+                  <div class="reward-features">
+                    <span *ngFor="let feature of reward.features" class="feature-tag future">
+                      {{ feature }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </section>
+
+  <!-- How Rewards Work -->
+  <section class="how-rewards-work">
+    <div class="container">
+      <h2>How Our Reward System Works</h2>
+      <div class="process-steps">
+        <div class="process-step" *ngFor="let step of rewardProcess; let i = index">
+          <div class="step-number">{{ i + 1 }}</div>
+          <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Earning Potential -->
+  <section class="earning-potential">
+    <div class="container">
+      <h2>Your Earning Potential</h2>
+      <p class="section-subtitle">Earnings will increase as we grow our business partner network</p>
+      <div class="earning-tiers">
+        <div class="tier-card" *ngFor="let tier of earningProjections" [class]="tier.highlight ? 'highlighted' : ''">
+          <div class="tier-badge" *ngIf="tier.highlight">Most Realistic</div>
+          <h3>{{ tier.name }}</h3>
+          <div class="tier-earning">{{ tier.monthlyEarning }}</div>
+          <p class="tier-description">{{ tier.description }}</p>
+          <ul class="tier-features">
+            <li *ngFor="let feature of tier.features">
+              <mat-icon>check</mat-icon>
+              {{ feature }}
+            </li>
+          </ul>
+          <div class="tier-surveys">{{ tier.surveys }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Updates -->
+  <section class="platform-updates">
+    <div class="container">
+      <h2>What We're Building</h2>
+      <div class="updates-grid">
+        <div class="update-card" *ngFor="let update of platformUpdates">
+          <mat-icon class="update-icon">{{ update.icon }}</mat-icon>
+          <h3>{{ update.title }}</h3>
+          <p>{{ update.description }}</p>
+          <div class="status-badge" [class]="update.status">
+            {{ update.status === 'in_progress' ? 'In Progress' : 
+               update.status === 'planned' ? 'Planned' : 'Ongoing' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="rewards-faq">
+    <div class="container">
+      <h2>Reward FAQs</h2>
+      <div class="faq-grid">
+        <div class="faq-item" *ngFor="let faq of rewardsFaq">
+          <h3>{{ faq.question }}</h3>
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Start Building Your Rewards</h2>
+      <p>Join early and grow your earnings as we expand our reward options</p>
+      <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-btn">
+        Start Earning Today
+      </button>
+    </div>
+  </section>
+</div>

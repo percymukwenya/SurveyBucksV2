@@ -1,0 +1,114 @@
+.survey-targeting-container {
+  max-width: 100%;
+  
+  .targeting-header {
+    margin-bottom: 24px;
+    
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    p {
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .loading-container {
+    text-align: center;
+    padding: 32px 0;
+    
+    p {
+      margin-top: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .targeting-content {
+    mat-accordion {
+      .section-description {
+        color: rgba(0, 0, 0, 0.6);
+        margin-bottom: 16px;
+      }
+      
+      .array-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        
+        .array-item {
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+          padding: 16px;
+          background-color: #f9f9f9;
+        }
+        
+        .form-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          
+          .separator {
+            margin: 0 8px;
+            font-weight: 500;
+          }
+          
+          mat-form-field {
+            flex: 1;
+          }
+        }
+        
+        .empty-state {
+          background-color: #f5f5f5;
+          border-radius: 4px;
+          padding: 16px;
+          text-align: center;
+          
+          p {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+        
+        .add-button {
+          align-self: flex-start;
+        }
+      }
+      
+      .full-width {
+        width: 100%;
+      }
+      
+      .tab-content {
+        padding: 24px 0;
+      }
+    }
+  }
+  
+  .actions-container {
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-end;
+    
+    .save-button {
+      min-width: 200px;
+    }
+  }
+}
+
+// Mat expansion panel customizations
+::ng-deep .mat-expansion-panel-header-title {
+  display: flex;
+  align-items: center;
+  
+  mat-icon {
+    margin-right: 12px;
+  }
+}
+
+// Chip list customizations
+::ng-deep .mat-mdc-chip-set {
+  width: 100%;
+}

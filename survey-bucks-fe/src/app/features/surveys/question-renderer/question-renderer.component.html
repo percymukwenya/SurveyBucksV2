@@ -1,0 +1,245 @@
+<div class="question-wrapper" [attr.data-question-id]="question.id"
+     [class.has-errors]="questionErrors.length > 0"
+     [class.mandatory]="question.isMandatory"
+     [class.answered]="isQuestionAnswered()">
+  
+  <!-- Question Header -->
+  <div class="question-header">
+    <div class="question-number-container">
+      <div class="question-number">{{ question.order }}</div>
+      <div class="question-type-indicator">
+        <mat-icon [matTooltip]="question.questionTypeName">{{ getQuestionIcon() }}</mat-icon>
+      </div>
+    </div>
+    
+    <div class="question-text-container">
+      <h3 class="question-text" [innerHTML]="question.text"></h3>
+      <div class="question-meta">
+        <mat-icon 
+          *ngIf="question.isMandatory" 
+          class="status-icon required"
+          matTooltip="Required">
+          radio_button_unchecked
+        </mat-icon>
+      </div>
+    </div>
+    
+    <div *ngIf="question.helpText" class="help-text">
+      <mat-icon class="help-icon">help_outline</mat-icon>
+      <span>{{ question.helpText }}</span>
+    </div>
+
+    <!-- Validation errors -->
+    <div *ngIf="showValidationErrors && questionErrors.length > 0" class="validation-errors">
+      <mat-icon class="error-icon">error</mat-icon>
+      <div class="error-content">
+        <strong>Please fix the following:</strong>
+        <ul class="error-list">
+          <li *ngFor="let error of questionErrors">{{ error }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question Input Based on Type -->
+  <div class="question-input" [ngSwitch]="question.questionTypeName">
+    
+    <!-- Short Text -->
+    <mat-form-field *ngSwitchCase="'ShortText'" appearance="outline" class="full-width">
+      <input matInput
+             [formControlName]="controlName"
+             placeholder="Your answer"
+             [maxlength]="question.maxValue || 255"
+             (input)="onValueChange($event.target?.value)" />
+      <mat-hint *ngIf="question.maxValue">
+        Maximum {{ question.maxValue }} characters
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Long Text -->
+    <mat-form-field *ngSwitchCase="'LongText'" appearance="outline" class="full-width">
+      <textarea matInput
+                [formControlName]="controlName"
+                placeholder="Your detailed answer"
+                rows="4"
+                [maxlength]="question.maxValue || 1000"
+                (input)="onValueChange($event.target?.value)">
+      </textarea>
+      <mat-hint *ngIf="question.maxValue">
+        Maximum {{ question.maxValue }} characters
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field *ngSwitchCase="'Email'" appearance="outline" class="full-width">
+      <input matInput
+             type="email"
+             [formControlName]="controlName"
+             placeholder="your.email@example.com"
+             (input)="onValueChange($event.target?.value)" />
+      <mat-icon matSuffix>email</mat-icon>
+    </mat-form-field>
+
+    <!-- Phone -->
+    <mat-form-field *ngSwitchCase="'Phone'" appearance="outline" class="full-width">
+      <input matInput
+             type="tel"
+             [formControlName]="controlName"
+             placeholder="Your phone number"
+             (input)="onValueChange($event.target?.value)" />
+      <mat-icon matSuffix>phone</mat-icon>
+    </mat-form-field>
+
+    <!-- Number Input -->
+    <mat-form-field *ngSwitchCase="'NumberInput'" appearance="outline" class="full-width">
+      <input matInput
+             type="number"
+             [formControlName]="controlName"
+             placeholder="Enter a number"
+             [min]="question.minValue ?? null"
+             [max]="question.maxValue ?? null"
+             (input)="onValueChange($event.target?.value)" />
+      <mat-hint *ngIf="question.minValue && question.maxValue">
+        Between {{ question.minValue }} and {{ question.maxValue }}
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Single Choice -->
+    <mat-radio-group *ngSwitchCase="'SingleChoice'"
+                     [formControlName]="controlName"
+                     class="radio-group"
+                     (change)="onValueChange($event.value)">
+      <mat-radio-button *ngFor="let choice of question.responseChoices"
+                        [value]="choice.value"
+                        class="radio-option">
+        {{ choice.text }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <!-- Multiple Choice -->
+    <div *ngSwitchCase="'MultipleChoice'" class="checkbox-group">
+      <div [formArrayName]="controlName">
+        <mat-checkbox *ngFor="let choice of question.responseChoices; let choiceIndex = index"
+                      [formControlName]="choiceIndex"
+                      (change)="onMultipleChoiceChange(choiceIndex, $event)"
+                      class="checkbox-option"
+                      [class.exclusive]="choice.isExclusiveOption">
+          {{ choice.text }}
+          <span *ngIf="choice.isExclusiveOption" class="exclusive-label">
+            (Select only this)
+          </span>
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Dropdown -->
+    <mat-form-field *ngSwitchCase="'Dropdown'" appearance="outline" class="full-width">
+      <mat-select [formControlName]="controlName"
+                  placeholder="Select an option"
+                  (selectionChange)="onValueChange($event.value)">
+        <mat-option *ngFor="let choice of question.responseChoices" [value]="choice.value">
+          {{ choice.text }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Rating Scale -->
+    <div *ngSwitchCase="'Rating'" class="rating-container">
+      <div class="rating-labels">
+        <span>{{ question.minValue || 1 }}</span>
+        <span>{{ question.maxValue || 5 }}</span>
+      </div>
+      <mat-slider [min]="question.minValue || 1"
+                  [max]="question.maxValue || 5"
+                  [step]="1"
+                  [discrete]="true"
+                  class="rating-slider">
+        <input matSliderThumb
+               [formControlName]="controlName"
+               (input)="onValueChange($event.target?.value)" />
+      </mat-slider>
+      <div class="current-value" *ngIf="questionControl?.value">
+        Selected: {{ questionControl.value }}
+      </div>
+    </div>
+
+    <!-- Slider -->
+    <div *ngSwitchCase="'Slider'" class="slider-container">
+      <div class="slider-labels">
+        <span>{{ question.minValue || 0 }}</span>
+        <span>{{ question.maxValue || 100 }}</span>
+      </div>
+      <mat-slider [min]="question.minValue || 0"
+                  [max]="question.maxValue || 100"
+                  [step]="1"
+                  class="slider">
+        <input matSliderThumb
+               [formControlName]="controlName"
+               (input)="onValueChange($event.target?.value)" />
+      </mat-slider>
+      <div class="current-value" *ngIf="questionControl?.value">
+        Value: {{ questionControl.value }}
+      </div>
+    </div>
+
+    <!-- Date -->
+    <mat-form-field *ngSwitchCase="'Date'" appearance="outline" class="full-width">
+      <input matInput
+             [matDatepicker]="picker"
+             [formControlName]="controlName"
+             placeholder="Select date"
+             (dateChange)="onValueChange($event.value)" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Yes/No -->
+    <mat-radio-group *ngSwitchCase="'YesNo'"
+                     [formControlName]="controlName"
+                     class="yes-no-group"
+                     (change)="onValueChange($event.value)">
+      <mat-radio-button value="yes" class="yes-no-option">Yes</mat-radio-button>
+      <mat-radio-button value="no" class="yes-no-option">No</mat-radio-button>
+    </mat-radio-group>
+
+    <!-- Matrix -->
+    <div *ngSwitchCase="'Matrix'" class="matrix-container">
+      <div class="matrix-header">
+        <div class="matrix-row-label"></div>
+        <div *ngFor="let column of question.matrixColumns" class="matrix-column-header">
+          {{ column.text }}
+        </div>
+      </div>
+      
+      <div *ngFor="let row of question.matrixRows" class="matrix-row"
+           [class.answered]="isMatrixRowAnswered(row)">
+        <div class="matrix-row-label">{{ row.text }}</div>
+        <mat-radio-group [formControlName]="'row_' + row.id" class="matrix-radio-group">
+          <mat-radio-button *ngFor="let column of question.matrixColumns"
+                            [value]="column.value"
+                            class="matrix-radio-option"
+                            (change)="onValueChange(questionControl?.value)">
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+      
+      <!-- Matrix validation feedback -->
+      <div *ngIf="question.isMandatory && getUnansweredMatrixRows().length > 0" 
+           class="matrix-validation">
+        <mat-icon class="warning-icon">warning</mat-icon>
+        <span>Please answer {{ getUnansweredMatrixRows().length }} more row(s)</span>
+      </div>
+    </div>
+
+    <!-- Default/Unknown Question Type -->
+    <div *ngSwitchDefault class="unknown-question-type">
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput
+               [formControlName]="controlName"
+               placeholder="Enter your answer"
+               (input)="onValueChange($event.target?.value)" />
+        <mat-hint>Question type: {{ question.questionTypeName }}</mat-hint>
+      </mat-form-field>
+    </div>
+  </div>
+</div>

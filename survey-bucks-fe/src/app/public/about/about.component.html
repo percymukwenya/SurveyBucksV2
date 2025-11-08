@@ -1,0 +1,141 @@
+<div class="about-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>About Our Platform</h1>
+      <p>We're building South Africa's most honest and rewarding survey platform, connecting local voices with businesses that need authentic insights.</p>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <section class="story-section">
+    <div class="container">
+      <div class="story-content">
+        <div class="story-text">
+          <h2>Our Journey</h2>
+          <p>We're a new South African startup launching in 2024 with a simple but important mission: create a survey platform that's genuinely fair, transparent, and designed for the South African market.</p>
+          
+          <p>We noticed that most survey platforms either don't serve South Africans well or aren't transparent about earnings and opportunities. We're building something different - a platform that grows with our community.</p>
+          
+          <p>While we're just getting started, we're committed to honest communication about our progress, realistic earning expectations, and building genuine value for both participants and businesses.</p>
+          
+          <div class="current-status">
+            <h3>Current Status: {{ currentStatus.stage }}</h3>
+            <p>Launched: {{ currentStatus.launched }}</p>
+            <div class="focus-areas">
+              <h4>What We're Focusing On:</h4>
+              <ul>
+                <li *ngFor="let area of currentStatus.focusAreas">{{ area }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="story-image">
+          <div class="image-placeholder">
+            <mat-icon>flag</mat-icon>
+            <p>Made in South Africa</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why We're Building This -->
+  <section class="why-section">
+    <div class="container">
+      <h2>Why We're Building This</h2>
+      <div class="why-grid">
+        <div class="why-card" *ngFor="let reason of whyWereBuilding">
+          <mat-icon class="why-icon">{{ reason.icon }}</mat-icon>
+          <h3>{{ reason.title }}</h3>
+          <p>{{ reason.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Values Section -->
+  <section class="mission-section">
+    <div class="container">
+      <h2>Our Values</h2>
+      <div class="values-grid">
+        <div class="value-card" *ngFor="let value of values">
+          <mat-icon class="value-icon">{{ value.icon }}</mat-icon>
+          <h3>{{ value.title }}</h3>
+          <p>{{ value.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How We Work Section -->
+  <section class="how-we-work-section">
+    <div class="container">
+      <h2>How We Create Value</h2>
+      <div class="work-process">
+        <div class="process-item" *ngFor="let item of workProcess; let i = index">
+          <div class="process-number">{{ i + 1 }}</div>
+          <div class="process-content">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+          <mat-icon class="process-icon">{{ item.icon }}</mat-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Features -->
+  <section class="platform-section">
+    <div class="container">
+      <h2>Built for South Africa</h2>
+      <div class="platform-grid">
+        <div class="platform-card" *ngFor="let feature of platformFeatures">
+          <mat-icon class="platform-icon">{{ feature.icon }}</mat-icon>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security & Privacy Section -->
+  <section class="security-section">
+    <div class="container">
+      <h2>Your Privacy & Security</h2>
+      <div class="security-grid">
+        <div class="security-item" *ngFor="let item of securityFeatures">
+          <mat-icon class="security-icon">{{ item.icon }}</mat-icon>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="container">
+      <h2>Get in Touch</h2>
+      <div class="contact-grid">
+        <div class="contact-method" *ngFor="let method of contactMethods">
+          <mat-icon class="contact-icon">{{ method.icon }}</mat-icon>
+          <h3>{{ method.title }}</h3>
+          <p>{{ method.description }}</p>
+          <a [href]="method.link" class="contact-link">{{ method.linkText }}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Join Our Growing Community</h2>
+      <p>Be part of building something authentic and valuable for South Africa</p>
+      <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-btn">
+        Join Our Platform
+      </button>
+    </div>
+  </section>
+</div>

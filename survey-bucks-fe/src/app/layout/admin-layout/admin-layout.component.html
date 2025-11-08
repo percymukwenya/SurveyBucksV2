@@ -1,0 +1,325 @@
+<div class="admin-layout" [class.dark-mode]="isDarkMode">
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidebar -->
+    <mat-sidenav 
+      #sidenav
+      [mode]="isMobileView ? 'over' : 'side'" 
+      [opened]="!isMobileView || isExpanded" 
+      [fixedInViewport]="true" 
+      [fixedTopGap]="0"
+      [fixedBottomGap]="0"
+      [class.expanded]="isExpanded"
+      class="sidebar">
+      
+      <!-- Sidebar Header with Logo -->
+      <div class="sidebar-header">
+        <div class="logo" routerLink="/admin/dashboard">
+          <mat-icon [class.primary-icon]="true">analytics</mat-icon>
+          <span *ngIf="isExpanded">SurveyBucks Admin</span>
+        </div>
+        <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn" matTooltip="Toggle menu">
+          <mat-icon>{{ isExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+      </div>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Admin quick stats -->
+      <!-- <div class="admin-stats" *ngIf="isExpanded">
+        <div class="stat-card">
+          <div class="stat-value">{{adminStats.activeUsers}}</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{adminStats.surveysToday}}</div>
+          <div class="stat-label">Surveys Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{adminStats.pendingRewards}}</div>
+          <div class="stat-label">Pending Rewards</div>
+        </div>
+      </div> -->
+      
+      <!-- Navigation Links -->
+      <div class="nav-container">
+        <div class="nav-section" *ngIf="isExpanded">
+          <div class="section-label">Main</div>
+        </div>
+        
+        <mat-nav-list class="nav-list">
+          <!-- Regular menu items -->
+          <ng-container *ngFor="let item of navItems">
+            <!-- Single nav item without children -->
+            <a *ngIf="!item.children" 
+              mat-list-item 
+              [routerLink]="item.route" 
+              routerLinkActive="active-link" 
+              matRipple
+              class="nav-item">
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              <div matListItemTitle *ngIf="isExpanded" class="nav-label">{{ item.label }}</div>
+              <div matListItemLine *ngIf="isExpanded" class="nav-description">{{ item.description }}</div>
+              <span *ngIf="item.badge && isExpanded" 
+                    matBadge="{{item.badge}}"                     
+                    matBadgeSize="small"
+                    matBadgeColor="warn" 
+                    class="item-badge"></span>
+            </a>
+            
+            <!-- Nav group with children -->
+            <ng-container *ngIf="item.children">
+              <!-- Group header (mobile/collapsed view shows as regular item) -->
+              <div *ngIf="!isExpanded" 
+                   class="nav-item group-header collapsed-group" 
+                   matRipple
+                   [matMenuTriggerFor]="submenu">
+                <mat-icon>{{ item.icon }}</mat-icon>
+              </div>
+              
+              <!-- Submenu for collapsed view -->
+              <mat-menu #submenu="matMenu" class="submenu">
+                <a *ngFor="let child of item.children"
+                  mat-menu-item
+                  [routerLink]="child.route">
+                  <mat-icon>{{ child.icon }}</mat-icon>
+                  <span>{{ child.label }}</span>
+                </a>
+              </mat-menu>
+              
+              <!-- Expanded view group header -->
+              <div *ngIf="isExpanded" 
+                   class="nav-item group-header"
+                   matRipple
+                   (click)="toggleNavGroup(item)">
+                <div class="group-header-content">
+                  <mat-icon>{{ item.icon }}</mat-icon>
+                  <div class="group-text">
+                    <div class="nav-label">{{ item.label }}</div>
+                    <div class="nav-description">{{ item.description }}</div>
+                  </div>
+                  <mat-icon class="expand-icon">{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </div>
+              </div>
+              
+              <!-- Group children (only in expanded view) -->
+              <div *ngIf="isExpanded && item.expanded" class="nav-children">
+                <a *ngFor="let child of item.children"
+                  mat-list-item
+                  [routerLink]="child.route"
+                  routerLinkActive="active-link"
+                  matRipple
+                  class="nav-item child-item">
+                  <mat-icon matListItemIcon>{{ child.icon }}</mat-icon>
+                  <div matListItemTitle class="nav-label">{{ child.label }}</div>
+                  <div matListItemLine class="nav-description">{{ child.description }}</div>
+                </a>
+              </div>
+            </ng-container>
+          </ng-container>
+        </mat-nav-list>
+        
+        <!-- Quick actions section -->
+        <div class="nav-section" *ngIf="isExpanded">
+          <div class="section-label">Quick Actions</div>
+        </div>
+        
+        <mat-nav-list class="quick-actions" *ngIf="isExpanded">
+          <a *ngFor="let action of quickActions"
+             mat-list-item
+             [routerLink]="action.route"
+             matRipple
+             class="action-item">
+            <mat-icon matListItemIcon class="action-icon">{{ action.icon }}</mat-icon>
+            <span matListItemTitle>{{ action.label }}</span>
+          </a>
+        </mat-nav-list>
+        
+        <!-- System status -->
+        <div class="system-status" *ngIf="isExpanded">
+          <div class="status-header">
+            <div class="status-label">System Status</div>
+            <div class="status-indicator" [class.operational]="systemStatus.status === 'Operational'">
+              <span class="status-dot"></span>
+              <span>{{ systemStatus.status }}</span>
+            </div>
+          </div>
+          <div class="status-details">
+            <div class="status-item">
+              <span class="status-key">Uptime:</span>
+              <span class="status-value">{{ systemStatus.uptime }}</span>
+            </div>
+            <div class="status-item">
+              <span class="status-key">Updated:</span>
+              <span class="status-value">{{ systemStatus.lastUpdated | date:'shortTime' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="spacer"></div>
+        
+        <!-- Bottom Navigation -->
+        <mat-nav-list class="bottom-nav">
+          <a mat-list-item routerLink="/" class="nav-item" matTooltip="View public site">
+            <mat-icon>public</mat-icon>
+            <span *ngIf="isExpanded" class="nav-label">View Site</span>
+          </a>
+          <a mat-list-item routerLink="/admin/help" class="nav-item" matTooltip="Help & documentation">
+            <mat-icon>help</mat-icon>
+            <span *ngIf="isExpanded" class="nav-label">Help</span>
+          </a>
+          <a mat-list-item (click)="logout()" class="nav-item logout" matTooltip="Sign out">
+            <mat-icon>exit_to_app</mat-icon>
+            <span *ngIf="isExpanded" class="nav-label">Logout</span>
+          </a>
+        </mat-nav-list>
+      </div>
+    </mat-sidenav>
+    
+    <!-- Main Content -->
+    <mat-sidenav-content class="content-container">
+      <!-- Top Toolbar -->
+      <mat-toolbar class="top-toolbar">
+        <div class="toolbar-left">
+          <button mat-icon-button 
+                  class="menu-toggle" 
+                  (click)="toggleSidebar()" 
+                  *ngIf="isMobileView"
+                  matTooltip="Toggle menu">
+            <mat-icon>menu</mat-icon>
+          </button>
+          
+          <h1 class="page-title">{{ pageTitle }}</h1>
+          
+          <breadcrumb></breadcrumb>
+        </div>
+        
+        <div class="toolbar-spacer"></div>
+        
+        <div class="toolbar-right">
+          <!-- Search Box -->
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Search..." 
+              [(ngModel)]="searchQuery"
+            >
+            <button 
+              *ngIf="searchQuery" 
+              mat-icon-button 
+              class="clear-search" 
+              (click)="searchQuery = ''">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          
+          <!-- Theme Toggle -->
+          <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" [matTooltip]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+            <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          </button>
+          
+          <!-- Notifications Button -->
+          <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" class="notification-btn" matTooltip="Notifications">
+            <mat-icon [matBadge]="3" matBadgeColor="warn">notifications</mat-icon>
+          </button>
+          <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+            <div class="notification-header">
+              <span>Notifications</span>
+              <button mat-button color="primary">Mark all as read</button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="notification-list">
+              <a mat-menu-item class="notification-item">
+                <div class="notification-content">
+                  <mat-icon class="notification-icon">person_add</mat-icon>
+                  <div class="notification-text">
+                    <div class="notification-title">New user registered</div>
+                    <div class="notification-time">5 minutes ago</div>
+                  </div>
+                </div>
+              </a>
+              <a mat-menu-item class="notification-item">
+                <div class="notification-content">
+                  <mat-icon class="notification-icon">assignment_turned_in</mat-icon>
+                  <div class="notification-text">
+                    <div class="notification-title">New survey submission</div>
+                    <div class="notification-time">1 hour ago</div>
+                  </div>
+                </div>
+              </a>
+              <a mat-menu-item class="notification-item">
+                <div class="notification-content">
+                  <mat-icon class="notification-icon">system_update</mat-icon>
+                  <div class="notification-text">
+                    <div class="notification-title">System update completed</div>
+                    <div class="notification-time">2 hours ago</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="notification-footer">
+              <a mat-button color="primary" routerLink="/admin/notifications">View all notifications</a>
+            </div>
+          </mat-menu>
+          
+          <!-- User Menu -->
+          <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+            <div class="user-info">
+              <div class="user-avatar">
+                <span>{{ authService.getUserDetail()?.['firstName']?.charAt(0) || 'A' }}</span>
+              </div>
+              <span class="user-name">{{ authService.getUserDetail()?.fullName || 'Admin User' }}</span>
+              <mat-icon>arrow_drop_down</mat-icon>
+            </div>
+          </button>
+          <mat-menu #userMenu="matMenu" class="user-menu">
+            <div class="user-menu-header">
+              <div class="user-avatar-large">
+                <span>{{ authService.getUserDetail()?.['firstName']?.charAt(0) || 'A' }}</span>
+              </div>
+              <div class="user-details">
+                <h3>{{ authService.getUserDetail()?.fullName || 'Admin User' }}</h3>
+                <p>Administrator</p>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <a mat-menu-item routerLink="/admin/profile">
+              <mat-icon>account_circle</mat-icon>
+              <span>My Profile</span>
+            </a>
+            <a mat-menu-item routerLink="/admin/settings">
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </a>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-toolbar>
+      
+      <!-- Page Content -->
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+      
+      <!-- Footer -->
+      <footer class="admin-footer">
+        <div class="footer-content">
+          <div class="copyright">
+            &copy; {{ currentYear }} SurveyBucks Admin Panel
+          </div>
+          <div class="footer-links">
+            <a routerLink="/admin/help">Help</a>
+            <a routerLink="/admin/support">Support</a>
+            <a href="https://docs.surveybucks.com" target="_blank">Documentation</a>
+          </div>
+        </div>
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,51 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <a routerLink="/" class="logo"><img class="logo" src="assets/SurveyBucksLogoHorizontal.png"></a>
+
+    <!-- Desktop Navigation -->
+    <div class="nav-links desktop-nav">
+      <a routerLink="/how-it-works" routerLinkActive="active">HOW IT WORKS</a>
+      <a routerLink="/rewards" routerLinkActive="active">REWARDS</a>
+      <a routerLink="/about" routerLinkActive="active">ABOUT US</a>
+      <a routerLink="/auth/login" routerLinkActive="active">LOGIN</a>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      routerLink="/auth/register"
+      class="signup-btn desktop-signup"
+    >
+      SIGN UP FREE
+    </button>
+
+    <!-- Mobile Menu Toggle -->
+    <button mat-icon-button class="mobile-toggle" (click)="toggleMobileMenu()">
+      <mat-icon>{{ isMobileMenuOpen ? "close" : "menu" }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" [class.open]="isMobileMenuOpen">
+    <a routerLink="/how-it-works" (click)="closeMobileMenu()">HOW IT WORKS</a>
+    <a routerLink="/rewards" (click)="closeMobileMenu()">REWARDS</a>
+    <a routerLink="/about" (click)="closeMobileMenu()">ABOUT US</a>
+    <a routerLink="/auth/login" (click)="closeMobileMenu()">LOGIN</a>
+    <button
+      mat-raised-button
+      color="primary"
+      routerLink="/auth/register"
+      (click)="closeMobileMenu()"
+      class="mobile-signup"
+    >
+      SIGN UP FREE
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Overlay -->
+<div
+  class="mobile-overlay"
+  [class.visible]="isMobileMenuOpen"
+  (click)="closeMobileMenu()"
+></div>

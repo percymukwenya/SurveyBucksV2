@@ -1,0 +1,199 @@
+<div class="business-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>Partner With Us for Consumer Insights</h1>
+      <p>Get authentic feedback from South African consumers to drive better business decisions. Our platform connects you with engaged participants who provide quality insights.</p>
+      <div class="hero-cta">
+        <button mat-raised-button color="primary" class="primary-cta">
+          Schedule Discovery Call
+        </button>
+        <button mat-stroked-button class="secondary-cta">
+          Download Partnership Guide
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Solutions -->
+  <section class="solutions-section">
+    <div class="container">
+      <h2>Research Solutions</h2>
+      <p class="section-subtitle">We provide comprehensive research solutions tailored to your business needs</p>
+      <div class="solutions-grid">
+        <div class="solution-card" *ngFor="let solution of researchSolutions">
+          <mat-icon class="solution-icon">{{ solution.icon }}</mat-icon>
+          <h3>{{ solution.title }}</h3>
+          <p>{{ solution.description }}</p>
+          <div class="solution-details">
+            <h4>Common Use Cases:</h4>
+            <ul>
+              <li *ngFor="let useCase of solution.useCases">{{ useCase }}</li>
+            </ul>
+            <div class="solution-specs">
+              <span><strong>Timeframe:</strong> {{ solution.timeframe }}</span>
+              <span><strong>Sample Size:</strong> {{ solution.sampleSize }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Target Audiences -->
+  <section class="audience-section">
+    <div class="container">
+      <h2>Reach Your Exact Target Audience</h2>
+      <p class="section-subtitle">Our platform allows precise targeting across multiple demographic and behavioral criteria</p>
+      <div class="audience-tabs">
+        <mat-tab-group>
+          <mat-tab *ngFor="let audience of targetAudiences" [label]="audience.category">
+            <div class="tab-content">
+              <ul class="audience-options">
+                <li *ngFor="let option of audience.options">
+                  <mat-icon>check_circle</mat-icon>
+                  {{ option }}
+                </li>
+              </ul>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="why-choose-section">
+    <div class="container">
+      <h2>Why Partner With Us</h2>
+      <div class="why-grid">
+        <div class="why-card" *ngFor="let reason of whyChooseUs">
+          <mat-icon class="why-icon">{{ reason.icon }}</mat-icon>
+          <h3>{{ reason.title }}</h3>
+          <p>{{ reason.description }}</p>
+          <ul class="benefit-list">
+            <li *ngFor="let benefit of reason.benefits">{{ benefit }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies -->
+  <section class="case-studies-section">
+    <div class="container">
+      <h2>Success Stories</h2>
+      <p class="section-subtitle">See how we've helped South African businesses gain valuable insights</p>
+      <div class="case-studies-grid">
+        <div class="case-study-card" *ngFor="let study of caseStudyHighlights">
+          <mat-icon class="case-icon">{{ study.icon }}</mat-icon>
+          <h3>{{ study.industry }}</h3>
+          <div class="case-content">
+            <div class="case-item">
+              <h4>Challenge:</h4>
+              <p>{{ study.challenge }}</p>
+            </div>
+            <div class="case-item">
+              <h4>Our Solution:</h4>
+              <p>{{ study.solution }}</p>
+            </div>
+            <div class="case-item">
+              <h4>Result:</h4>
+              <p>{{ study.result }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries -->
+  <section class="industries-section">
+    <div class="container">
+      <h2>Industries We Serve</h2>
+      <div class="industries-grid">
+        <div class="industry-card" *ngFor="let industry of industriesServed">
+          <mat-icon class="industry-icon">{{ industry.icon }}</mat-icon>
+          <h3>{{ industry.name }}</h3>
+          <p>{{ industry.count }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process-section">
+    <div class="container">
+      <h2>Our Partnership Process</h2>
+      <div class="process-timeline">
+        <div class="process-step" *ngFor="let step of processSteps">
+          <div class="step-number">{{ step.step }}</div>
+          <div class="step-content">
+            <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+            <span class="step-duration">{{ step.duration }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="container">
+      <h2>Investment Packages</h2>
+      <p class="section-subtitle">Flexible pricing to match your research needs and budget</p>
+      <div class="pricing-grid">
+        <div class="pricing-card" 
+             *ngFor="let tier of pricingTiers" 
+             [class.highlighted]="tier.highlight"
+             [class.popular]="tier.popular">
+          <div class="popular-badge" *ngIf="tier.popular">Most Popular</div>
+          <h3>{{ tier.name }}</h3>
+          <div class="price">{{ tier.price }}</div>
+          <p class="price-description">{{ tier.description }}</p>
+          <ul class="features-list">
+            <li *ngFor="let feature of tier.features">
+              <mat-icon>check</mat-icon>
+              {{ feature }}
+            </li>
+          </ul>
+          <button mat-raised-button 
+                  [color]="tier.highlight ? 'primary' : ''" 
+                  class="pricing-cta">
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="final-cta-section">
+    <div class="container">
+      <h2>Ready to Get Started?</h2>
+      <p>Let's discuss how consumer insights can drive your business forward</p>
+      <div class="cta-options">
+        <div class="cta-option">
+          <mat-icon>call</mat-icon>
+          <h3>Schedule a Call</h3>
+          <p>Discuss your research needs with our team</p>
+          <button mat-raised-button color="primary">Book Discovery Call</button>
+        </div>
+        <div class="cta-option">
+          <mat-icon>email</mat-icon>
+          <h3>Send Us Your Brief</h3>
+          <p>Email us your project details for a custom quote</p>
+          <button mat-stroked-button>Email Partnership Team</button>
+        </div>
+        <div class="cta-option">
+          <mat-icon>download</mat-icon>
+          <h3>Download Our Guide</h3>
+          <p>Learn more about our research capabilities</p>
+          <button mat-stroked-button>Get Partnership Guide</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
