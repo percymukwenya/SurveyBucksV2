@@ -6,7 +6,7 @@
       (click)="pauseSurvey()"
       matTooltip="Pause Survey"
       [disabled]="saving || completing"
-    >
+      aria-label="Pause survey">
       <mat-icon>{{ saving ? "hourglass_empty" : "pause" }}</mat-icon>
     </button>
 
@@ -51,7 +51,7 @@
         [matBadge]="getIncompleteSectionCount() > 0 ? getIncompleteSectionCount() : null"
         matBadgeColor="warn"
         matBadgeSize="small"
-      >
+        aria-label="View progress summary">
         <mat-icon>analytics</mat-icon>
       </button>
 
@@ -60,7 +60,7 @@
         routerLink="/client/surveys"
         matTooltip="Exit Survey"
         (click)="confirmExit($event)"
-      >
+        aria-label="Exit survey">
         <mat-icon>close</mat-icon>
       </button>
     </div>

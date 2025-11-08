@@ -31,10 +31,10 @@
         </div>
         
         <div class="completion-actions">
-          <button mat-icon-button (click)="refreshProfileCompletion()" matTooltip="Refresh">
+          <button mat-icon-button (click)="refreshProfileCompletion()" matTooltip="Refresh" aria-label="Refresh profile completion">
             <mat-icon>refresh</mat-icon>
           </button>
-          <button mat-icon-button (click)="debugProfileData()" matTooltip="Debug Info" *ngIf="!loading">
+          <button mat-icon-button (click)="debugProfileData()" matTooltip="Debug Info" *ngIf="!loading" aria-label="Show debug information">
             <mat-icon>bug_report</mat-icon>
           </button>
         </div>
@@ -709,7 +709,7 @@
                     (click)="removeInterest(interest.id)"
                     color="warn"
                     matTooltip="Remove interest"
-                  >
+                    aria-label="Remove interest">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -906,7 +906,7 @@
                     mat-icon-button
                     (click)="downloadDocument(document)"
                     matTooltip="Download"
-                  >
+                    aria-label="Download document">
                     <mat-icon>download</mat-icon>
                   </button>
 
@@ -916,7 +916,7 @@
                     *ngIf="document.verificationStatus !== 'Approved'"
                     matTooltip="Delete"
                     color="warn"
-                  >
+                    aria-label="Delete document">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -1198,7 +1198,7 @@
                     (click)="setPrimaryBankingDetail(banking)"
                     *ngIf="!banking.isPrimary"
                     matTooltip="Set as Primary"
-                  >
+                    aria-label="Set as primary banking detail">
                     <mat-icon>star_border</mat-icon>
                   </button>
 
@@ -1207,7 +1207,7 @@
                     (click)="editBankingDetail(banking)"
                     *ngIf="!banking.isVerified"
                     matTooltip="Edit"
-                  >
+                    aria-label="Edit banking detail">
                     <mat-icon>edit</mat-icon>
                   </button>
 
@@ -1216,7 +1216,7 @@
                     (click)="deleteBankingDetail(banking)"
                     matTooltip="Delete"
                     color="warn"
-                  >
+                    aria-label="Delete banking detail">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>

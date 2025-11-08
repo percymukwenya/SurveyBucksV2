@@ -23,7 +23,7 @@
           <mat-icon [class.primary-icon]="true">analytics</mat-icon>
           <span *ngIf="isExpanded">SurveyBucks Admin</span>
         </div>
-        <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn" matTooltip="Toggle menu">
+        <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn" matTooltip="Toggle menu" aria-label="Toggle sidebar menu">
           <mat-icon>{{ isExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
         </button>
       </div>
@@ -186,11 +186,12 @@
       <!-- Top Toolbar -->
       <mat-toolbar class="top-toolbar">
         <div class="toolbar-left">
-          <button mat-icon-button 
-                  class="menu-toggle" 
-                  (click)="toggleSidebar()" 
+          <button mat-icon-button
+                  class="menu-toggle"
+                  (click)="toggleSidebar()"
                   *ngIf="isMobileView"
-                  matTooltip="Toggle menu">
+                  matTooltip="Toggle menu"
+                  aria-label="Toggle navigation menu">
             <mat-icon>menu</mat-icon>
           </button>
           
@@ -211,22 +212,23 @@
               placeholder="Search..." 
               [(ngModel)]="searchQuery"
             >
-            <button 
-              *ngIf="searchQuery" 
-              mat-icon-button 
-              class="clear-search" 
-              (click)="searchQuery = ''">
+            <button
+              *ngIf="searchQuery"
+              mat-icon-button
+              class="clear-search"
+              (click)="searchQuery = ''"
+              aria-label="Clear search">
               <mat-icon>close</mat-icon>
             </button>
           </div>
           
           <!-- Theme Toggle -->
-          <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" [matTooltip]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" [matTooltip]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'" [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
             <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
           </button>
           
           <!-- Notifications Button -->
-          <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" class="notification-btn" matTooltip="Notifications">
+          <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" class="notification-btn" matTooltip="Notifications" aria-label="View notifications, 3 unread">
             <mat-icon [matBadge]="3" matBadgeColor="warn">notifications</mat-icon>
           </button>
           <mat-menu #notificationsMenu="matMenu" class="notifications-menu">

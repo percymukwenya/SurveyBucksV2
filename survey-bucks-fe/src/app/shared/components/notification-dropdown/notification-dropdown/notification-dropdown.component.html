@@ -1,10 +1,11 @@
 <!-- src/app/shared/components/notification-dropdown/notification-dropdown.component.html -->
-<button mat-icon-button 
-       [matMenuTriggerFor]="notificationMenu" 
-       [matBadge]="unreadCount" 
-       [matBadgeHidden]="unreadCount === 0" 
+<button mat-icon-button
+       [matMenuTriggerFor]="notificationMenu"
+       [matBadge]="unreadCount"
+       [matBadgeHidden]="unreadCount === 0"
        matBadgeColor="accent"
-       (menuOpened)="refreshNotifications()">
+       (menuOpened)="refreshNotifications()"
+       [attr.aria-label]="'View notifications' + (unreadCount > 0 ? ', ' + unreadCount + ' unread' : '')">
   <mat-icon>notifications</mat-icon>
 </button>
 
