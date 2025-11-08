@@ -1,0 +1,168 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: #6c757d;
+
+  // Icon
+  &__icon {
+    margin-bottom: 24px;
+
+    mat-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+      color: #cbd5e0;
+      opacity: 0.7;
+    }
+  }
+
+  // Content
+  &__content {
+    margin-bottom: 24px;
+    max-width: 500px;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+  }
+
+  &__description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  // Actions
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    button {
+      min-width: 120px;
+    }
+  }
+
+  // Size Variants
+  &--small {
+    padding: 32px 16px;
+
+    .empty-state__icon mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .empty-state__title {
+      font-size: 16px;
+    }
+
+    .empty-state__description {
+      font-size: 14px;
+    }
+  }
+
+  &--large {
+    padding: 64px 32px;
+    min-height: 400px;
+
+    .empty-state__icon mat-icon {
+      font-size: 120px;
+      width: 120px;
+      height: 120px;
+    }
+
+    .empty-state__title {
+      font-size: 24px;
+    }
+
+    .empty-state__description {
+      font-size: 18px;
+    }
+  }
+}
+
+// Animation
+.empty-state {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .empty-state {
+    padding: 32px 16px;
+
+    &__icon mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+    }
+
+    &__title {
+      font-size: 18px;
+    }
+
+    &__description {
+      font-size: 14px;
+    }
+
+    &__actions {
+      flex-direction: column;
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    &--large {
+      padding: 48px 24px;
+      min-height: 300px;
+
+      .empty-state__icon mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+}
+
+// Dark Mode
+@media (prefers-color-scheme: dark) {
+  .empty-state {
+    color: #bdc3c7;
+
+    &__icon mat-icon {
+      color: #4a5568;
+    }
+
+    &__title {
+      color: #ecf0f1;
+    }
+
+    &__description {
+      color: #bdc3c7;
+    }
+  }
+}
