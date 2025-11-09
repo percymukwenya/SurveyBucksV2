@@ -733,7 +733,7 @@ namespace Application.Services
 
                 if (points > 0)
                 {
-                    await _pointsRepository.AwardPointsAsync(userId, points, $"ProfileMilestone_{completionPercentage}", achievementKey);
+                    await _pointsRepository.AddPointsAsync(userId, points, $"ProfileMilestone_{completionPercentage}", achievementKey);
                 }
             }
             catch (Exception ex)
@@ -750,11 +750,11 @@ namespace Application.Services
                     userId, actionType, actionValue);
 
                 // Update active user challenges
-                var challenges = await _challengeRepository.GetUserActiveChallengesAsync(userId);
+                var challenges = await _challengeRepository.GetActiveChallengesAsync(userId);
                 foreach (var challenge in challenges)
                 {
                     // Update progress based on action type
-                    await _challengeRepository.UpdateChallengeProgressAsync(userId, challenge.Id, actionValue);
+                    await _challengeRepository.UpdateChallengeProgressAsync(userId, challenge.Id, actionValue, false);
                 }
             }
             catch (Exception ex)
@@ -770,7 +770,7 @@ namespace Application.Services
                 _logger.LogInformation("Awarding {Points} points to user {UserId} for {ActionType}",
                     points, userId, actionType);
 
-                await _pointsRepository.AwardPointsAsync(userId, points, actionType, referenceId);
+                await _pointsRepository.AddPointsAsync(userId, points, actionType, referenceId);
 
                 // Check for level up
                 var stats = await GetUserStatsAsync(userId);
@@ -790,7 +790,7 @@ namespace Application.Services
                     userId, documentTypeId);
 
                 // Award points for document upload
-                await _pointsRepository.AwardPointsAsync(userId, 10, "DocumentUpload", documentTypeId.ToString());
+                await _pointsRepository.AddPointsAsync(userId, 10, "DocumentUpload", documentTypeId.ToString());
             }
             catch (Exception ex)
             {
@@ -806,7 +806,7 @@ namespace Application.Services
                     userId, documentType);
 
                 // Award points for document upload
-                await _pointsRepository.AwardPointsAsync(userId, 10, "DocumentUpload", documentType);
+                await _pointsRepository.AddPointsAsync(userId, 10, "DocumentUpload", documentType);
             }
             catch (Exception ex)
             {
@@ -822,7 +822,7 @@ namespace Application.Services
                     userId, documentTypeName);
 
                 // Award points for verified document
-                await _pointsRepository.AwardPointsAsync(userId, 25, "DocumentVerification", documentTypeName);
+                await _pointsRepository.AddPointsAsync(userId, 25, "DocumentVerification", documentTypeName);
 
                 // Check for achievements
                 await CheckAndAwardBadgesAsync(userId);
@@ -844,6 +844,30 @@ namespace Application.Services
                 AchievementsUnlocked = 0,
                 ChallengesCompleted = 0
             };
+        }
+
+        /// <summary>
+        /// Checks and awards badges/achievements based on user activity
+        /// </summary>
+        private async Task CheckAndAwardBadgesAsync(string userId)
+        {
+            try
+            {
+                _logger.LogDebug("Checking badges for user {UserId}", userId);
+
+                // TODO: Implement badge checking logic
+                // This is a stub implementation - needs to be completed with actual badge logic
+                // Examples:
+                // - Check if user has completed X surveys -> award "Survey Master" badge
+                // - Check if user has earned X points -> award "Point Collector" badge
+                // - Check if user has X day streak -> award "Consistency Champion" badge
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking badges for user {UserId}", userId);
+            }
         }
     }
 }
